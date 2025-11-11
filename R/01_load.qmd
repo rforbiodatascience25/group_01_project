@@ -69,4 +69,4 @@ write_rds(gds3268, file="../_raw/gds3268.rds")
 write_rds(gse11223, file="../_raw/gse11223.rds")
 ```
 
-\_raw/ will indeed only contain raw data pulls (apart from the disturbing list extraction for gse11223...).
+\_raw/ will indeed only contain raw data pulls (apart from the disturbing list extraction for gse11223...)
