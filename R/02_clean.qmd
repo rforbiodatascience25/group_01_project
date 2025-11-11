@@ -3,3 +3,106 @@ title: "02_clean"
 format: html
 ---
 
+# Cleaning data
+
+Clean \_raw/ data to data/
+
+Converts each of the following to a tibble dataframe in the tidy format
+
+-   the expression GEODataTable from GDS in \_raw/
+
+-   the metadata from GSE
+
+    -   phenoData\$data - metadata concerning samples (patients)
+
+    -   featureData\$data - metadata concerning genes
+
+**Setup/Initialization**
+
+```{r}
+#| message: false
+#| warning: false
+library(tidyverse)
+```
+
+## GEODataTable from \_raw/gds3268.rds
+
+#### Loading in the data
+
+Expression data of patients with different genes. (patient) Samples are stored as columns and gene names as rows, which we would like to flip, to align with tidy standards. But first we load the data from \_raw/
+
+```{r}
+#Applying the Table function from GEOquery to extract the dataframe.
+exprs_geodf <- Table(read_rds("../_raw/gds3268.rds"))
+exprs_geodf <- as_tibble(exprs_geodf)
+exprs_geodf
+```
+
+Now we can treat it as a normal dataframe to try to clean it to a tidy dataframe.
+
+#### Removing empty rows
+
+All 204 columns are (patient) Samples, and of type \<dbl\> with NA values. With this data we would like to keep the random NA values that appear throughout the dataset as they clearly represent no data. Substituting it with zeros would indicate that there is no expression of that gene in that sample, which is not necessarily the case (most likely not). Although, if an entire row is made of zeros, we would like to exclude that gene.
+
+```{r}
+fully_na <- exprs_geodf |>
+  filter(if_all(starts_with("GSM"), is.na)) |> 
+  select("ID_REF") 
+
+count(fully_na)
+```
+
+There are 3299 identifiers with completely empty rows in the expression dataset, given in the list "fully_na". We cannot use the gene column name: "IDENTIFIER", as it contains duplicates. Lets exclude fully_na indexes from the dataset:
+
+```{r}
+exprs_df <- exprs_geodf |> 
+  anti_join(fully_na, by = "ID_REF")
+
+exprs_df
+```
+
+With our little sanity check below, we can confirm that 3299 rows has been filtered from the data, matching the number of empty rows (fully_na)
+
+```{r}
+dim(exprs_geodf)[[1]] - dim(exprs_df)[[1]] - dim(fully_na)[[1]]
+```
+
+We could choose to reset ID_REF values and keep them as the index of the frame (essentially removing them), but that would obscure us from combining the expression dataframe with any potential meta data later on. We therefore instead denote the ID_REF column as lookup keys; since they're unique.
+
+#### Transposing the dataframe
+
+As according to tidy principles, we need variables (gene names) as columns and observations (samples) as rows, which is currently flipped. We therefore need to transpose the dataframe.
+
+We can use pivot_longer to concatenate columns and values except *ID_REF*, and then pivot_wider to unpack the values along with *ID_REF*, leaving sample names as row names. Although, currently we have both *ID_REF* and *IDENTIFIER* functioning as column headers. We choose to exclude the IDENTIFIER column from the table, and combine it with future metadata tables. As long as the ID_REF is present, we can lookup any meta data there might be for either variables and observations.
+
+```{r}
+exprs_df <- exprs_df |> 
+  select(-IDENTIFIER) |> 
+  
+  #Packing column names to one (except ID_REF)
+  pivot_longer(
+    cols = -ID_REF,          
+    names_to = "Variable", 
+    values_to = "Value"  
+  ) |>
+  
+  #Unpacking ID_REF as columns
+  pivot_wider(
+    names_from = ID_REF,
+    values_from = Value
+  )
+
+exprs_df
+```
+
+Now we see the data transposed with 202 rows and 40,992 columns, as opposed to the opposite before.
+
+#### Converting column headers to snake 
+
+## phenoData\$data from \_raw/gse11223.rds
+
+Metadata concerning samples (patients)
+
+## featureData\$data from \_raw/gse11223.rds
+
+Metadata concerning genes
