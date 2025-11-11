@@ -3,3 +3,70 @@ title: "01_load"
 format: html
 ---
 
+# Load data
+
+### Make \_raw dir
+
+```{r}
+#| warning: false
+# Create data dirs using base R
+dir.create("../_raw/")
+dir.create("../data/")
+```
+
+### Loading GEO data using GEOquery
+
+<https://warwick.ac.uk/fac/sci/moac/people/students/peter_cock/r/geo/>
+
+On the GEO database, files are stored as .soft files, with metadata in the beginning and (for the case of "GSE11223") gene expression data at the end.
+
+```{r}
+#| message: false
+#| warning: false
+install.packages("GEOquery")
+library(GEOquery)
+library(tidyverse)
+```
+
+The getGEO function from GEOquery obtains queries GEO datasets with the GEO id (if specified). In this case for GSE11223. Else, filename can be supplied to import a downloaded file from the GEO database
+
+```{r}
+#| message: false
+gse11223 <- getGEO(GEO="GSE11223")
+gds3268 <- getGEO(GEO="GDS3268")
+```
+
+#### Working with the raw "gse" data
+
+For GSE11223, getGEO pulls the data into a list of length 1. The file GSE11223_series_matrix.txt.gz is extracted into the first (and only) position of that list. We therefore extract the data, getting rid of the parent list:
+
+```{r}
+gse11223 <- gse11223$GSE11223_series_matrix.txt.gz
+```
+
+Now, the gse11223 variable is a "Large ExpressionSet" of 44.1MB.
+
+#### Working with the curated "gds" data
+
+gds3268 is the curated dataset for the project, meaning that the meta data of samples and the expression table can be easily extracted using Meta() and Table() respectively.
+
+```{r}
+gds3268_meta <- Meta(gds3268)
+gds3268_meta
+```
+
+```{r}
+gds3268_expression <- Table(gds3268)
+gds3268_expression
+```
+
+**Save gse11223 & gds3268 objects in \_raw/**
+
+underlying tables can be extracted from each when they're loaded as rds files, this ensures collectively of the two pulls when working with the data.
+
+```{r}
+write_rds(gds3268, file="../_raw/gds3268.rds")
+write_rds(gse11223, file="../_raw/gse11223.rds")
+```
+
+\_raw/ will indeed only contain raw data pulls (apart from the disturbing list extraction for gse11223...).
