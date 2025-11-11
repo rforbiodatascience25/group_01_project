@@ -76,13 +76,16 @@ As according to tidy principles, we need variables (gene names) as columns and o
 We can use pivot_longer to concatenate columns and values except *ID_REF*, and then pivot_wider to unpack the values along with *ID_REF*, leaving sample names as row names. Although, currently we have both *ID_REF* and *IDENTIFIER* functioning as column headers. We choose to exclude the IDENTIFIER column from the table, and combine it with future metadata tables. As long as the ID_REF is present, we can lookup any meta data there might be for either variables and observations.
 
 ```{r}
+identifier_exprs <- exprs_df |>  # for later use
+  select(ID_REF, IDENTIFIER)
+
 exprs_df <- exprs_df |> 
   select(-IDENTIFIER) |> 
   
   #Packing column names to one (except ID_REF)
   pivot_longer(
     cols = -ID_REF,          
-    names_to = "Variable", 
+    names_to = "Samples", 
     values_to = "Value"  
   ) |>
   
@@ -97,7 +100,14 @@ exprs_df
 
 Now we see the data transposed with 202 rows and 40,992 columns, as opposed to the opposite before.
 
-#### Converting column headers to snake 
+**Converting Samples names to snake case**
+
+```{r}
+exprs_df <- exprs_df |> 
+  mutate(Samples = str_to_lower(Samples))
+
+exprs_df
+```
 
 ## phenoData\$data from \_raw/gse11223.rds
 
@@ -106,3 +116,9 @@ Metadata concerning samples (patients)
 ## featureData\$data from \_raw/gse11223.rds
 
 Metadata concerning genes
+
+## Exporting to data/
+
+```{r}
+write_csv(exprs_df, file = "../data/exprs_df.csv")
+```
