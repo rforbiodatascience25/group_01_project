@@ -132,10 +132,10 @@ finaldata <- right_join(phenodata, exprs_df, by = "geo_accession")
 Metadata concerning genes
 
 ```{r}
-feturedata <- pData(featureData(gse11223))
+featuredata <- pData(featureData(gse11223))
 ```
 
-## Merging featureData with finaldata
+## Cleaning environment
 
 ```{r}
 #finaldata <- left_join(finaldata, )
@@ -144,5 +144,6 @@ feturedata <- pData(featureData(gse11223))
 ## Exporting to data/
 
 ```{r}
-write_csv(exprs_df, file = "../data/exprs_df.csv")
+write_csv(finaldata, file = "../data/finaldata.csv")
+write_csv(featuredata, file = "../data/featuredata.csv")
 ```
