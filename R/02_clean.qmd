@@ -145,5 +145,5 @@ write_csv(featuredata, file = "../data/featuredata.csv")
 ## Cleaning environment
 
 ```{r}
-rm(list=ls())
+rm(list = setdiff(ls(), c("finaldata", "featuredata")))
 ```
