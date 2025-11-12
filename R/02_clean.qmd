@@ -135,12 +135,6 @@ Metadata concerning genes
 featuredata <- pData(featureData(gse11223))
 ```
 
-## Cleaning environment
-
-```{r}
-#finaldata <- left_join(finaldata, )
-```
-
 ## Exporting to data/
 
 ```{r}
@@ -148,7 +142,8 @@ write_csv(finaldata, file = "../data/finaldata.csv")
 write_csv(featuredata, file = "../data/featuredata.csv")
 ```
 
+## Cleaning environment
+
 ```{r}
 rm(list=ls())
 ```
-
