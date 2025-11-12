@@ -22,7 +22,15 @@ Converts each of the following to a tibble dataframe in the tidy format
 ```{r}
 #| message: false
 #| warning: false
-library(tidyverse)
+
+# Checks if tidyverse is installed, if not it will install
+if (!requireNamespace("tidyverse")) {
+  install.packages("tidyverse")
+}
+data_dir <- "../data/"
+raw_dir <- "../data/_raw/"
+
+library("tidyverse")
 ```
 
 ## GEODataTable from \_raw/gds3268.rds
@@ -33,7 +41,8 @@ Expression data of patients with different genes. (patient) Samples are stored a
 
 ```{r}
 #Applying the Table function from GEOquery to extract the dataframe.
-exprs_geodf <- Table(read_rds("../_raw/gds3268.rds"))
+exprs_geodf <- Table(read_rds(file.path(raw_dir,"gds3268.rds")))
+#exprs_geodf <- Table(read_rds("../_raw/gds3268.rds"))
 exprs_geodf <- as_tibble(exprs_geodf)
 exprs_geodf
 ```
@@ -113,9 +122,23 @@ exprs_df
 
 Metadata concerning samples (patients)
 
+```{r}
+read_rds(file = file.path(raw_dir,"gse11223.rds")) 
+
+phenodata <- pData(phenoData(gse11223[[1]]))
+```
+
+The phenodata has been extracted from the gse11223 and now we will pick and choose the data that is, perhaps removing those variables that are of no importance for us, such as status, submission_date, type, channel_count, organism_ch1 (as they are all homo sapiens) and characteristics_ch1
+
+maybe more.
+
 ## featureData\$data from \_raw/gse11223.rds
 
 Metadata concerning genes
+
+```{r}
+feturedata <- pData(featureData(gse11223[[1]]))
+```
 
 ## Exporting to data/
 
