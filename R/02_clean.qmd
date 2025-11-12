@@ -123,9 +123,9 @@ exprs_df
 Metadata concerning samples (patients)
 
 ```{r}
-read_rds(file = file.path(raw_dir,"gse11223.rds")) 
+gse11223 <- read_rds(file = file.path(raw_dir,"gse11223.rds")) 
 
-phenodata <- pData(phenoData(gse11223[[1]]))
+phenodata <- pData(phenoData(gse11223[1]))
 ```
 
 The phenodata has been extracted from the gse11223 and now we will pick and choose the data that is, perhaps removing those variables that are of no importance for us, such as status, submission_date, type, channel_count, organism_ch1 (as they are all homo sapiens) and characteristics_ch1
