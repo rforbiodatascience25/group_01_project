@@ -23,14 +23,9 @@ Converts each of the following to a tibble dataframe in the tidy format
 #| message: false
 #| warning: false
 
-# Checks if tidyverse is installed, if not it will install
-if (!requireNamespace("tidyverse")) {
-  install.packages("tidyverse")
-}
 data_dir <- "../data/"
 raw_dir <- "../data/_raw/"
 
-library("tidyverse")
 ```
 
 ## GEODataTable from \_raw/gds3268.rds

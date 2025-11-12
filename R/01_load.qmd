@@ -41,7 +41,12 @@ if (!requireNamespace("GEOquery")) {
   install.packages("GEOquery")
 }
 
-# install.packages("GEOquery")
+# Checks if tidyverse is installed, if not it will install
+if (!requireNamespace("tidyverse")) {
+  install.packages("tidyverse")
+}
+
+# install.packages("GEOquery" and "tidyverse)
 library("GEOquery")
 library("tidyverse")
 ```
