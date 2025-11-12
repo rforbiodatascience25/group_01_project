@@ -137,7 +137,7 @@ maybe more.
 Metadata concerning genes
 
 ```{r}
-feturedata <- pData(featureData(gse11223[[1]]))
+feturedata <- pData(featureData(gse11223[1]))
 ```
 
 ## Exporting to data/
