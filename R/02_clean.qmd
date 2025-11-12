@@ -89,7 +89,7 @@ exprs_df <- exprs_df |>
   #Packing column names to one (except ID_REF)
   pivot_longer(
     cols = -ID_REF,          
-    names_to = "Samples", 
+    names_to = "geo_accession", 
     values_to = "Value"  
   ) |>
   
@@ -103,15 +103,6 @@ exprs_df
 ```
 
 Now we see the data transposed with 202 rows and 40,992 columns, as opposed to the opposite before.
-
-**Converting Samples names to snake case**
-
-```{r}
-exprs_df <- exprs_df |> 
-  mutate(Samples = str_to_lower(Samples))
-
-exprs_df
-```
 
 ## phenoData\$data from \_raw/gse11223.rds
 
@@ -127,12 +118,27 @@ The phenodata has been extracted from the gse11223 and now we will pick and choo
 
 maybe more.
 
+## Merging phenodata
+
+Do a left_join() with phenodata and exprs_df on geo_accession
+
+```{r}
+
+finaldata <- right_join(phenodata, exprs_df, by = "geo_accession")
+```
+
 ## featureData\$data from \_raw/gse11223.rds
 
 Metadata concerning genes
 
 ```{r}
 feturedata <- pData(featureData(gse11223))
+```
+
+## Merging featureData with finaldata
+
+```{r}
+#finaldata <- left_join(finaldata, )
 ```
 
 ## Exporting to data/
