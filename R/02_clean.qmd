@@ -147,3 +147,8 @@ featuredata <- pData(featureData(gse11223))
 write_csv(finaldata, file = "../data/finaldata.csv")
 write_csv(featuredata, file = "../data/featuredata.csv")
 ```
+
+```{r}
+rm(list=ls())
+```
+
