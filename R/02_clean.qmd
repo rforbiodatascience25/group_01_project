@@ -127,6 +127,16 @@ Do a left_join() with phenodata and exprs_df on geo_accession
 finaldata <- right_join(phenodata, exprs_df, by = "geo_accession")
 ```
 
+Stretching the data set so that genes
+
+```{r}
+finaldata <-  finaldata |> 
+  pivot_longer(cols = 152:last_col(),
+               names_to = "gene_id" ,
+               values_to = "gene_expr" )
+
+```
+
 ## featureData\$data from \_raw/gse11223.rds
 
 Metadata concerning genes
