@@ -26,30 +26,22 @@ if (!dir.exists(raw_dir)) {
 #dir.create("../data/")
 ```
 
-### Loading GEO data using GEOquery
-
-<https://warwick.ac.uk/fac/sci/moac/people/students/peter_cock/r/geo/>
-
-On the GEO database, files are stored as .soft files, with metadata in the beginning and (for the case of "GSE11223") gene expression data at the end.
+### Loading libraries
 
 ```{r}
 #| message: false
 #| warning: false
 
-# Checks if GEOquery is installed, if not it will install
-if (!requireNamespace("GEOquery")) {
-  install.packages("GEOquery")
-}
-
-# Checks if tidyverse is installed, if not it will install
-if (!requireNamespace("tidyverse")) {
-  install.packages("tidyverse")
-}
-
-# install.packages("GEOquery" and "tidyverse)
+# loading packages ("GEOquery" and "tidyverse)
 library("GEOquery")
 library("tidyverse")
 ```
+
+### Loading GEO data using GEOquery
+
+<https://warwick.ac.uk/fac/sci/moac/people/students/peter_cock/r/geo/>
+
+On the GEO database, files are stored as .soft files, with metadata in the beginning and (for the case of "GSE11223") gene expression data at the end.
 
 The getGEO function from GEOquery obtains queries GEO datasets with the GEO id (if specified). In this case for GSE11223. Else, filename can be supplied to import a downloaded file from the GEO database
 
