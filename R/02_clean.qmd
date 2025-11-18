@@ -146,6 +146,61 @@ Metadata concerning samples (patients)
 gse11223 <- read_rds(file = file.path(raw_dir,"gse11223.rds")) 
 
 phenodata <- pData(phenoData(gse11223[1]))
+
+phenodata |>
+  summarise(across(everything(), ~ n_distinct(.x, na.rm = TRUE))) |>
+  pivot_longer(
+    everything(),
+    names_to = "col",
+    values_to = "n_levels"
+  ) |>
+  filter(n_levels <= 1)
+```
+
+Once we spotted the "one type columns" we drop them. Then we check the remaining ones.
+
+```{r}
+phenodata <- phenodata |>
+  select(where(~ n_distinct(.x, na.rm = TRUE) > 1))
+
+names(phenodata)
+phenodata
+```
+
+```{r}
+library(tidyverse)
+
+# Select only the characteristics_* columns
+char_cols <- phenodata |> 
+  select(starts_with("characteristics_ch1"))
+
+# Extract a unique prefix (text before ':') for each column
+prefixes <- char_cols |> 
+  map_chr(~ {
+    vals <- na.omit(.x)
+    pref <- str_extract(vals, "^[^:]+") |> unique()
+    # keep only columns where ALL rows share the same prefix
+    if (length(pref) == 1) pref else NA_character_
+  })
+
+# Keep only columns with a valid single prefix
+valid_cols <- names(prefixes)[!is.na(prefixes)]
+
+# Build clean column names (lowercase + underscores)
+new_names <- prefixes[valid_cols] |> 
+  tolower() |> 
+  str_replace_all("\\s+", "_")
+
+# Remove the prefix from cell contents, keep only the value
+phenodata[valid_cols] <- map2_df(
+  phenodata[valid_cols],
+  prefixes[valid_cols],
+  ~ str_remove(.x, paste0("^", .y, "\\s*:\\s*")) |> str_trim()
+)
+
+# Rename the columns to their extracted prefix
+names(phenodata)[match(valid_cols, names(phenodata))] <- new_names
+
 ```
 
 The phenodata has been extracted from the gse11223 and now we will pick and choose the data that is, perhaps removing those variables that are of no importance for us, such as status, submission_date, type, channel_count, organism_ch1 (as they are all homo sapiens) and characteristics_ch1
