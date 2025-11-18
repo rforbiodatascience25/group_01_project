@@ -107,10 +107,10 @@ Now we see the data transposed with 202 rows and 40,992 columns, as opposed to t
 ## OLIVER DONT TOUCH
 
 ```{r}
-gene_var <- exprs_df %>%
+gene_var <- exprs_df |> 
   # drop the sample ID column, keep only expression values
-  select(-geo_accession) %>%
-  summarise(across(everything(), ~ var(.x, na.rm = TRUE))) %>%
+  select(-geo_accession) |> 
+  summarise(across(everything(), ~ var(.x, na.rm = TRUE))) |> 
   pivot_longer(
     cols      = everything(),
     names_to  = "gene",
@@ -128,11 +128,11 @@ ggplot(gene_var, aes(x = variance)) +
 We decide the cutoff genes with a variance below 0.05, and have 2909 genes remaining
 
 ```{r}
-genes_keep <- gene_var %>%
-  filter(variance > 0.05) %>%
+genes_keep <- gene_var |> 
+  filter(variance > 0.05) |> 
   pull(gene)
 
-exprs_filtered <- exprs_df %>%
+exprs_filtered <- exprs_df |> 
   select(geo_accession, all_of(genes_keep))
 
 length(genes_keep)
