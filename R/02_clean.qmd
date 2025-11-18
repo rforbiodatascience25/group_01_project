@@ -134,39 +134,57 @@ phenodata
 ```
 
 ```{r}
-library(tidyverse)
+library(stringr)
 
-# Select only the characteristics_* columns
-char_cols <- phenodata |> 
-  select(starts_with("characteristics_ch1"))
+phenodata <- phenodata |>
+  #Convert all columns starting with "characteristics_ch1" to long format
+  pivot_longer(
+    cols = starts_with("characteristics_ch1"),
+    names_to = "old_col",
+    values_to = "value"
+  ) |>
+  
+  #Split "prefix: content"
+  separate(
+    col  = value,
+    into = c("prefix", "content"),
+    sep  = ":",          # split at the first colon
+    fill = "right",      # if content is missing, fill with NA
+  ) |>
+  
+  #Clean the prefix
+  mutate(
+    prefix = str_replace_all(prefix, "\\s+", "_"),
+    content = str_trim(content)
+  ) |>
+  
+  # remove the old column name
+  select(-old_col) |>
+  
+  # 4) Convert back to wide: each prefix becomes its own column
+  pivot_wider(
+    names_from = prefix,
+    values_from = content
+  )
 
-# Extract a unique prefix (text before ':') for each column
-prefixes <- char_cols |> 
-  map_chr(~ {
-    vals <- na.omit(.x)
-    pref <- str_extract(vals, "^[^:]+") |> unique()
-    # keep only columns where ALL rows share the same prefix
-    if (length(pref) == 1) pref else NA_character_
-  })
+phenodata <- phenodata |>
+  select(
+    !ends_with(":ch1"),
+    ends_with(":ch1")
+  )
 
-# Keep only columns with a valid single prefix
-valid_cols <- names(prefixes)[!is.na(prefixes)]
 
-# Build clean column names (lowercase + underscores)
-new_names <- prefixes[valid_cols] |> 
-  tolower() |> 
-  str_replace_all("\\s+", "_")
+# Check results
+names(phenodata)
+phenodata
 
-# Remove the prefix from cell contents, keep only the value
-phenodata[valid_cols] <- map2_df(
-  phenodata[valid_cols],
-  prefixes[valid_cols],
-  ~ str_remove(.x, paste0("^", .y, "\\s*:\\s*")) |> str_trim()
-)
+```
 
-# Rename the columns to their extracted prefix
-names(phenodata)[match(valid_cols, names(phenodata))] <- new_names
+```{r}
+phenodata <- phenodata[, !duplicated(as.list(phenodata))]
 
+names(phenodata)
+phenodata
 ```
 
 The phenodata has been extracted from the gse11223 and now we will pick and choose the data that is, perhaps removing those variables that are of no importance for us, such as status, submission_date, type, channel_count, organism_ch1 (as they are all homo sapiens) and characteristics_ch1
