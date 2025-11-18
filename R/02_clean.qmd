@@ -237,8 +237,8 @@ featuredata <- pData(featureData(gse11223))
 ## Exporting to data/
 
 ```{r}
-write_csv(finaldata, file = "../data/finaldata.csv")
-write_csv(featuredata, file = "../data/featuredata.csv")
+write_csv(finaldata, file = "../data/finaldata.csv.gz")
+write_csv(featuredata, file = "../data/featuredata.csv.gz")
 ```
 
 ## Cleaning environment
