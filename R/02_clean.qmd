@@ -158,7 +158,7 @@ Do a left_join() with phenodata and exprs_df on geo_accession
 
 ```{r}
 
-finaldata <- right_join(phenodata, exprs_df, by = "geo_accession")
+finaldata <- right_join(phenodata, exprs_filtered, by = "geo_accession")
 ```
 
 Stretching the data set so that genes
