@@ -234,6 +234,13 @@ Metadata concerning genes
 featuredata <- pData(featureData(gse11223))
 ```
 
+Now we filter the same low variance genes from featuredata
+
+```{r}
+featuredata <- featuredata |> 
+  filter(ID %in% genes_keep)
+```
+
 ## Exporting to data/
 
 ```{r}
