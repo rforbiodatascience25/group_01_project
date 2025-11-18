@@ -31,33 +31,9 @@ Making the age variable from the date of birth and the submission date for the a
 ```{r}
 # first line can be ommited when name of column is birthdate from clean02
 finaldata <- finaldata |> 
-  mutate(birth_date = str_split_i(characteristics_ch1.2, ":", -1), keep=FALSE)  |> 
-  select(procedure_date, birth_date) |> 
   mutate(birth_date = reformat_pheno_birth_dates(birth_date)) |> 
   mutate(procedure_date = as.Date.character(procedure_date, "%m/%d/%Y")) |> 
   mutate(Age = round(as.numeric(difftime(procedure_date, birth_date, units = "days")) / 365.25, 0)) |> 
-   mutate(age_group = case_when(
-    20 <= Age & Age < 30 ~ "(20,30]",
-    30 <= Age & Age < 40 ~ "(30,40]",
-    40 <= Age & Age < 50 ~ "(40,50]",
-    50 <= Age & Age < 60 ~ "(50,60]",
-    60 <= Age & Age < 70 ~ "(60,70]",
-    70 <= Age & Age < 80 ~ "(70,80]"
-  ))
-  
-  
-# Needs to be updated maybe just replace the birth_date with age variable
-# not to only select two columns
-```
-
-```{r}
-# first line can be ommited when name of column is birthdate from clean02
-finaldata <- finaldata |> 
-  mutate(birth_date = str_split_i(characteristics_ch1.2, ":", -1), keep=FALSE)  |> 
-  select(submission_date, birth_date) |> 
-  mutate(birth_date = reformat_pheno_birth_dates(birth_date)) |> 
-  mutate(submission_date = as.Date.character(submission_date, "%b %d %Y")) |> 
-  mutate(Age = round(as.numeric(difftime(submission_date, birth_date, units = "days")) / 365.25, 0)) |> 
    mutate(age_group = case_when(
     20 <= Age & Age < 30 ~ "(20,30]",
     30 <= Age & Age < 40 ~ "(30,40]",
