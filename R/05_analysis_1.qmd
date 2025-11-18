@@ -3,3 +3,36 @@ title: "05_analysis_1"
 format: html
 ---
 
+```{r}
+ggplot(finaldata, aes(x = `inflammation_status:ch1`, y = gene_expr)) +
+  geom_boxplot() +
+  geom_jitter(width = 0.2, alpha = 0.4) +
+  theme_minimal() +
+  labs(
+    x = "Inflammation status",
+    y = "Gene expression"
+  )
+```
+
+```{r}
+finaldata_clean <- finaldata %>%
+  filter(is.finite(gene_expr))
+
+k_out <- kmeans(finaldata_clean$gene_expr, centers = 2)
+
+finaldata_k <- finaldata_clean %>%
+  mutate(cluster = factor(k_out$cluster))
+```
+
+```{r}
+ggplot(finaldata_k,
+       aes(x = cluster, y = gene_expr, colour = `inflammation_status:ch1`)) +
+  geom_boxplot(outlier.shape = NA, alpha = 0.4) +
+  geom_jitter(width = 0.1, alpha = 0.6) +
+  theme_minimal() +
+  labs(
+    x = "k-means cluster",
+    y = "Gene expression",
+    colour = "Inflammation status"
+  )
+```
