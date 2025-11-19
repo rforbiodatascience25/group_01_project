@@ -29,21 +29,16 @@ reformat_pheno_birth_dates <- function(date_char){
 Making the age variable from the date of birth and the submission date for the article, to estimate the age. at the time of sampling.
 
 ```{r}
-# first line can be ommited when name of column is birthdate from clean02
 finaldata <- finaldata |> 
   mutate(birth_date = reformat_pheno_birth_dates(birth_date)) |> 
-  mutate(procedure_date = as.Date.character(procedure_date, "%m/%d/%Y")) |> 
-  mutate(Age = round(as.numeric(difftime(procedure_date, birth_date, units = "days")) / 365.25, 0)) |> 
+  mutate(procedure_date = as.Date(procedure_date, "%m/%d/%y")) |> 
+  mutate(age = round(as.numeric(difftime(procedure_date, birth_date, units = "days")) / 365.25, 0)) |> 
    mutate(age_group = case_when(
-    20 <= Age & Age < 30 ~ "(20,30]",
-    30 <= Age & Age < 40 ~ "(30,40]",
-    40 <= Age & Age < 50 ~ "(40,50]",
-    50 <= Age & Age < 60 ~ "(50,60]",
-    60 <= Age & Age < 70 ~ "(60,70]",
-    70 <= Age & Age < 80 ~ "(70,80]"
+    20 <= age & age < 30 ~ "(20,30]",
+    30 <= age & age < 40 ~ "(30,40]",
+    40 <= age & age < 50 ~ "(40,50]",
+    50 <= age & age < 60 ~ "(50,60]",
+    60 <= age & age < 70 ~ "(60,70]",
+    70 <= age & age < 80 ~ "(70,80]"
   ))
-  
-  
-# Needs to be updated maybe just replace the birth_date with age variable
-# not to only select two columns
 ```
