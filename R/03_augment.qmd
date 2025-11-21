@@ -51,3 +51,16 @@ finaldata <- finaldata |>
   mutate(diagnosis_date = as.Date.character(diagnosis_date, "%m/%d/%y")) |>
   mutate(time_untreated = as.numeric(difftime(diagnosis_date, symptoms_onset_date, units = "days")), .after = diagnosis_date)
 ```
+
+## Exporting to data/
+
+```{r}
+write_csv(finaldata, file = "../data/finaldata.csv.gz")
+write_csv(featuredata, file = "../data/featuredata.csv.gz")
+```
+
+## Cleaning environment
+
+```{r}
+rm(list = ls())
+```
