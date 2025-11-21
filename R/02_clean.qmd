@@ -104,6 +104,40 @@ exprs_df
 
 Now we see the data transposed with 202 rows and 40,992 columns, as opposed to the opposite before.
 
+## Removing low variance genes
+
+```{r}
+gene_var <- exprs_df |> 
+  # drop the sample ID column, keep only expression values
+  select(-geo_accession) |> 
+  summarise(across(everything(), ~ var(.x, na.rm = TRUE))) |> 
+  pivot_longer(
+    cols      = everything(),
+    names_to  = "gene",
+    values_to = "variance"
+  )
+```
+
+```{r}
+ggplot(gene_var, aes(x = variance)) +
+  geom_histogram(bins = 100) +
+  coord_cartesian(xlim = c(0, 0.5)) +
+  theme_minimal()
+```
+
+We decide the cutoff genes with a variance below 0.05, and have 2909 genes remaining
+
+```{r}
+genes_keep <- gene_var |> 
+  filter(variance > 0.05) |> 
+  pull(gene)
+
+exprs_filtered <- exprs_df |> 
+  select(geo_accession, all_of(genes_keep))
+
+length(genes_keep)
+```
+
 ## phenoData\$data from \_raw/gse11223.rds
 
 Metadata concerning samples (patients)
@@ -191,20 +225,29 @@ The phenodata has been extracted from the gse11223 and now we will pick and choo
 
 maybe more.
 
+## Selecting variables
+
+Selecting which variables from phenodata that we would like to keep for further analysis.
+
+```{r}
+phenodata <- phenodata |> 
+  select(geo_accession, patient, current_medication, birth_date, ethnicity, symptoms_onset_date, diagnosis_date, joint_problems, uc_flare_up, family_history, neutrophils, albumin, ibd_affected_relatives, smoking_status, smoking_start_date, smoking_stop_date, smoking_amount, other_illnesses, disease, anatomic_location, inflammation_status, procedure_date)
+```
+
 ## Merging phenodata
 
 Do a left_join() with phenodata and exprs_df on geo_accession
 
 ```{r}
 
-finaldata <- right_join(phenodata, exprs_df, by = "geo_accession")
+finaldata <- right_join(phenodata, exprs_filtered, by = "geo_accession")
 ```
 
 Stretching the data set so that genes
 
 ```{r}
 finaldata <-  finaldata |> 
-  pivot_longer(cols = 152:last_col(),
+  pivot_longer(cols = 23:last_col(),
                names_to = "gene_id" ,
                values_to = "gene_expr" )
 
@@ -218,11 +261,18 @@ Metadata concerning genes
 featuredata <- pData(featureData(gse11223))
 ```
 
+Now we filter the same low variance genes from featuredata
+
+```{r}
+featuredata <- featuredata |> 
+  filter(ID %in% genes_keep)
+```
+
 ## Exporting to data/
 
 ```{r}
-write_csv(finaldata, file = "../data/finaldata.csv")
-write_csv(featuredata, file = "../data/featuredata.csv")
+write_csv(finaldata, file = "../data/finaldata.csv.gz")
+write_csv(featuredata, file = "../data/featuredata.csv.gz")
 ```
 
 ## Cleaning environment

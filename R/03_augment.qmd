@@ -2,3 +2,65 @@
 title: "03_augment"
 format: html
 ---
+
+#### Load finaldata and featuredata
+
+```{r}
+#| message: false
+#| warning: false
+
+finaldata <- read_csv("../data/finaldata.csv.gz")
+featuredata <- read_csv("../data/featuredata.csv.gz")
+
+colnames(finaldata)
+colnames(featuredata)
+```
+
+#### Calculating the Age from date of birth
+
+Birth date reformat - input a date in string format, with "/" as spacer. Date format should be in MM/DD/YY
+
+```{r}
+source(file = "99_proj_func.R")
+```
+
+Making the age variable from the date of birth and the submission date for the article, to estimate the age. at the time of sampling.
+
+```{r}
+finaldata <- finaldata |> 
+  mutate(birth_date = reformat_dates(birth_date)) |> 
+  mutate(procedure_date = as.Date(procedure_date, "%m/%d/%y")) |> 
+  mutate(age = round(as.numeric(difftime(procedure_date, birth_date, units = "days")) / 365.25, 0), .after=procedure_date) |> 
+   mutate(age_group = case_when(
+    20 <= age & age < 30 ~ "(20,30]",
+    30 <= age & age < 40 ~ "(30,40]",
+    40 <= age & age < 50 ~ "(40,50]",
+    50 <= age & age < 60 ~ "(50,60]",
+    60 <= age & age < 70 ~ "(60,70]",
+    70 <= age & age < 80 ~ "(70,80]"
+    ), .after=age)
+```
+
+#### Reformatting symptoms_onset_date & diagnosis_date & Calculating the time difference from symptoms_onset to diagnosis_date
+
+Will reflect time between disease constetation and treatment. Shorter time from first symptom to treatment may slow the disease development.
+
+```{r}
+finaldata <- finaldata |> 
+  mutate(symptoms_onset_date = as.Date(symptoms_onset_date, "%m/%d/%y")) |> 
+  mutate(diagnosis_date = as.Date.character(diagnosis_date, "%m/%d/%y")) |>
+  mutate(time_untreated = as.numeric(difftime(diagnosis_date, symptoms_onset_date, units = "days")), .after = diagnosis_date)
+```
+
+## Exporting to data/
+
+```{r}
+write_csv(finaldata, file = "../data/finaldata.csv.gz")
+write_csv(featuredata, file = "../data/featuredata.csv.gz")
+```
+
+## Cleaning environment
+
+```{r}
+rm(list = ls())
+```

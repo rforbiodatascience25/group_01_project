@@ -3,3 +3,144 @@ title: "05_analysis_1"
 format: html
 ---
 
+# Analysis
+
+## Overall gene expression distribution
+
+```{r}
+finaldata |> 
+  mutate(inflammation_status = factor(inflammation_status,
+                                      levels = c("Uninflamed", "Inflamed"))) |>
+  ggplot(aes(x = gene_expr, fill = inflammation_status)) +
+  geom_histogram(position = "identity", alpha = 0.6, bins = 80) +
+  theme_minimal()
+```
+
+## **Expression by anatomic location and inflammation**
+
+```{r}
+finaldata |> 
+  ggplot(aes(x = anatomic_location, y = gene_expr, 
+             fill = inflammation_status)) +
+  geom_violin(trim = FALSE, alpha = 0.5) +
+  geom_boxplot(width = 0.15, outlier.shape = NA, position = position_dodge(width = 0.9)) +
+  coord_flip() +
+  theme_minimal() +
+  labs(x = "Anatomic location", y = "Gene expression")
+```
+
+```{r}
+patient_means <- finaldata |> 
+  group_by(patient, inflammation_status) |> 
+  summarise(mean_expr = mean(gene_expr, na.rm = TRUE), .groups = "drop")
+
+ggplot(patient_means, aes(x = inflammation_status, y = mean_expr)) +
+  geom_boxplot(outlier.shape = NA, alpha = 0.4) +
+  geom_jitter(width = 0.15, alpha = 0.6) +
+  theme_minimal() +
+  labs(x = "Inflammation status", y = "Mean gene expression per patient")
+```
+
+```{r}
+# compute counts per ethnicity
+eth_counts <- finaldata |>
+  distinct(patient, ethnicity) |>
+  count(ethnicity)
+
+# plotting with relabelled axis
+finaldata |> 
+  distinct(patient, inflammation_status, ethnicity) |> 
+  ggplot(aes(x = ethnicity, fill = inflammation_status)) +
+  geom_bar(position = "fill") +
+  scale_y_continuous(labels = scales::percent_format()) +
+  coord_flip() +
+  scale_x_discrete(
+    labels = function(x) {
+      paste0(x, " (", eth_counts$n[match(x, eth_counts$ethnicity)], ")")
+    }
+  ) +
+  theme_minimal() +
+  labs(x = "Ethnicity", y = "Proportion of patients", fill = "Inflammation")
+```
+
+```{r}
+finaldata_clean <- finaldata |> 
+  filter(is.finite(gene_expr))
+
+k_out <- kmeans(finaldata_clean$gene_expr, centers = 2)
+
+finaldata_k <- finaldata_clean |> 
+  mutate(cluster = factor(k_out$cluster))
+```
+
+```{r}
+ggplot(finaldata_k,
+       aes(x = cluster, y = gene_expr, colour = `inflammation_status`)) +
+  geom_boxplot(outlier.shape = NA, alpha = 0.4) +
+  geom_jitter(width = 0.1, alpha = 0.6) +
+  theme_minimal() +
+  labs(
+    x = "k-means cluster",
+    y = "Gene expression",
+    colour = "Inflammation status"
+  )
+```
+
+```{r}
+expr_mat <- finaldata |> 
+  select(sample_id = geo_accession, gene_id, gene_expr) |> 
+  pivot_wider(
+    names_from  = gene_id,
+    values_from = gene_expr
+)
+```
+
+```{r}
+# Extract gene matrix
+gene_mat <- expr_mat |> 
+  select(-sample_id) |> 
+  as.matrix()
+
+# Drop genes with NA or zero variance
+keep_cols <- apply(gene_mat, 2, function(x) all(is.finite(x)) && var(x) > 0)
+gene_mat_clean <- gene_mat[, keep_cols]
+
+# Scale genes
+gene_mat_scaled <- scale(gene_mat_clean)
+
+# PCA on samples
+pca <- prcomp(gene_mat_scaled)
+
+# k-means on first 10 PCs (you can change)
+set.seed(1)
+k_out <- kmeans(pca$x[, 1:10], centers = 2)
+```
+
+```{r}
+sample_meta <- finaldata |> 
+  select(sample_id = geo_accession,
+         inflammation_status = `inflammation_status`) |> 
+  distinct()
+```
+
+```{r}
+plot_df <- data.frame(
+  sample_id = expr_mat$sample_id,
+  PC1 = pca$x[,1],
+  PC2 = pca$x[,2],
+  cluster = factor(k_out$cluster)
+) |> 
+  left_join(sample_meta, by = "sample_id")
+```
+
+```{r}
+ggplot(plot_df, aes(PC1, PC2)) +
+  geom_point(aes(color = cluster, shape = inflammation_status), size = 1) +
+  theme_minimal() +
+  labs(
+    x = "PC1",
+    y = "PC2",
+    color = "k-means cluster",
+    shape = "Inflammation status"
+  )
+```
