@@ -1,3 +1,9 @@
+```{r}
+sig_genes <- de_results_annot |>
+  filter(FDR < 0.05, abs(log2FC) > 0.25) |>
+  arrange(FDR)
+```
+
 ---
 title: "05_analysis_1"
 format: html
@@ -203,6 +209,20 @@ plot_df <- de_results_annot |>
                      levels = c("Up in inflamed", "Up in uninflamed", "Non significant"))
   )
 
+sig_genes <- plot_df |>
+  filter(sig_cat != "Non significant") |>
+  select(gene_id, GENE_SYMBOL, log2FC, p_value, FDR, sig_cat) |>
+  arrange(FDR)
+
+# split into up in inflamed / up in uninflamed
+up_in_inflamed <- sig_genes |>
+  filter(sig_cat == "Up in inflamed") |>
+  pull(GENE_SYMBOL)
+
+up_in_uninflamed <- sig_genes |>
+  filter(sig_cat == "Up in uninflamed") |>
+  pull(GENE_SYMBOL)
+
 ## 4) Volcano plot
 ggplot(plot_df,
        aes(x = log2FC, y = neg_log10_p, colour = sig_cat)) +
@@ -248,4 +268,25 @@ ggplot(plot_df,
     plot.subtitle = element_text(size = 11),
     axis.title = element_text(size = 12)
   )
+```
+
+```{r}
+top_ids <- sig_genes |>
+  slice_min(FDR, n = 40) |>
+  pull(GENE_SYMBOL)
+
+heat_df <- finaldata |>
+  filter(GENE_SYMBOL %in% top_ids) |>
+  distinct(patient, inflammation_status, GENE_SYMBOL, gene_expr)
+
+ggplot(heat_df,
+       aes(x = patient, y = GENE_SYMBOL, fill = gene_expr)) +
+  geom_tile() +
+  scale_fill_viridis_c() +
+  facet_grid(~ inflammation_status, scales = "free_x", space = "free_x") +
+  labs(x = "Patient", y = "Gene Symbol", fill = "Expression",
+       title = "Top 40 differential genes across patients") +
+  theme_minimal() +
+  theme(axis.text.x = element_blank(),
+        axis.ticks.x = element_blank())
 ```
