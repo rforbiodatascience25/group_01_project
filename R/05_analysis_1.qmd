@@ -49,14 +49,14 @@ eth_counts <- finaldata |>
 
 # plotting with relabelled axis
 finaldata |> 
-  distinct(patient, inflammation_status, ethnicity) |> 
-  ggplot(aes(x = ethnicity, fill = inflammation_status)) +
+  distinct(patient, inflammation_status, smoking_status) |> 
+  ggplot(aes(x = smoking_status, fill = inflammation_status)) +
   geom_bar(position = "fill") +
   scale_y_continuous(labels = scales::percent_format()) +
   coord_flip() +
   scale_x_discrete(
     labels = function(x) {
-      paste0(x, " (", eth_counts$n[match(x, eth_counts$ethnicity)], ")")
+      paste0(x, " (", eth_counts$n[match(x, eth_counts$smoking_status)], ")")
     }
   ) +
   theme_minimal() +
@@ -142,5 +142,123 @@ ggplot(plot_df, aes(PC1, PC2)) +
     y = "PC2",
     color = "k-means cluster",
     shape = "Inflammation status"
+  )
+```
+
+## Volcano plot test
+
+```{r}
+final_clean <- finaldata |>
+  filter(!is.na(gene_expr),
+         !is.na(inflammation_status)) |>
+  mutate(
+    inflammation_status = factor(inflammation_status,
+                                 levels = c("Uninflamed", "Inflamed")) # control first
+  )
+```
+
+```{r}
+de_results <- final_clean |>
+  group_by(gene_id) |>
+  # keep only genes that have both groups present
+  filter(n_distinct(inflammation_status) == 2) |>
+  summarise(
+    mean_inflamed   = mean(gene_expr[inflammation_status == "Inflamed"],   na.rm = TRUE),
+    mean_uninflamed = mean(gene_expr[inflammation_status == "Uninflamed"], na.rm = TRUE),
+
+    # already log2 → fold change is just the difference
+    log2FC = mean_inflamed - mean_uninflamed,
+
+    p_value = tryCatch(
+      t.test(gene_expr ~ inflammation_status)$p.value,
+      error = function(e) NA_real_
+    ),
+    .groups = "drop"
+  ) |>
+  mutate(
+    neg_log10_p = -log10(p_value),
+    sig = p_value < 0.05   # or adjust later with p.adjust()
+  )
+```
+
+```{r}
+library(ggrepel)
+## ----- thresholds you can tweak -----
+lfc_cut <- 0.25   # minimum |log2FC| to call biologically relevant
+p_cut   <- 0.05   # p-value threshold for the dashed line
+
+## 1) Add gene symbol by matching finaldata$gene_id --> featuredata$ID
+de_results_annot <- de_results |>
+  mutate(
+    GENE_SYMBOL = featuredata$GENE_SYMBOL[
+      match(gene_id, featuredata$ID)  # <-- your working mapping
+    ]
+  )
+
+## 2) Label only highly significant genes with valid symbols
+label_df <- de_results_annot |>
+  filter(
+    neg_log10_p > 10,          # very strong p-values
+    !is.na(GENE_SYMBOL)
+  )
+
+## 3) Prepare plotting data: FDR + 3-level significance category
+plot_df <- de_results_annot |>
+  filter(!is.na(p_value)) |>
+  mutate(
+    FDR = p.adjust(p_value, method = "BH"),
+    sig_cat = case_when(
+      FDR < 0.05 & log2FC >=  lfc_cut ~ "Up in inflamed",
+      FDR < 0.05 & log2FC <= -lfc_cut ~ "Up in uninflamed",
+      TRUE                            ~ "NS"
+    ),
+    sig_cat = factor(sig_cat,
+                     levels = c("Up in inflamed", "Up in uninflamed", "NS"))
+  )
+
+## 4) Volcano plot
+ggplot(plot_df,
+       aes(x = log2FC, y = neg_log10_p, colour = sig_cat)) +
+  # points
+  geom_point(size = 1.3, alpha = 0.8) +
+  # cutoff lines
+  geom_hline(yintercept = -log10(p_cut),
+             linetype = "dashed", linewidth = 0.3) +
+  geom_vline(xintercept = c(-lfc_cut, lfc_cut),
+             linetype = "dashed", linewidth = 0.3) +
+  # labels for strongest hits
+  geom_text_repel(
+    data = label_df,
+    aes(label = GENE_SYMBOL),
+    size = 3,
+    colour = "black",
+    max.overlaps = 30,
+    box.padding = 0.4,
+    point.padding = 0.3,
+    segment.size = 0.2,
+    show.legend = FALSE
+  ) +
+  # nicer colours
+  scale_colour_manual(
+    values = c(
+      "Up in inflamed"   = "#d73027",
+      "Up in uninflamed" = "#4575b4",
+      "NS"               = "grey80"
+    ),
+    name = NULL
+  ) +
+  labs(
+    title = "Volcano plot of colonic gene expression",
+    subtitle = "Inflamed vs uninflamed biopsies (Gut 57:1398–1405)",
+    x = "log2 fold change (Inflamed – Uninflamed)",
+    y = expression(-log[10](italic(p)~value))
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    panel.grid.minor = element_blank(),
+    legend.position = "right",
+    plot.title = element_text(face = "bold", size = 16),
+    plot.subtitle = element_text(size = 11),
+    axis.title = element_text(size = 12)
   )
 ```
