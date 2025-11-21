@@ -1,9 +1,3 @@
-```{r}
-sig_genes <- de_results_annot |>
-  filter(FDR < 0.05, abs(log2FC) > 0.25) |>
-  arrange(FDR)
-```
-
 ---
 title: "05_analysis_1"
 format: html
@@ -314,4 +308,3 @@ ggplot(heat_df,
     panel.grid   = element_blank()
   )
 ```
-
