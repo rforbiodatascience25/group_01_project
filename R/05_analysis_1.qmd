@@ -5,6 +5,12 @@ format: html
 
 # Analysis
 
+## Init
+
+```{r}
+library(ggrepel)
+```
+
 ## Overall gene expression distribution
 
 ```{r}
@@ -49,14 +55,14 @@ eth_counts <- finaldata |>
 
 # plotting with relabelled axis
 finaldata |> 
-  distinct(patient, inflammation_status, smoking_status) |> 
-  ggplot(aes(x = smoking_status, fill = inflammation_status)) +
+  distinct(patient, inflammation_status, ethnicity) |> 
+  ggplot(aes(x = ethnicity, fill = inflammation_status)) +
   geom_bar(position = "fill") +
   scale_y_continuous(labels = scales::percent_format()) +
   coord_flip() +
   scale_x_discrete(
     labels = function(x) {
-      paste0(x, " (", eth_counts$n[match(x, eth_counts$smoking_status)], ")")
+      paste0(x, " (", eth_counts$n[match(x, eth_counts$ethnicity)], ")")
     }
   ) +
   theme_minimal() +
@@ -74,21 +80,8 @@ finaldata_k <- finaldata_clean |>
 ```
 
 ```{r}
-ggplot(finaldata_k,
-       aes(x = cluster, y = gene_expr, colour = `inflammation_status`)) +
-  geom_boxplot(outlier.shape = NA, alpha = 0.4) +
-  geom_jitter(width = 0.1, alpha = 0.6) +
-  theme_minimal() +
-  labs(
-    x = "k-means cluster",
-    y = "Gene expression",
-    colour = "Inflammation status"
-  )
-```
-
-```{r}
 expr_mat <- finaldata |> 
-  select(sample_id = geo_accession, gene_id, gene_expr) |> 
+  dplyr::select(sample_id = geo_accession, gene_id, gene_expr) |> 
   pivot_wider(
     names_from  = gene_id,
     values_from = gene_expr
@@ -98,7 +91,7 @@ expr_mat <- finaldata |>
 ```{r}
 # Extract gene matrix
 gene_mat <- expr_mat |> 
-  select(-sample_id) |> 
+  dplyr::select(-sample_id) |> 
   as.matrix()
 
 # Drop genes with NA or zero variance
@@ -118,7 +111,7 @@ k_out <- kmeans(pca$x[, 1:10], centers = 2)
 
 ```{r}
 sample_meta <- finaldata |> 
-  select(sample_id = geo_accession,
+  dplyr::select(sample_id = geo_accession,
          inflammation_status = `inflammation_status`) |> 
   distinct()
 ```
@@ -182,8 +175,6 @@ de_results <- final_clean |>
 ```
 
 ```{r}
-library(ggrepel)
-
 lfc_cut <- 0.25   # minimum |log2FC| to call biologically relevant
 p_cut   <- 0.05   # p-value threshold for the dashed line
 
@@ -215,6 +206,20 @@ plot_df <- de_results_annot |>
     sig_cat = factor(sig_cat,
                      levels = c("Up in inflamed", "Up in uninflamed", "Non significant"))
   )
+
+sig_genes <- plot_df |>
+  filter(sig_cat != "Non significant") |>
+  dplyr::select(gene_id, GENE_SYMBOL, log2FC, p_value, FDR, sig_cat) |>
+  arrange(FDR)
+
+# split into up in inflamed / up in uninflamed
+up_in_inflamed <- sig_genes |>
+  filter(sig_cat == "Up in inflamed") |>
+  pull(GENE_SYMBOL)
+
+up_in_uninflamed <- sig_genes |>
+  filter(sig_cat == "Up in uninflamed") |>
+  pull(GENE_SYMBOL)
 
 ## 4) Volcano plot
 ggplot(plot_df,
@@ -260,5 +265,46 @@ ggplot(plot_df,
     plot.title = element_text(face = "bold", size = 16),
     plot.subtitle = element_text(size = 11),
     axis.title = element_text(size = 12)
+  )
+```
+
+```{r}
+
+# pick e.g. top 40 most significant genes
+top_markers <- sig_genes |>
+  slice_min(FDR, n = 40) |>
+  dplyr::select(gene_id, GENE_SYMBOL)          # keep both id + symbol
+
+# join symbols onto finaldata
+heat_df <- finaldata |>
+  inner_join(top_markers, by = "gene_id") |>   # adds GENE_SYMBOL column
+  distinct(patient, inflammation_status, GENE_SYMBOL, gene_expr)
+
+# reorder symbols by average expression difference → nicer heatmap ordering
+symbol_order <- heat_df |>
+  group_by(GENE_SYMBOL) |>
+  summarise(mean_expr = mean(gene_expr, na.rm = TRUE)) |>
+  arrange(desc(mean_expr)) |>
+  pull(GENE_SYMBOL)
+
+heat_df$GENE_SYMBOL <- factor(heat_df$GENE_SYMBOL, levels = symbol_order)
+
+# draw heatmap
+ggplot(heat_df,
+       aes(x = patient, y = GENE_SYMBOL, fill = gene_expr)) +
+  geom_tile() +
+  scale_fill_viridis_c() +
+  facet_grid(~ inflammation_status, scales = "free_x", space = "free_x") +
+  labs(
+    x = "Patient",
+    y = "Gene symbol",
+    fill = "Expression",
+    title = "Top 40 differential genes across samples"
+  ) +
+  theme_minimal() +
+  theme(
+    axis.text.x  = element_blank(),
+    axis.ticks.x = element_blank(),
+    panel.grid   = element_blank()
   )
 ```
