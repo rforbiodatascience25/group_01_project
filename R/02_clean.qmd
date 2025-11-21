@@ -225,6 +225,15 @@ The phenodata has been extracted from the gse11223 and now we will pick and choo
 
 maybe more.
 
+## Selecting variables
+
+Selecting which variables from phenodata that we would like to keep for further analysis.
+
+```{r}
+phenodata <- phenodata |> 
+  select(geo_accession, patient, current_medication, birth_date, ethnicity, symptoms_onset_date, diagnosis_date, joint_problems, uc_flare_up, family_history, neutrophils, albumin, ibd_affected_relatives, smoking_status, smoking_start_date, smoking_stop_date, smoking_amount, other_illnesses, disease, anatomic_location, inflammation_status)
+```
+
 ## Merging phenodata
 
 Do a left_join() with phenodata and exprs_df on geo_accession
