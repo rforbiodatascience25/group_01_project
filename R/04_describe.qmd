@@ -35,10 +35,8 @@ fin_all<-finaldata|>
     age,
     age_group
   )|>
-  # 1 riga per paziente
   distinct(patient,.keep_all=TRUE)|>
   mutate(
-    # numeriche
     neutrophils=suppressWarnings(as.numeric(neutrophils)),
     albumin=suppressWarnings(as.numeric(albumin)),
     smoking_amount=suppressWarnings(as.numeric(smoking_amount)),
