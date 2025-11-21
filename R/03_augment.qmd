@@ -49,6 +49,5 @@ Will reflect time between disease constetation and treatment. Shorter time from 
 finaldata <- finaldata |> 
   mutate(symptoms_onset_date = as.Date(symptoms_onset_date, "%m/%d/%y")) |> 
   mutate(diagnosis_date = as.Date.character(diagnosis_date, "%m/%d/%y")) |>
-  mutate(time_untreated = as.numeric(difftime(diagnosis_date, symptoms_onset_date, units = "days")), .after = diagnosis_date) |> 
-  distinct(time_untreated)
+  mutate(time_untreated = as.numeric(difftime(diagnosis_date, symptoms_onset_date, units = "days")), .after = diagnosis_date)
 ```
