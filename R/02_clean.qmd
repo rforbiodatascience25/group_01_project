@@ -104,7 +104,7 @@ exprs_df
 
 Now we see the data transposed with 202 rows and 40,992 columns, as opposed to the opposite before.
 
-## OLIVER DONT TOUCH
+## Removing low variance genes
 
 ```{r}
 gene_var <- exprs_df |> 
@@ -247,7 +247,7 @@ Stretching the data set so that genes
 
 ```{r}
 finaldata <-  finaldata |> 
-  pivot_longer(cols = 118:last_col(),
+  pivot_longer(cols = 22:last_col(),
                names_to = "gene_id" ,
                values_to = "gene_expr" )
 
@@ -278,6 +278,5 @@ write_csv(featuredata, file = "../data/featuredata.csv.gz")
 ## Cleaning environment
 
 ```{r}
-rm(list = ls())
-#rm(list = setdiff(ls(), c("finaldata", "featuredata")))
+rm(list = setdiff(ls(), c("finaldata", "featuredata")))
 ```
