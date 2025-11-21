@@ -1,29 +1,90 @@
 ---
 title: "Presentation"
-author: Asbjørn, Emiliano, Magnus, Oliver and Trine
+author: "Asbjørn, Emiliano, Magnus, Oliver and Trine"
 format:
   revealjs:
     theme: simple
-    transition: fade
+    transition: slide
     footer: "Group 01 R for Bio data science 22160"
+    highlight-style: github
+    code-fold: false
 output-dir: doc
-editor: visual
 ---
 
-##
+# Introduction
 
-Something is supposed to happen here
+-   Dataset from NCBI
+-   Ulcerative colitis - Ulcers in the colon
+-   Biopsies from the gut
+    - 202 samples
+-   Gene expression
 
 # Materials of Methods
+## Initialization
 
-```{r}
-#| Echo: True
-#| message: false
-library("GEOquery")
+::::{.columns}
+:::{.column width="40%"}
+```{r Setup, echo=TRUE}
 library("tidyverse")
+#library("getGEO")
 ```
+:::
+:::{.column width="60%"}
 
-## Going to sleep
 
--   Get in bed
--   Count sheep
+
+![](Initializing.gif){fig-align="center"}
+:::
+::::
+
+## Filtering data
+
+::::{.columns}
+:::{.column width="50%"}
+Removing one-type columns
+```{r Cleaning_phenodata, echo=TRUE, eval=FALSE}
+phenodata <- phenodata |>
+  select(
+    where(
+      ~ n_distinct(
+        .x, na.rm = TRUE) > 1))
+```
+:::
+:::{.column width="50%"}
+Removing low variance genes 
+```{r Cleaning_genes, echo=TRUE, eval=FALSE}
+gene_var <- exprs_df |> 
+  # Drop the sample ID column, keep only expression values
+  select(-geo_accession) |> 
+  summarise(across(everything(), ~ var(.x, na.rm = TRUE))) |> 
+  pivot_longer(
+    cols      = everything(),
+    names_to  = "gene",
+    values_to = "variance"
+  )
+# Cutoff genes that does not vary more than 0.05 - 2909 genes remaining
+genes_keep <- gene_var |> 
+  filter(variance > 0.05) |> 
+  pull(gene)
+
+exprs_filtered <- exprs_df |> 
+  select(geo_accession, all_of(genes_keep))
+
+```
+:::
+::::
+## Joining Data
+
+## Augmenting Data
+
+# Results 
+## Plot 1
+
+## Plot 2
+
+## Plot 3
+
+
+
+# Discussion
+## Correlations and Causality
