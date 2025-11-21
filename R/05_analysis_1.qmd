@@ -11,6 +11,12 @@ format: html
 
 # Analysis
 
+## Init
+
+```{r}
+library(ggrepel)
+```
+
 ## Overall gene expression distribution
 
 ```{r}
@@ -81,7 +87,7 @@ finaldata_k <- finaldata_clean |>
 
 ```{r}
 expr_mat <- finaldata |> 
-  select(sample_id = geo_accession, gene_id, gene_expr) |> 
+  dplyr::select(sample_id = geo_accession, gene_id, gene_expr) |> 
   pivot_wider(
     names_from  = gene_id,
     values_from = gene_expr
@@ -91,7 +97,7 @@ expr_mat <- finaldata |>
 ```{r}
 # Extract gene matrix
 gene_mat <- expr_mat |> 
-  select(-sample_id) |> 
+  dplyr::select(-sample_id) |> 
   as.matrix()
 
 # Drop genes with NA or zero variance
@@ -111,7 +117,7 @@ k_out <- kmeans(pca$x[, 1:10], centers = 2)
 
 ```{r}
 sample_meta <- finaldata |> 
-  select(sample_id = geo_accession,
+  dplyr::select(sample_id = geo_accession,
          inflammation_status = `inflammation_status`) |> 
   distinct()
 ```
@@ -175,8 +181,6 @@ de_results <- final_clean |>
 ```
 
 ```{r}
-library(ggrepel)
-
 lfc_cut <- 0.25   # minimum |log2FC| to call biologically relevant
 p_cut   <- 0.05   # p-value threshold for the dashed line
 
@@ -211,7 +215,7 @@ plot_df <- de_results_annot |>
 
 sig_genes <- plot_df |>
   filter(sig_cat != "Non significant") |>
-  select(gene_id, GENE_SYMBOL, log2FC, p_value, FDR, sig_cat) |>
+  dplyr::select(gene_id, GENE_SYMBOL, log2FC, p_value, FDR, sig_cat) |>
   arrange(FDR)
 
 # split into up in inflamed / up in uninflamed
@@ -275,7 +279,7 @@ ggplot(plot_df,
 # pick e.g. top 40 most significant genes
 top_markers <- sig_genes |>
   slice_min(FDR, n = 40) |>
-  select(gene_id, GENE_SYMBOL)          # keep both id + symbol
+  dplyr::select(gene_id, GENE_SYMBOL)          # keep both id + symbol
 
 # join symbols onto finaldata
 heat_df <- finaldata |>
@@ -310,3 +314,4 @@ ggplot(heat_df,
     panel.grid   = element_blank()
   )
 ```
+
