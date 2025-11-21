@@ -66,5 +66,3 @@ finaldata |>
       plot.title = element_text(size = 12)   # << decrease title size
     )
 ```
-
-#### 
