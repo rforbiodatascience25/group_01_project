@@ -1,0 +1,10 @@
+---
+title: "07_analysis"
+format: html
+---
+
+## Finding correlations between time left untreated and disease development
+
+```{r}
+
+```

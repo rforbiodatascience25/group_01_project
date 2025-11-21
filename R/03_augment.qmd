@@ -21,31 +21,16 @@ colnames(featuredata)
 Birth date reformat - input a date in string format, with "/" as spacer. Date format should be in MM/DD/YY
 
 ```{r}
-reformat_pheno_birth_dates <- function(date_char){
-  date_split <- str_split_fixed(date_char, "/", n=3)
-  
-  # year takes the last two characters and combines them with 19, despite its length
-  year <- str_c("19", substr(date_split[,3], 
-                             nchar(date_split[,3])-1,
-                             nchar(date_split[,3])))
-  # Month is the first element in the date_split matrix
-  month <- date_split[,1]
-  # Day is the second element in the date_split matrix
-  day <- date_split[,2]
-  # Combining the String to a date format this time in DD/MM/YY
-  date_str_out <- str_c(day, "-", month, "-", year)
-  # Returns as a Date.charactor in the format YY/MM/DD
-  return (as.Date.character(date_str_out, "%d-%m-%Y"))
-}
+source(file = "99_proj_func.R")
 ```
 
 Making the age variable from the date of birth and the submission date for the article, to estimate the age. at the time of sampling.
 
 ```{r}
 finaldata <- finaldata |> 
-  mutate(birth_date = reformat_pheno_birth_dates(birth_date)) |> 
+  mutate(birth_date = reformat_dates(birth_date)) |> 
   mutate(procedure_date = as.Date(procedure_date, "%m/%d/%y")) |> 
-  mutate(age = round(as.numeric(difftime(procedure_date, birth_date, units = "days")) / 365.25, 0)) |> 
+  mutate(age = round(as.numeric(difftime(procedure_date, birth_date, units = "days")) / 365.25, 0), .after=procedure_date) |> 
    mutate(age_group = case_when(
     20 <= age & age < 30 ~ "(20,30]",
     30 <= age & age < 40 ~ "(30,40]",
@@ -53,5 +38,29 @@ finaldata <- finaldata |>
     50 <= age & age < 60 ~ "(50,60]",
     60 <= age & age < 70 ~ "(60,70]",
     70 <= age & age < 80 ~ "(70,80]"
-  ))
+    ), .after=age)
+```
+
+#### Reformatting symptoms_onset_date & diagnosis_date & Calculating the time difference from symptoms_onset to diagnosis_date
+
+Will reflect time between disease constetation and treatment. Shorter time from first symptom to treatment may slow the disease development.
+
+```{r}
+finaldata <- finaldata |> 
+  mutate(symptoms_onset_date = as.Date(symptoms_onset_date, "%m/%d/%y")) |> 
+  mutate(diagnosis_date = as.Date.character(diagnosis_date, "%m/%d/%y")) |>
+  mutate(time_untreated = as.numeric(difftime(diagnosis_date, symptoms_onset_date, units = "days")), .after = diagnosis_date)
+```
+
+## Exporting to data/
+
+```{r}
+write_csv(finaldata, file = "../data/finaldata.csv.gz")
+write_csv(featuredata, file = "../data/featuredata.csv.gz")
+```
+
+## Cleaning environment
+
+```{r}
+rm(list = ls())
 ```

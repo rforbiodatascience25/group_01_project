@@ -1,5 +1,29 @@
 ---
-title: "presentation"
-format: html
+title: "Presentation"
+author: Asbjørn, Emiliano, Magnus, Oliver and Trine
+format:
+  revealjs:
+    theme: simple
+    transition: fade
+    footer: "Group 01 R for Bio data science 22160"
+output-dir: doc
+editor: visual
 ---
 
+##
+
+Something is supposed to happen here
+
+# Materials of Methods
+
+```{r}
+#| Echo: True
+#| message: false
+library("GEOquery")
+library("tidyverse")
+```
+
+## Going to sleep
+
+-   Get in bed
+-   Count sheep
