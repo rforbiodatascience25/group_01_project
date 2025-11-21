@@ -3,7 +3,17 @@ title: "03_augment"
 format: html
 ---
 
-Calculating the Age from date of birth
+#### Load finaldata and featuredata
+
+```{r}
+#| messages = false
+#| warning = false
+
+finaldata <- read_csv("../data/finaldata.csv.gz")
+featuredata <- read_csv("../data/featuredata.csv.gz")
+```
+
+#### Calculating the Age from date of birth
 
 Birth date reformat - input a date in string format, with "/" as spacer. Date format should be in MM/DD/YY
 
