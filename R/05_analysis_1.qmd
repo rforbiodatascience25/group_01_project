@@ -183,7 +183,7 @@ de_results <- final_clean |>
 
 ```{r}
 library(ggrepel)
-## ----- thresholds you can tweak -----
+
 lfc_cut <- 0.25   # minimum |log2FC| to call biologically relevant
 p_cut   <- 0.05   # p-value threshold for the dashed line
 
@@ -210,10 +210,10 @@ plot_df <- de_results_annot |>
     sig_cat = case_when(
       FDR < 0.05 & log2FC >=  lfc_cut ~ "Up in inflamed",
       FDR < 0.05 & log2FC <= -lfc_cut ~ "Up in uninflamed",
-      TRUE                            ~ "NS"
+      TRUE                            ~ "Non significant"
     ),
     sig_cat = factor(sig_cat,
-                     levels = c("Up in inflamed", "Up in uninflamed", "NS"))
+                     levels = c("Up in inflamed", "Up in uninflamed", "Non significant"))
   )
 
 ## 4) Volcano plot
@@ -243,7 +243,7 @@ ggplot(plot_df,
     values = c(
       "Up in inflamed"   = "#d73027",
       "Up in uninflamed" = "#4575b4",
-      "NS"               = "grey80"
+      "Non significant"               = "grey80"
     ),
     name = NULL
   ) +
