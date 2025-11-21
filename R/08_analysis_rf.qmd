@@ -1,0 +1,53 @@
+---
+title: "08_analysis_umap"
+format: html
+---
+
+```{r}
+#| message: false
+#| warning: false
+
+library(tidyverse)
+library(randomForest)
+
+finaldata <- read_csv("../data/finaldata.csv.gz")
+featuredata <- read_csv("../data/featuredata.csv.gz")
+```
+
+### Reformatting expression dataset
+
+```{r}
+finaldata |> 
+  select(geo_accession, gene_id, gene_expr)
+```
+
+```{r}
+disease_geo <- finaldata |> 
+  select(geo_accession, disease) |> 
+  distinct(geo_accession, disease)
+
+expr_df <- finaldata |> 
+  select(geo_accession, gene_id, gene_expr) |> 
+  filter(!is.na(gene_expr)) |> 
+  pivot_wider(names_from = gene_id,
+              values_from = gene_expr) |> 
+  rename_with(~ paste0("Gene_", .), 
+              .cols = -c(geo_accession)) |>
+  mutate(across(starts_with("Gene_"), ~replace_na(., 0))) |>
+  distinct(geo_accession, .keep_all = TRUE) |> 
+  left_join(disease_geo, by = "geo_accession") |> 
+  mutate(y_pred_UC = as.factor(case_when(disease == "Normal" ~ 0,
+                               disease == "UC" ~ 1)),
+         .keep = "unused")
+```
+
+```{r}
+expr_df.rf <- randomForest(y_pred_UC ~ . - geo_accession, 
+                           data = expr_df, 
+                           mtry = 3,
+                           importance = TRUE)
+```
+
+```{r}
+round(importance(expr_df.rf), 2)
+```
