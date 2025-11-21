@@ -3,8 +3,68 @@ title: "07_analysis"
 format: html
 ---
 
-## Finding correlations between time left untreated and disease development
+```{r}
+#| message: false
+#| warning: false
+
+finaldata <- read_csv("../data/finaldata.csv.gz")
+featuredata <- read_csv("../data/featuredata.csv.gz")
+source("99_proj_func.R")
+
+colnames(finaldata)
+colnames(featuredata)
+```
+
+### Smoking
 
 ```{r}
+finaldata |>  
+  filter(!is.na(smoking_status)) |> 
+  filter(!is.na(time_untreated)) |> 
+  filter(time_untreated > 0) |> 
+  group_by(smoking_status) |> 
+  summarise(n = n()) 
 
+finaldata |>  
+  filter(!is.na(smoking_status)) |> 
+  filter(!is.na(time_untreated)) |> 
+  filter(time_untreated > 0) |> 
+  group_by(smoking_status) |> 
+  ggplot(aes(x = smoking_status, y = time_untreated)) +
+    geom_boxplot() + 
+    theme_minimal() + 
+    labs(x = "Smoking Status",
+         y = "Time to diagnostics (days)",
+         title = "Time from 1st UC symtomps to diagnostics against smoking") +
+    theme(
+      plot.title = element_text(size = 12)   # << decrease title size
+    )
 ```
+
+#### Age
+
+```{r}
+finaldata |>  
+  filter(!is.na(age_group)) |> 
+  filter(!is.na(time_untreated)) |> 
+  filter(time_untreated > 0) |> 
+  group_by(age_group) |> 
+  summarise(n = n())
+
+finaldata |>  
+  filter(!is.na(age_group)) |> 
+  filter(!is.na(time_untreated)) |> 
+  filter(time_untreated > 0) |> 
+  group_by(age_group) |> 
+  ggplot(aes(x = age_group, y = time_untreated)) +
+    geom_boxplot() + 
+    theme_minimal() + 
+    labs(x = "Age Groups",
+         y = "Time to diagnostics (days)",
+         title = "Time from 1st UC symtomps to diagnostics against age") +
+    theme(
+      plot.title = element_text(size = 12)   # << decrease title size
+    )
+```
+
+#### 
