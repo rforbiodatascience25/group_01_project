@@ -3,3 +3,182 @@ title: "04_describe"
 format: html
 ---
 
+```{r}
+library(dplyr)
+library(table1)
+```
+
+```{r}
+finaldata   <- read_csv("../data/finaldata.csv.gz")
+featuredata <- read_csv("../data/featuredata.csv.gz")
+```
+
+# Finaldata:
+
+```{r}
+fin_all<-finaldata|>
+  select(
+    patient,
+    ethnicity,
+    joint_problems,
+    uc_flare_up,
+    family_history,
+    neutrophils,
+    albumin,
+    ibd_affected_relatives,
+    smoking_status,
+    smoking_amount,
+    other_illnesses,
+    disease,
+    anatomic_location,
+    inflammation_status,
+    age,
+    age_group
+  )|>
+  distinct(patient,.keep_all=TRUE)|>
+  mutate(
+    neutrophils=suppressWarnings(as.numeric(neutrophils)),
+    albumin=suppressWarnings(as.numeric(albumin)),
+    smoking_amount=suppressWarnings(as.numeric(smoking_amount)),
+    age=suppressWarnings(as.numeric(age)),
+    # fattori
+    ethnicity=factor(ethnicity),
+    joint_problems=factor(joint_problems),
+    uc_flare_up=factor(uc_flare_up),
+    family_history=factor(family_history),
+    ibd_affected_relatives=factor(ibd_affected_relatives),
+    smoking_status=factor(smoking_status),
+    disease=factor(disease),
+    anatomic_location=factor(anatomic_location),
+    inflammation_status=factor(inflammation_status),
+    age_group=factor(age_group)
+  )
+
+fin_all$neutrophils[fin_all$neutrophils==0]<-NA
+fin_all$albumin[fin_all$albumin==0]<-NA
+
+fin_all$other_illnesses_clean<-dplyr::case_when(
+  is.na(fin_all$other_illnesses)~NA_character_,
+  fin_all$other_illnesses%in%c("none","None","NONE")~"None",
+  TRUE~"Any comorbidity"
+)
+
+fin_all$other_illnesses_clean<-factor(
+  fin_all$other_illnesses_clean,
+  levels=c("None","Any comorbidity")
+)
+
+# Label per table1 (adattate alle variabili che esistono davvero)
+label(fin_all$neutrophils)<-"Neutrophils"
+label(fin_all$albumin)<-"Albumin"
+label(fin_all$ethnicity)<-"Ethnicity"
+label(fin_all$joint_problems)<-"Joint problems"
+label(fin_all$uc_flare_up)<-"UC flare-up"
+label(fin_all$family_history)<-"Family history of IBD"
+label(fin_all$ibd_affected_relatives)<-"IBD-affected relatives"
+label(fin_all$smoking_status)<-"Smoking status"
+label(fin_all$other_illnesses_clean)<-"Other illnesses"
+label(fin_all$disease)<-"Disease group"
+label(fin_all$anatomic_location)<-"Anatomic location"
+label(fin_all$inflammation_status)<-"Inflammation status"
+label(fin_all$age)<-"Age"
+label(fin_all$age_group)<-"Age group"
+```
+
+```{r}
+table1(
+  ~ age + neutrophils + albumin +
+    ethnicity + smoking_status + other_illnesses_clean +
+    anatomic_location + inflammation_status + joint_problems +
+    family_history + ibd_affected_relatives +
+    age_group
+  | disease,
+  data = fin_all
+)
+```
+
+Ninety-three subjects were included, of whom 63 (67.7%) were diagnosed with ulcerative colitis (UC) and 30 (32.3%) with histologically normal mucosa (controls). UC patients were older than controls: the mean age was 50.9 ± 15.9 years in the UC group and 41.3 ± 16.3 years in the control group, with an overall median of 47 years (range 17–84). The age distribution confirms this trend, with a higher percentage of subjects over 60 years of age in the UC group (22.2% vs. 6.7%).
+
+The ethnicity was predominantly Caucasian (90.3% of the entire cohort), with a small percentage of Asian subjects (3.2%, all in the UC group) and Jewish subjects (6.5%, all in the control group). Endoscopic inflammatory status showed a marked difference between the groups: in the ulcerative colitis group, over half of the samples came from macroscopically inflamed mucosa (54.0%), compared to 10.0% of the controls, in whom 90.0% of biopsies came from non-inflamed mucosa. The most frequently sampled anatomical site was the sigmoid colon (62.4%), followed by the ascending colon (17.2%), the descending colon (14.0%), and the terminal ileum (6.5%), with a similar distribution between the two groups.
+
+Regarding clinical characteristics, almost all subjects had no joint problems (98.9%) or a family history of inflammatory bowel disease (IBD) (93.5%); only one patient with ulcerative colitis reported joint problems (1.6%), and six patients with ulcerative colitis (9.5%) reported a positive family history. Consistent with this, "relatives affected by IBD" were documented exclusively in the UC group (4 patients with 1-2 affected relatives), while this information was completely absent in the controls (all 30 subjects with missing data).
+
+Smoking status and extraintestinal comorbidities were available only for the UC patients: in the UC group, 9.5% were current smokers, 34.9% were former smokers, and 52.4% had never smoked, with a minimal percentage of "unknown" smoking status (3.2%); in the controls, this variable was absent in 100% of subjects. Similarly, other concomitant conditions were reported exclusively in the UC group, where 60.3% of patients had no comorbidities and 39.7% reported at least one extraintestinal condition, while this information was missing in all controls (100%). The available laboratory parameters (neutrophils and albumin) were present only in a small subpopulation of UC patients (4 and 3 subjects, respectively), while they were completely absent in controls; consequently, although reported in the table for descriptive purposes, they were not considered for subsequent analyses.
+
+# Featuredata:
+
+```{r}
+feat_all<-featuredata|>
+  mutate(
+    # indici tecnici: sono già numerici, ma non fa male ribadire
+    ID=suppressWarnings(as.numeric(ID)),
+    COL=suppressWarnings(as.numeric(COL)),
+    ROW=suppressWarnings(as.numeric(ROW)),
+    GENE=suppressWarnings(as.numeric(GENE)),
+
+    # variabile categoriale vera
+    CONTROL_TYPE=factor(CONTROL_TYPE),
+
+    # indicatori Yes/No per tutte le annotazioni testuali
+    HAS_NAME=factor(ifelse(is.na(NAME)|NAME=="","No","Yes")),
+    HAS_SPOT_ID=factor(ifelse(is.na(SPOT_ID)|SPOT_ID=="","No","Yes")),
+    HAS_REFSEQ=factor(ifelse(is.na(REFSEQ)|REFSEQ=="","No","Yes")),
+    HAS_GB_ACC=factor(ifelse(is.na(GB_ACC)|GB_ACC=="","No","Yes")),
+    HAS_GENE_SYMBOL=factor(ifelse(is.na(GENE_SYMBOL)|GENE_SYMBOL=="","No","Yes")),
+    HAS_GENE_NAME=factor(ifelse(is.na(GENE_NAME)|GENE_NAME=="","No","Yes")),
+    HAS_UNIGENE=factor(ifelse(is.na(UNIGENE_ID)|UNIGENE_ID=="","No","Yes")),
+    HAS_ENSEMBL=factor(ifelse(is.na(ENSEMBL_ID)|ENSEMBL_ID=="","No","Yes")),
+    HAS_TIGR=factor(ifelse(is.na(TIGR_ID)|TIGR_ID=="","No","Yes")),
+    HAS_ACCESSION=factor(ifelse(is.na(ACCESSION_STRING)|ACCESSION_STRING=="","No","Yes")),
+    HAS_CHR_LOC=factor(ifelse(is.na(CHROMOSOMAL_LOCATION)|CHROMOSOMAL_LOCATION=="","No","Yes")),
+    HAS_CYTOBAND=factor(ifelse(is.na(CYTOBAND)|CYTOBAND=="","No","Yes")),
+    HAS_DESCRIPTION=factor(ifelse(is.na(DESCRIPTION)|DESCRIPTION=="","No","Yes")),
+    HAS_GO=factor(ifelse(is.na(GO_ID)|GO_ID=="","No","Yes")),
+    HAS_SEQUENCE=factor(ifelse(is.na(SEQUENCE)|SEQUENCE=="","No","Yes"))
+  )
+
+# Label per table1
+label(feat_all$ID)<-"Probe ID"
+label(feat_all$COL)<-"Array column index"
+label(feat_all$ROW)<-"Array row index"
+label(feat_all$GENE)<-"Internal gene ID"
+label(feat_all$CONTROL_TYPE)<-"Control type"
+label(feat_all$HAS_NAME)<-"Has probe NAME"
+label(feat_all$HAS_SPOT_ID)<-"Has SPOT_ID"
+label(feat_all$HAS_REFSEQ)<-"Has RefSeq ID"
+label(feat_all$HAS_GB_ACC)<-"Has GenBank accession"
+label(feat_all$HAS_GENE_SYMBOL)<-"Has gene symbol"
+label(feat_all$HAS_GENE_NAME)<-"Has gene name"
+label(feat_all$HAS_UNIGENE)<-"Has UniGene ID"
+label(feat_all$HAS_ENSEMBL)<-"Has Ensembl ID"
+label(feat_all$HAS_TIGR)<-"Has TIGR ID"
+label(feat_all$HAS_ACCESSION)<-"Has accession string"
+label(feat_all$HAS_CHR_LOC)<-"Has chromosomal location"
+label(feat_all$HAS_CYTOBAND)<-"Has cytoband"
+label(feat_all$HAS_DESCRIPTION)<-"Has description"
+label(feat_all$HAS_GO)<-"Has GO annotation"
+label(feat_all$HAS_SEQUENCE)<-"Has probe sequence"
+
+
+```
+
+```{r}
+table1(
+  ~ CONTROL_TYPE +
+    HAS_REFSEQ + HAS_GB_ACC +
+    HAS_GENE_NAME + HAS_UNIGENE + HAS_ENSEMBL +
+    HAS_TIGR + HAS_ACCESSION +
+    HAS_CHR_LOC + HAS_CYTOBAND +
+    HAS_DESCRIPTION + HAS_GO + HAS_SEQUENCE
+  | HAS_GENE_SYMBOL,
+  data = feat_all
+)
+```
+
+The gene expression dataset included a total of 2,909 probes. Of these, 2,028 (69.7%) were associated with a known gene symbol, while the remaining 881 (30.3%) were not. All considered probes had CONTROL_TYPE = FALSE, indicating they were "biological" probes and not technical controls, and had the probe sequence available (Has probe sequence = Yes for 100% of the probes).
+
+The presence of a gene symbol was associated with a marked increase in annotation richness. Among probes with gene symbols, 91.8% had a RefSeq identifier (Ha RefSeq ID), 100% had a GenBank accession, 98.9% had a UniGene ID, and 86.4% had an Ensembl ID; In contrast, in the group of probes without gene symbols, such annotations were much less frequent (only 7.6% with RefSeq IDs, 52.2% with GenBank accessions, 46.4% with UniGene IDs, and 16.8% with Ensembl IDs). A similar trend was observed for other resources: 96.2% of probes with gene symbols had a TIGR ID and 100% a combined accession string, compared to 54.4% and 72.8%, respectively, in the group without gene symbols.
+
+Genomic information was also significantly more complete in probes annotated with gene symbols: almost all presented the chromosomal position (99.7%) and cytoband (99.3%), compared to 95.2% and 93.1% of probes without gene symbols, which nevertheless already had relatively good coverage for these two fields. The most notable difference concerned functional annotations: only 6.8% of probes without gene symbols contained at least one Gene Ontology term (GO annotation), while in the group with gene symbols, this percentage rose to 78.9%. Overall, 57.1% of all probes in the dataset had GO annotation, but almost exclusively among those with gene symbols.
+
+These results indicate that probes associated with a gene symbol represent a highly enriched subset of genomic and functional information (RefSeq, GenBank, UniGene, Ensembl, GO, etc.), while probes without gene symbols remain largely poorly annotated. Consequently, downstream analyses requiring biological interpretation (e.g., pathway analysis, functional enrichment) will likely focus primarily on probes with available gene symbols.
