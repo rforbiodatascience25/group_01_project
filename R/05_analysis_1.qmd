@@ -43,7 +43,7 @@ expr_mat <- finaldata |>
   pivot_wider(
     names_from  = gene_id,
     values_from = gene_expr
-  )
+)
 ```
 
 ```{r}
