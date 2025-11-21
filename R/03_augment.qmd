@@ -6,7 +6,7 @@ format: html
 #### Load finaldata and featuredata
 
 ```{r}
-#| messages = false
+#| message = false
 #| warning = false
 
 finaldata <- read_csv("../data/finaldata.csv.gz")
