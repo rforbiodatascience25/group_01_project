@@ -49,14 +49,14 @@ eth_counts <- finaldata |>
 
 # plotting with relabelled axis
 finaldata |> 
-  distinct(patient, inflammation_status, smoking_status) |> 
-  ggplot(aes(x = smoking_status, fill = inflammation_status)) +
+  distinct(patient, inflammation_status, ethnicity) |> 
+  ggplot(aes(x = ethnicity, fill = inflammation_status)) +
   geom_bar(position = "fill") +
   scale_y_continuous(labels = scales::percent_format()) +
   coord_flip() +
   scale_x_discrete(
     labels = function(x) {
-      paste0(x, " (", eth_counts$n[match(x, eth_counts$smoking_status)], ")")
+      paste0(x, " (", eth_counts$n[match(x, eth_counts$ethnicity)], ")")
     }
   ) +
   theme_minimal() +
@@ -71,19 +71,6 @@ k_out <- kmeans(finaldata_clean$gene_expr, centers = 2)
 
 finaldata_k <- finaldata_clean |> 
   mutate(cluster = factor(k_out$cluster))
-```
-
-```{r}
-ggplot(finaldata_k,
-       aes(x = cluster, y = gene_expr, colour = `inflammation_status`)) +
-  geom_boxplot(outlier.shape = NA, alpha = 0.4) +
-  geom_jitter(width = 0.1, alpha = 0.6) +
-  theme_minimal() +
-  labs(
-    x = "k-means cluster",
-    y = "Gene expression",
-    colour = "Inflammation status"
-  )
 ```
 
 ```{r}
