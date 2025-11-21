@@ -6,11 +6,14 @@ format: html
 #### Load finaldata and featuredata
 
 ```{r}
-#| message = false
-#| warning = false
+#| message: false
+#| warning: false
 
 finaldata <- read_csv("../data/finaldata.csv.gz")
 featuredata <- read_csv("../data/featuredata.csv.gz")
+
+colnames(finaldata)
+colnames(featuredata)
 ```
 
 #### Calculating the Age from date of birth
