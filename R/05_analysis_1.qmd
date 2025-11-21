@@ -3,15 +3,64 @@ title: "05_analysis_1"
 format: html
 ---
 
+# Analysis
+
+## Overall gene expression distribution
+
 ```{r}
-ggplot(finaldata, aes(x = `inflammation_status`, y = gene_expr)) +
-  geom_boxplot() +
-  geom_jitter(width = 0.2, alpha = 0.4) +
+finaldata |> 
+  mutate(inflammation_status = factor(inflammation_status,
+                                      levels = c("Uninflamed", "Inflamed"))) |>
+  ggplot(aes(x = gene_expr, fill = inflammation_status)) +
+  geom_histogram(position = "identity", alpha = 0.6, bins = 80) +
+  theme_minimal()
+```
+
+## **Expression by anatomic location and inflammation**
+
+```{r}
+finaldata |> 
+  ggplot(aes(x = anatomic_location, y = gene_expr, 
+             fill = inflammation_status)) +
+  geom_violin(trim = FALSE, alpha = 0.5) +
+  geom_boxplot(width = 0.15, outlier.shape = NA, position = position_dodge(width = 0.9)) +
+  coord_flip() +
   theme_minimal() +
-  labs(
-    x = "Inflammation status",
-    y = "Gene expression"
-  )
+  labs(x = "Anatomic location", y = "Gene expression")
+```
+
+```{r}
+patient_means <- finaldata |> 
+  group_by(patient, inflammation_status) |> 
+  summarise(mean_expr = mean(gene_expr, na.rm = TRUE), .groups = "drop")
+
+ggplot(patient_means, aes(x = inflammation_status, y = mean_expr)) +
+  geom_boxplot(outlier.shape = NA, alpha = 0.4) +
+  geom_jitter(width = 0.15, alpha = 0.6) +
+  theme_minimal() +
+  labs(x = "Inflammation status", y = "Mean gene expression per patient")
+```
+
+```{r}
+# compute counts per ethnicity
+eth_counts <- finaldata |>
+  distinct(patient, ethnicity) |>
+  count(ethnicity)
+
+# plotting with relabelled axis
+finaldata |> 
+  distinct(patient, inflammation_status, ethnicity) |> 
+  ggplot(aes(x = ethnicity, fill = inflammation_status)) +
+  geom_bar(position = "fill") +
+  scale_y_continuous(labels = scales::percent_format()) +
+  coord_flip() +
+  scale_x_discrete(
+    labels = function(x) {
+      paste0(x, " (", eth_counts$n[match(x, eth_counts$ethnicity)], ")")
+    }
+  ) +
+  theme_minimal() +
+  labs(x = "Ethnicity", y = "Proportion of patients", fill = "Inflammation")
 ```
 
 ```{r}
@@ -26,7 +75,7 @@ finaldata_k <- finaldata_clean |>
 
 ```{r}
 ggplot(finaldata_k,
-       aes(x = cluster, y = gene_expr, colour = `inflammation_status:ch1`)) +
+       aes(x = cluster, y = gene_expr, colour = `inflammation_status`)) +
   geom_boxplot(outlier.shape = NA, alpha = 0.4) +
   geom_jitter(width = 0.1, alpha = 0.6) +
   theme_minimal() +
@@ -70,7 +119,7 @@ k_out <- kmeans(pca$x[, 1:10], centers = 2)
 ```{r}
 sample_meta <- finaldata |> 
   select(sample_id = geo_accession,
-         inflammation_status = `inflammation_status:ch1`) |> 
+         inflammation_status = `inflammation_status`) |> 
   distinct()
 ```
 

@@ -247,7 +247,7 @@ Stretching the data set so that genes
 
 ```{r}
 finaldata <-  finaldata |> 
-  pivot_longer(cols = 23:last_col(),
+  pivot_longer(cols = 22:last_col(),
                names_to = "gene_id" ,
                values_to = "gene_expr" )
 
