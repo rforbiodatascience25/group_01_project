@@ -66,3 +66,9 @@ finaldata |>
       plot.title = element_text(size = 12)   # << decrease title size
     )
 ```
+
+## Cleaning environment
+
+```{r}
+rm(list = setdiff(ls(), c("finaldata", "featuredata")))
+```
