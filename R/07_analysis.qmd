@@ -11,6 +11,9 @@ finaldata <- read_csv("../data/03_dat_aug.csv.gz")
 featuredata <- read_csv("../data/featuredata.csv.gz")
 source("99_proj_func.R")
 
+library(dplyr)
+library(ggplot2)
+
 colnames(finaldata)
 colnames(featuredata)
 ```
@@ -124,21 +127,28 @@ There is no significant difference in the amount of A and T in the sequences bet
 # Significance based on anatomical location
 
 ```{r}
-library(dplyr)
-library(ggplot2)
-
 de_by_loc <- finaldata |>
   filter(complete.cases(gene_expr, inflammation_status, anatomic_location)) |>
-  mutate(inflammation_status = factor(inflammation_status, c("Uninflamed","Inflamed"))) |>
+  mutate(inflammation_status = factor(inflammation_status,
+                                      c("Uninflamed", "Inflamed"))) |>
   group_by(anatomic_location, gene_id) |>
+  # keep only genes where both groups are present in that location
+  filter(n_distinct(inflammation_status) == 2) |>
   summarise(
-    log2FC  = mean(gene_expr[inflammation_status=="Inflamed"]) -
-              mean(gene_expr[inflammation_status=="Uninflamed"]),
-    p_value = t_safe(gene_expr, inflammation_status),
+    log2FC  = mean(gene_expr[inflammation_status == "Inflamed"],   na.rm = TRUE) -
+              mean(gene_expr[inflammation_status == "Uninflamed"], na.rm = TRUE),
+
+    p_value = tryCatch(
+      t.test(gene_expr ~ inflammation_status)$p.value,
+      error = function(e) NA_real_
+    ),
     .groups = "drop"
   ) |>
   group_by(anatomic_location) |>
-  mutate(FDR = p.adjust(p_value, "BH"), sig = !is.na(FDR) & FDR < .05) |>
+  mutate(
+    FDR = p.adjust(p_value, "BH"),
+    sig = !is.na(FDR) & FDR < 0.05
+  ) |>
   ungroup()
 
 de_by_loc |>
