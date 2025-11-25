@@ -11,6 +11,13 @@ format: html
 library(ggrepel)
 ```
 
+# Load
+
+```{r}
+finaldata   <- read_csv("../data/finaldata.csv.gz")
+featuredata <- read_csv("../data/featuredata.csv.gz")
+```
+
 ## Overall gene expression distribution
 
 ```{r}
@@ -307,4 +314,10 @@ ggplot(heat_df,
     axis.ticks.x = element_blank(),
     panel.grid   = element_blank()
   )
+```
+
+# Cleaning environment
+
+```{r}
+rm(list = ls())
 ```
