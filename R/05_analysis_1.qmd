@@ -327,6 +327,25 @@ ggplot(heat_df,
   )
 ```
 
+## Correlation between time untreated and gene expression
+
+Plotting the correlation between the time patients went untreated and the gene expression of significant genes. Looking at the genes that were up-regulated in inflamed patients (red) it can be seen that some of the patients with the genes that were the most upregulated went to the doctor earlier compared to some of the patients that had genes that were the least upregulated.
+
+```{r}
+finaldata |>
+  filter(gene_id == sig_genes$gene_id) |> 
+  select(geo_accession, gene_id, time_untreated, disease, family_history) |> 
+  left_join(sig_genes, finaldata, by = "gene_id") |> 
+  group_by(GENE_SYMBOL) %>% filter(n() >= 2) |> 
+  filter(time_untreated > 0) |> 
+  ggplot(aes(x = time_untreated, y = log2FC, 
+             color = sig_cat)) +
+  geom_point(alpha = 0.5) +
+  theme_minimal() +
+  labs(title = "Correlation between time untreated and expression of significant genes", x = "Time untreated (days)", y = "log2FC", color = "Inflammation status") + 
+  theme(legend.position = "bottom")
+```
+
 # Cleaning environment
 
 ```{r}
