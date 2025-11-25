@@ -9,11 +9,10 @@ format: html
 
 ```{r}
 #| warning: false
-# Create data dirs using base R, puts _raw into data directory
+# Create data dirs
 data_dir <- "../data/"
 raw_dir <- "../data/_raw/"
 
-# Checks if folders are already present, if not it creates them.
 if (!dir.exists(data_dir)) {
   dir.create(data_dir)
 }
@@ -32,7 +31,6 @@ if (!dir.exists(raw_dir)) {
 #| message: false
 #| warning: false
 
-# loading packages ("GEOquery" and "tidyverse)
 library("GEOquery")
 library("tidyverse")
 ```
