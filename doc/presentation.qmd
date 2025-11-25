@@ -47,6 +47,9 @@ finaldata <- read.csv(file = "../data/finaldata.csv.gz")
 
     -   30 healthy controls
 -   Gene expression
+-   Augtments to the data
+    -   Age and Age group
+    -   Time untreated
 :::
 
 ::: {.column width="50%"}
