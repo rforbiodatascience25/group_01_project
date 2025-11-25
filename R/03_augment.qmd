@@ -24,7 +24,7 @@ Birth date reformat - input a date in string format, with "/" as spacer. Date fo
 source(file = "99_proj_func.R")
 ```
 
-Making the age variable from the date of birth and the submission date for the article, to estimate the age. at the time of sampling.
+Making the age variable from the date of birth and the submission date for the article, to estimate the age. at the time of sampling. We identified some birth dates that were written as MM/DD/1060, we belive it is a typo and what was meant was 1960. Hence we changed it to 1960.
 
 ```{r}
 finaldata <- finaldata |> 

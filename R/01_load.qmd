@@ -88,3 +88,9 @@ write_rds(gse11223, file=file.path (raw_dir,"/gse11223.rds"))
 ```
 
 \_raw/ will indeed only contain raw data pulls (apart from the disturbing list extraction for gse11223...)
+
+Cleaning environment at the end of the file
+
+```{r}
+rm(list = ls())
+```

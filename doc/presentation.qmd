@@ -8,35 +8,68 @@ format:
     footer: "Group 01 R for Bio data science 22160"
     highlight-style: github
     code-fold: false
+    slide-number: c/t
+    show-slide-number: all
 output-dir: doc
 ---
 
-# Introduction
-
--   Dataset from NCBI
--   Ulcerative colitis - Ulcers in the colon
--   Biopsies from the gut
-    -   202 samples
--   Gene expression
-
-# Materials of Methods
-
-## Initialization
-
-::::: columns
-::: {.column width="40%"}
-```{r Setup, echo=TRUE}
+```{r}
+#| eval: true
 library("tidyverse")
-library("GEOquery")
+finaldata <- read.csv(file = "../data/finaldata.csv.gz")
 ```
+
+# Introduction 2
+
+::: {#Introduction style="font-size: 0.8em"}
+-   Dataset from NCBI
+
+-   Transcriptional profiling of colon epithelial from ulcerative colitis patients and healthy controls
+
+-   Ulcers in the colon
+
+-   chronic inflamation
+
+-   Aim to find and analyze variation between healthy controls and patients
+
+    -   what smoking does
+    -   Effect of genes
 :::
 
-::: {.column width="60%"}
-![](Initializing.gif){fig-align="center"}
+# Materials of Methods 3
+
+::::: columns
+::: {.column width="50%" style="font-size: 0.9em"}
+-   Biopsies from the gut
+    -   202 samples
+
+    -   from 67 patients
+
+    -   30 healthy controls
+-   Gene expression
+-   Augtments to the data
+    -   Age and Age group
+    -   Time untreated
+:::
+
+::: {.column width="50%"}
+
+```{r}
+finaldata |> 
+  distinct(geo_accession, .keep_all = TRUE) |> 
+  ggplot(aes(x = age_group)
+) +
+  geom_bar()
+
+```
 :::
 :::::
 
-## Filtering data
+::: {#Source .Reference style="font-size: 0.6em"}
+*Noble CL, Abbas AR, Cornelius J, et al Regional variation in gene expression in the healthy colon is dysregulated in ulcerative colitis Gut 2008;**57:**1398-1405.*
+:::
+
+## Filtering data 4
 
 ::::: columns
 ::: {.column width="50%"}
@@ -76,18 +109,12 @@ exprs_filtered <- exprs_df |>
 :::
 :::::
 
-## Joining Data
+## Augmenting Data 5
 
-## Augmenting Data
+# Results 6
 
-# Results
+# plot 7
 
-## Plot 1
+# Discussion 8
 
-## Plot 2
-
-## Plot 3
-
-# Discussion
-
-## Correlations and Causality
+## 
