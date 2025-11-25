@@ -68,7 +68,6 @@ fin_all$other_illnesses_clean<-factor(
   levels=c("None","Any comorbidity")
 )
 
-# Label per table1 (adattate alle variabili che esistono davvero)
 label(fin_all$neutrophils)<-"Neutrophils"
 label(fin_all$albumin)<-"Albumin"
 label(fin_all$ethnicity)<-"Ethnicity"
@@ -132,16 +131,13 @@ As for relatives affected by IBD, they are present only in the UC group (4 patie
 ```{r}
 feat_all<-featuredata|>
   mutate(
-    # indici tecnici: sono già numerici, ma non fa male ribadire
     ID=suppressWarnings(as.numeric(ID)),
     COL=suppressWarnings(as.numeric(COL)),
     ROW=suppressWarnings(as.numeric(ROW)),
     GENE=suppressWarnings(as.numeric(GENE)),
 
-    # variabile categoriale vera
     CONTROL_TYPE=factor(CONTROL_TYPE),
 
-    # indicatori Yes/No per tutte le annotazioni testuali
     HAS_NAME=factor(ifelse(is.na(NAME)|NAME=="","No","Yes")),
     HAS_SPOT_ID=factor(ifelse(is.na(SPOT_ID)|SPOT_ID=="","No","Yes")),
     HAS_REFSEQ=factor(ifelse(is.na(REFSEQ)|REFSEQ=="","No","Yes")),
@@ -209,135 +205,139 @@ This table does not tell us anything about expression values ​​or UC vs cont
 
     -   Overall: N = 2909
 
-<!-- -->
+-   **Control type (CONTROL_TYPE = FALSE):**
 
--    **Control type (CONTROL_TYPE = FALSE):**
+```         
+-   Normal group: 881/881 (100%)
 
-    -   Normal group: 881/881 (100%)
+-   UC group: 2028/2028 (100%)
 
-    -   UC group: 2028/2028 (100%)
+-   Overall: 2909/2909 (100%)
+```
 
-    -   Overall: 2909/2909 (100%)
+-   **Has RefSeq ID:**
 
-<!-- -->
+```         
+-    Normal group: No 814 (92.4%), Yes 67 (7.6%)
 
--    **Has RefSeq ID:**
+-   UC group: No 167 (8.2%), Yes 1861 (91.8%)
 
-    -    Normal group: No 814 (92.4%), Yes 67 (7.6%)
+-   Overall: No 981 (33.7%), Yes 1928 (66.3%)
+```
 
-    -   UC group: No 167 (8.2%), Yes 1861 (91.8%)
+-   **Has GenBank accession:**
 
-    -   Overall: No 981 (33.7%), Yes 1928 (66.3%)
+```         
+-    Normal group: No 421 (47.8%), Yes 460 (52.2%)
 
-<!-- -->
+-   UC group: No 0 (0%), Yes 2028 (100%)
 
--    **Has GenBank accession:**
-
-    -    Normal group: No 421 (47.8%), Yes 460 (52.2%)
-
-    -   UC group: No 0 (0%), Yes 2028 (100%)
-
-    -   Overall: No 421 (14.5%), Yes 2488 (85.5%)
-
-<!-- -->
-
--    **Has gene name:**
-
-    -    Normal group: No 881 (100%), Yes 0 (0%)
-
-    -   UC group: No 0 (0%), Yes 2028 (100%)
-
-    -   Overall: No 881 (30.3%), Yes 2028 (69.7%)
+-   Overall: No 421 (14.5%), Yes 2488 (85.5%)
+```
 
 <!-- -->
 
--    **Has UniGene ID:**
+-   **Has gene name:**
 
-    -    Normal group: No 472 (53.6%), Yes 409 (46.4%)
+```         
+-    Normal group: No 881 (100%), Yes 0 (0%)
 
-    -   UC group: No 23 (1.1%), Yes 2005 (98.9%)
+-   UC group: No 0 (0%), Yes 2028 (100%)
 
-    -   Overall: No 495 (17.0%), Yes 2414 (83.0%)
-
-<!-- -->
-
--    **Has Ensembl ID:**
-
-    -    Normal group: No 733 (83.2%), Yes 148 (16.8%)
-
-    -   UC group: No 275 (13.6%), Yes 1753 (86.4%)
-
-    -   Overall: No 1008 (34.7%), Yes 1901 (65.3%)
+-   Overall: No 881 (30.3%), Yes 2028 (69.7%)
+```
 
 <!-- -->
 
--    **Has TIGR ID:**
+-   **Has UniGene ID:**
 
-    -    Normal group: No 402 (45.6%), Yes 479 (54.4%)
+```         
+-    Normal group: No 472 (53.6%), Yes 409 (46.4%)
 
-    -   UC group: No 77 (3.8%), Yes 1951 (96.2%)
+-   UC group: No 23 (1.1%), Yes 2005 (98.9%)
 
-    -   Overall: No 479 (16.5%), Yes 2430 (83.5%)
+-   Overall: No 495 (17.0%), Yes 2414 (83.0%)
+```
 
-<!-- -->
+-   **Has Ensembl ID:**
 
--    **Has accession string:**
+```         
+-    Normal group: No 733 (83.2%), Yes 148 (16.8%)
 
-    -    Normal group: No 240 (27.2%), Yes 641 (72.8%)
+-   UC group: No 275 (13.6%), Yes 1753 (86.4%)
 
-    -   UC group: No 0 (0%), Yes 2028 (100%)
+-   Overall: No 1008 (34.7%), Yes 1901 (65.3%)
+```
 
-    -   Overall: No 240 (8.3%), Yes 2669 (91.7%)
+-   **Has TIGR ID:**
 
-<!-- -->
+```         
+-    Normal group: No 402 (45.6%), Yes 479 (54.4%)
 
--    **Has chromosomal location:**
+-   UC group: No 77 (3.8%), Yes 1951 (96.2%)
 
-    -    Normal group: No 42 (4.8%), Yes 839 (95.2%)
+-   Overall: No 479 (16.5%), Yes 2430 (83.5%)
+```
 
-    -    UC group: No 6 (0.3%), Yes 2022 (99.7%)
+-   **Has accession string:**
 
-    -   Overall: No 48 (1.7%), Yes 2861 (98.4%)
+```         
+-    Normal group: No 240 (27.2%), Yes 641 (72.8%)
 
-<!-- -->
+-   UC group: No 0 (0%), Yes 2028 (100%)
 
--    **Has cytoband:**
+-   Overall: No 240 (8.3%), Yes 2669 (91.7%)
+```
 
-    -    Normal group: No 61 (6.9%), Yes 820 (93.1%)
+-   **Has chromosomal location:**
 
-    -   UC group: No 15 (0.7%), Yes 2013 (99.3%)
+```         
+-    Normal group: No 42 (4.8%), Yes 839 (95.2%)
 
-    -   Overall: No 76 (2.6%), Yes 2833 (97.4%)
+-    UC group: No 6 (0.3%), Yes 2022 (99.7%)
 
-<!-- -->
+-   Overall: No 48 (1.7%), Yes 2861 (98.4%)
+```
 
--    **Has description:**
+-   **Has cytoband:**
 
-    -    Normal group: No 342 (38.8%), Yes 539 (61.2%)
+```         
+-    Normal group: No 61 (6.9%), Yes 820 (93.1%)
 
-    -    UC group: No 0 (0%), Yes 2028 (100%)
+-   UC group: No 15 (0.7%), Yes 2013 (99.3%)
 
-    -    Overall: No 342 (11.8%), Yes 2567 (88.2%)
+-   Overall: No 76 (2.6%), Yes 2833 (97.4%)
+```
 
-<!-- -->
+-   **Has description:**
 
--    **Has GO annotation:**
+```         
+-    Normal group: No 342 (38.8%), Yes 539 (61.2%)
 
-    -    Normal group: No 821 (93.2%), Yes 60 (6.8%)
+-    UC group: No 0 (0%), Yes 2028 (100%)
 
-    -   UC group: No 427 (21.1%), Yes 1601 (78.9%)
+-    Overall: No 342 (11.8%), Yes 2567 (88.2%)
+```
 
-    -   Overall: No 1248 (42.9%), Yes 1661 (57.1%)
+-   **Has GO annotation:**
 
-<!-- -->
+```         
+-    Normal group: No 821 (93.2%), Yes 60 (6.8%)
 
--    **Has probe sequence:**
+-   UC group: No 427 (21.1%), Yes 1601 (78.9%)
 
-    -    Normal group: Yes 881 (100%)
+-   Overall: No 1248 (42.9%), Yes 1661 (57.1%)
+```
 
-    -   UC group: Yes 2028 (100%)
+-   **Has probe sequence:**
 
-    -   Overall: Yes 2909 (100%)
+```         
+-    Normal group: Yes 881 (100%)
+
+-   UC group: Yes 2028 (100%)
+
+-   Overall: Yes 2909 (100%)
+```
 
 # Cleaning environment:
 
