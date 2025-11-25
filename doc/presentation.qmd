@@ -19,7 +19,7 @@ library("tidyverse")
 finaldata <- read.csv(file = "../data/03_dat_aug.csv.gz")
 ```
 
-# Introduction 2
+# Introduction 1
 
 ::: {#Introduction style="font-size: 0.8em"}
 -   Dataset from NCBI
@@ -36,7 +36,7 @@ finaldata <- read.csv(file = "../data/03_dat_aug.csv.gz")
     -   Effect of genes
 :::
 
-# Materials of Methods 3
+# Materials of Methods 2
 
 ::::: columns
 ::: {.column width="50%" style="font-size: 0.9em"}
@@ -68,7 +68,7 @@ finaldata |>
 *Noble CL, Abbas AR, Cornelius J, et al Regional variation in gene expression in the healthy colon is dysregulated in ulcerative colitis Gut 2008;**57:**1398-1405.*
 :::
 
-## Filtering data 4
+## Filtering data 3
 
 ::::: columns
 ::: {.column width="50%"}
@@ -108,12 +108,14 @@ exprs_filtered <- exprs_df |>
 :::
 :::::
 
-## Augmenting Data 5
+# Results Emiliano 4
 
-# Results 6
+# plot Trine 5
 
-# plot 7
+# Plot Oliver 6
+
+# Plot asbjørn 7
 
 # Discussion 8
 
-## 
+# Conclusion 9

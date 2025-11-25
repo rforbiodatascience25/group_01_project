@@ -3,3 +3,25 @@ title: "00_all"
 format: html
 ---
 
+```{r}
+#| warning: false
+result_dir <- "../results"
+library(knitr)
+
+# Checks if folders are already present, if not it creates them.
+if (!dir.exists(result_dir)) {
+  dir.create(result_dir)
+}
+```
+
+```{r}
+#| include: false
+knit_child("01_load.qmd", quiet=TRUE)
+knit_child("02_clean.qmd", quiet=TRUE)
+knit_child("03_augment.qmd", quiet=TRUE)
+knit_child("04_describe.qmd", quiet=TRUE)
+knit_child("05_analysis_1.qmd", quiet=TRUE)
+knit_child("06_analysis_2.qmd", quiet=TRUE)
+knit_child("07_analysis.qmd", quiet=TRUE)
+knit_child("08_analysis_rf.qmd", quiet=TRUE)
+```
