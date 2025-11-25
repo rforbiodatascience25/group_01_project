@@ -26,6 +26,9 @@ finaldata |>
                                       levels = c("Uninflamed", "Inflamed"))) |>
   ggplot(aes(x = gene_expr, fill = inflammation_status)) +
   geom_histogram(position = "identity", alpha = 0.6, bins = 80) +
+  labs(
+    fill = "Inflammation state"
+  )+
   theme_minimal()
 ```
 
