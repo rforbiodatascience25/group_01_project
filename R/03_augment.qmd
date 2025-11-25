@@ -65,16 +65,6 @@ final_clean <- finaldata |>
 ```
 
 ```{r}
-final_clean <- finaldata |>
-  filter(!is.na(gene_expr),
-         !is.na(inflammation_status)) |>
-  mutate(
-    inflammation_status = factor(inflammation_status,
-                                 levels = c("Uninflamed", "Inflamed")) # control first
-  )
-```
-
-```{r}
 de_results <- final_clean |>
   group_by(gene_id) |>
   # keep only genes that have both groups present
@@ -103,6 +93,7 @@ de_results <- final_clean |>
 ```{r}
 write_csv(finaldata, file = "../data/03_dat_aug.csv.gz")
 write_csv(featuredata, file = "../data/featuredata.csv.gz")
+write_csv(de_results, file = "../data/03_de_results.csv.gz")
 ```
 
 ## Cleaning environment
