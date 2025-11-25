@@ -28,7 +28,7 @@ raw_dir <- "../data/_raw/"
 
 ```
 
-## GEODataTable from \_raw/gds3268.rds
+## GEODataTable from raw/raw_expression_data.rds
 
 #### Loading in the data
 
@@ -36,7 +36,7 @@ Expression data of patients with different genes. (patient) Samples are stored a
 
 ```{r}
 #Applying the Table function from GEOquery to extract the dataframe.
-exprs_geodf <- Table(read_rds(file.path(raw_dir,"gds3268.rds")))
+exprs_geodf <- Table(read_rds(file.path(raw_dir,"raw_expression_data.rds")))
 #exprs_geodf <- Table(read_rds("../_raw/gds3268.rds"))
 exprs_geodf <- as_tibble(exprs_geodf)
 exprs_geodf
@@ -143,7 +143,7 @@ length(genes_keep)
 Metadata concerning samples (patients)
 
 ```{r}
-gse11223 <- read_rds(file = file.path(raw_dir,"gse11223.rds")) 
+gse11223 <- read_rds(file = file.path(raw_dir,"raw_meta_data.rds")) 
 
 phenodata <- pData(phenoData(gse11223[1]))
 
@@ -271,8 +271,8 @@ featuredata <- featuredata |>
 ## Exporting to data/
 
 ```{r}
-write_csv(finaldata, file = "../data/finaldata.csv.gz")
-write_csv(featuredata, file = "../data/featuredata.csv.gz")
+write_csv(finaldata, file = "../data/02_dat_clean.csv.gz")
+write_csv(featuredata, file = "../data/02_dat_genbank.csv.gz")
 ```
 
 ## Cleaning environment
