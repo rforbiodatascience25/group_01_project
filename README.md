@@ -53,8 +53,7 @@ Direct link to the rendered project presentation:
 All data used in this project originates from the following peer-reviewed publication:
 
 **Burczynski et al., "Molecular profiling of ulcerative colitis from colon tissue", Gut (2008), 57:1398–1405.**  
-Full text:  
-https://gut.bmj.com/content/57/10/1398.long
+Full text: https://gut.bmj.com/content/57/10/1398.long
 
 The study is publicly available through the Gene Expression Omnibus (GEO) under:
 
