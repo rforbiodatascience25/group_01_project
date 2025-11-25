@@ -16,32 +16,32 @@ output-dir: doc
 -   Dataset from NCBI
 -   Ulcerative colitis - Ulcers in the colon
 -   Biopsies from the gut
-    - 202 samples
+    -   202 samples
 -   Gene expression
 
 # Materials of Methods
+
 ## Initialization
 
-::::{.columns}
-:::{.column width="40%"}
+::::: columns
+::: {.column width="40%"}
 ```{r Setup, echo=TRUE}
 library("tidyverse")
-#library("getGEO")
+library("GEOquery")
 ```
 :::
-:::{.column width="60%"}
 
-
-
+::: {.column width="60%"}
 ![](Initializing.gif){fig-align="center"}
 :::
-::::
+:::::
 
 ## Filtering data
 
-::::{.columns}
-:::{.column width="50%"}
+::::: columns
+::: {.column width="50%"}
 Removing one-type columns
+
 ```{r Cleaning_phenodata, echo=TRUE, eval=FALSE}
 phenodata <- phenodata |>
   select(
@@ -50,8 +50,10 @@ phenodata <- phenodata |>
         .x, na.rm = TRUE) > 1))
 ```
 :::
-:::{.column width="50%"}
-Removing low variance genes 
+
+::: {.column width="50%"}
+Removing low variance genes
+
 ```{r Cleaning_genes, echo=TRUE, eval=FALSE}
 gene_var <- exprs_df |> 
   # Drop the sample ID column, keep only expression values
@@ -72,19 +74,20 @@ exprs_filtered <- exprs_df |>
 
 ```
 :::
-::::
+:::::
+
 ## Joining Data
 
 ## Augmenting Data
 
-# Results 
+# Results
+
 ## Plot 1
 
 ## Plot 2
 
 ## Plot 3
 
-
-
 # Discussion
+
 ## Correlations and Causality
