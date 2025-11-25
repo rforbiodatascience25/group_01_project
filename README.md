@@ -1,4 +1,4 @@
-<img width="588" height="297" alt="Skærmbillede 2025-11-25 kl  08 43 31" src="https://github.com/user-attachments/assets/51e6ea1a-403f-437b-9aac-e0df2cfe827c" /># Project Contributors
+# Project Contributors
 
 | Student Name           | Student ID | GitHub Username          |
 |------------------------|------------|---------------------------|
