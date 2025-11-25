@@ -167,6 +167,8 @@ names(phenodata)
 phenodata
 ```
 
+Then we remove the duplicate columns and rename them appropriately
+
 ```{r}
 library(stringr)
 
@@ -182,8 +184,8 @@ phenodata <- phenodata |>
   separate(
     col  = value,
     into = c("prefix", "content"),
-    sep  = ":",          # split at the first colon
-    fill = "right",      # if content is missing, fill with NA
+    sep  = ":",  # split at the first colon
+    fill = "right",   # if content is missing, fill with NA
   ) |>
   
   #Clean the prefix
@@ -207,10 +209,9 @@ phenodata <- phenodata |>
   )
 
 
-# Check results
+
 names(phenodata)
 phenodata
-
 ```
 
 ```{r}
@@ -221,8 +222,6 @@ phenodata
 ```
 
 The phenodata has been extracted from the gse11223 and now we will pick and choose the data that is, perhaps removing those variables that are of no importance for us, such as status, submission_date, type, channel_count, organism_ch1 (as they are all homo sapiens) and characteristics_ch1
-
-maybe more.
 
 ## Selecting variables
 

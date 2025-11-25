@@ -86,25 +86,25 @@ ggplot(patient_means, aes(x = inflammation_status, y = mean_expr)) +
 ## Identification of significant genes during dependent on inflammation state using a Volcano plot
 
 ```{r}
-lfc_cut <- 0.25   # minimum |log2FC| to call biologically relevant
-p_cut   <- 0.05   # p-value threshold for the dashed line
+lfc_cut <- 0.25   # Minimum |log2FC| to call biologically relevant
+p_cut   <- 0.05   # p-value threshold
 
-## 1) Add gene symbol by matching finaldata$gene_id --> featuredata$ID
+#Add gene symbol by matching finaldata$gene_id with featuredata$ID
 de_results_annot <- de_results |>
   mutate(
     GENE_SYMBOL = featuredata$GENE_SYMBOL[
-      match(gene_id, featuredata$ID)  # <-- your working mapping
+      match(gene_id, featuredata$ID)
     ]
   )
 
-## 2) Label only highly significant genes with valid symbols
+#Label only highly significant genes with valid symbols
 label_df <- de_results_annot |>
   filter(
-    neg_log10_p > 10,          # very strong p-values
+    neg_log10_p > 10,
     !is.na(GENE_SYMBOL)
   )
 
-## 3) Prepare plotting data: FDR + 3-level significance category
+#Prepare plotting data: FDR + 3-level significance category
 plot_df <- de_results_annot |>
   filter(!is.na(p_value)) |>
   mutate(
@@ -123,7 +123,7 @@ sig_genes <- plot_df |>
   dplyr::select(gene_id, GENE_SYMBOL, log2FC, p_value, FDR, sig_cat) |>
   arrange(FDR)
 
-# split into up in inflamed / up in uninflamed
+#Split into up in inflamed / up in uninflamed
 up_in_inflamed <- sig_genes |>
   filter(sig_cat == "Up in inflamed") |>
   pull(GENE_SYMBOL)
@@ -132,17 +132,17 @@ up_in_uninflamed <- sig_genes |>
   filter(sig_cat == "Up in uninflamed") |>
   pull(GENE_SYMBOL)
 
-## 4) Volcano plot
+#Volcano plot
 ggplot(plot_df,
        aes(x = log2FC, y = neg_log10_p, colour = sig_cat)) +
-  # points
+  #Points
   geom_point(size = 1.3, alpha = 0.8) +
-  # cutoff lines
+  #Cutoff lines
   geom_hline(yintercept = -log10(p_cut),
              linetype = "dashed", linewidth = 0.3) +
   geom_vline(xintercept = c(-lfc_cut, lfc_cut),
              linetype = "dashed", linewidth = 0.3) +
-  # labels for strongest hits
+  # labels
   geom_text_repel(
     data = label_df,
     aes(label = GENE_SYMBOL),
@@ -154,7 +154,7 @@ ggplot(plot_df,
     segment.size = 0.2,
     show.legend = FALSE
   ) +
-  # nicer colours
+
   scale_colour_manual(
     values = c(
       "Up in inflamed"   = "#d73027",
@@ -180,26 +180,19 @@ ggplot(plot_df,
 ```
 
 ```{r}
-
-# pick e.g. top 40 most significant genes
+#Pick top 40 most significant genes
 top_markers <- sig_genes |>
   slice_min(FDR, n = 40) |>
-  dplyr::select(gene_id, GENE_SYMBOL)          # keep both id + symbol
+  dplyr::select(gene_id, GENE_SYMBOL)
 
-# join symbols onto finaldata
-# pick e.g. top 40 most significant genes
-top_markers <- sig_genes |>
-  slice_min(FDR, n = 40) |>
-  dplyr::select(gene_id, GENE_SYMBOL)          # keep both id + symbol
-
-# join symbols onto finaldata
+#Join
 heat_df <- finaldata |>
   inner_join(top_markers, by = "gene_id") |>
-  filter(!is.na(GENE_SYMBOL)) |>          # drop genes without symbol if you like
+  filter(!is.na(GENE_SYMBOL)) |>
   distinct(patient, inflammation_status, GENE_SYMBOL, gene_expr) |>
-  mutate(patient = factor(patient))       # <- make patient discrete
+  mutate(patient = factor(patient))     #Make patient discrete
 
-# reorder symbols by average expression difference → nicer heatmap ordering
+#Reorder symbols by average expression difference
 symbol_order <- heat_df |>
   group_by(GENE_SYMBOL) |>
   summarise(mean_expr = mean(gene_expr, na.rm = TRUE)) |>

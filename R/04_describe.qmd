@@ -3,6 +3,8 @@ title: "04_describe"
 format: html
 ---
 
+# Load:
+
 ```{r}
 library("dplyr")
 library("table1")
@@ -198,147 +200,75 @@ table1(
 
 This table does not tell us anything about expression values ​​or UC vs control differences, however it can provide us with valuable information regarding the quality of the probe annotations.
 
--   **Group sizes:**
+-   Group sizes:\
+    Normal group: 881\
+    UC group: 2028\
+    Overall: 2909
 
-    -   Normal group: N = 881
+-   Control type (CONTROL_TYPE = FALSE):\
+    Normal group: 881/881 (100%)\
+    UC group: 2028/2028 (100%)\
+    Overall: 2909/2909 (100%)
 
-    -   UC group: N = 2028
+-   Has RefSeq ID:\
+    Normal group: No 814 (92.4%), Yes 67 (7.6%)\
+    UC group: No 167 (8.2%), Yes 1861 (91.8%)\
+    Overall: No 981 (33.7%), Yes 1928 (66.3%)
 
-    -   Overall: N = 2909
+-   Has GenBank accession:\
+    Normal group: No 421 (47.8%), Yes 460 (52.2%)\
+    UC group: No 0 (0%), Yes 2028 (100%)\
+    Overall: No 421 (14.5%), Yes 2488 (85.5%)
 
--   **Control type (CONTROL_TYPE = FALSE):**
+-   Has gene name:\
+    Normal group: No 881 (100%), Yes 0 (0%)\
+    UC group: No 0 (0%), Yes 2028 (100%)\
+    Overall: No 881 (30.3%), Yes 2028 (69.7%)
 
-```         
--   Normal group: 881/881 (100%)
+-   Has UniGene ID:\
+    Normal group: No 472 (53.6%), Yes 409 (46.4%)\
+    UC group: No 23 (1.1%), Yes 2005 (98.9%)\
+    Overall: No 495 (17.0%), Yes 2414 (83.0%)
 
--   UC group: 2028/2028 (100%)
+-   Has Ensembl ID:\
+    Normal group: No 733 (83.2%), Yes 148 (16.8%)\
+    UC group: No 275 (13.6%), Yes 1753 (86.4%)\
+    Overall: No 1008 (34.7%), Yes 1901 (65.3%)
 
--   Overall: 2909/2909 (100%)
-```
+-   Has TIGR ID:\
+    Normal group: No 402 (45.6%), Yes 479 (54.4%)\
+    UC group: No 77 (3.8%), Yes 1951 (96.2%)\
+    Overall: No 479 (16.5%), Yes 2430 (83.5%)
 
--   **Has RefSeq ID:**
+-   Has accession string:\
+    Normal group: No 240 (27.2%), Yes 641 (72.8%)\
+    UC group: No 0 (0%), Yes 2028 (100%)\
+    Overall: No 240 (8.3%), Yes 2669 (91.7%)
 
-```         
--    Normal group: No 814 (92.4%), Yes 67 (7.6%)
+-   Has chromosomal location:\
+    Normal group: No 42 (4.8%), Yes 839 (95.2%)\
+    UC group: No 6 (0.3%), Yes 2022 (99.7%)\
+    Overall: No 48 (1.7%), Yes 2861 (98.4%)
 
--   UC group: No 167 (8.2%), Yes 1861 (91.8%)
+-   Has cytoband:\
+    Normal group: No 61 (6.9%), Yes 820 (93.1%)\
+    UC group: No 15 (0.7%), Yes 2013 (99.3%)\
+    Overall: No 76 (2.6%), Yes 2833 (97.4%)
 
--   Overall: No 981 (33.7%), Yes 1928 (66.3%)
-```
+-   Has description:\
+    Normal group: No 342 (38.8%), Yes 539 (61.2%)\
+    UC group: No 0 (0%), Yes 2028 (100%)\
+    Overall: No 342 (11.8%), Yes 2567 (88.2%)
 
--   **Has GenBank accession:**
+-   Has GO annotation:\
+    Normal group: No 821 (93.2%), Yes 60 (6.8%)\
+    UC group: No 427 (21.1%), Yes 1601 (78.9%)\
+    Overall: No 1248 (42.9%), Yes 1661 (57.1%)
 
-```         
--    Normal group: No 421 (47.8%), Yes 460 (52.2%)
-
--   UC group: No 0 (0%), Yes 2028 (100%)
-
--   Overall: No 421 (14.5%), Yes 2488 (85.5%)
-```
-
-<!-- -->
-
--   **Has gene name:**
-
-```         
--    Normal group: No 881 (100%), Yes 0 (0%)
-
--   UC group: No 0 (0%), Yes 2028 (100%)
-
--   Overall: No 881 (30.3%), Yes 2028 (69.7%)
-```
-
-<!-- -->
-
--   **Has UniGene ID:**
-
-```         
--    Normal group: No 472 (53.6%), Yes 409 (46.4%)
-
--   UC group: No 23 (1.1%), Yes 2005 (98.9%)
-
--   Overall: No 495 (17.0%), Yes 2414 (83.0%)
-```
-
--   **Has Ensembl ID:**
-
-```         
--    Normal group: No 733 (83.2%), Yes 148 (16.8%)
-
--   UC group: No 275 (13.6%), Yes 1753 (86.4%)
-
--   Overall: No 1008 (34.7%), Yes 1901 (65.3%)
-```
-
--   **Has TIGR ID:**
-
-```         
--    Normal group: No 402 (45.6%), Yes 479 (54.4%)
-
--   UC group: No 77 (3.8%), Yes 1951 (96.2%)
-
--   Overall: No 479 (16.5%), Yes 2430 (83.5%)
-```
-
--   **Has accession string:**
-
-```         
--    Normal group: No 240 (27.2%), Yes 641 (72.8%)
-
--   UC group: No 0 (0%), Yes 2028 (100%)
-
--   Overall: No 240 (8.3%), Yes 2669 (91.7%)
-```
-
--   **Has chromosomal location:**
-
-```         
--    Normal group: No 42 (4.8%), Yes 839 (95.2%)
-
--    UC group: No 6 (0.3%), Yes 2022 (99.7%)
-
--   Overall: No 48 (1.7%), Yes 2861 (98.4%)
-```
-
--   **Has cytoband:**
-
-```         
--    Normal group: No 61 (6.9%), Yes 820 (93.1%)
-
--   UC group: No 15 (0.7%), Yes 2013 (99.3%)
-
--   Overall: No 76 (2.6%), Yes 2833 (97.4%)
-```
-
--   **Has description:**
-
-```         
--    Normal group: No 342 (38.8%), Yes 539 (61.2%)
-
--    UC group: No 0 (0%), Yes 2028 (100%)
-
--    Overall: No 342 (11.8%), Yes 2567 (88.2%)
-```
-
--   **Has GO annotation:**
-
-```         
--    Normal group: No 821 (93.2%), Yes 60 (6.8%)
-
--   UC group: No 427 (21.1%), Yes 1601 (78.9%)
-
--   Overall: No 1248 (42.9%), Yes 1661 (57.1%)
-```
-
--   **Has probe sequence:**
-
-```         
--    Normal group: Yes 881 (100%)
-
--   UC group: Yes 2028 (100%)
-
--   Overall: Yes 2909 (100%)
-```
+-   Has probe sequence:\
+    Normal group: Yes 881 (100%)\
+    UC group: Yes 2028 (100%)\
+    Overall: Yes 2909 (100%)
 
 # Cleaning environment:
 

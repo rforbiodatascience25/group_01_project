@@ -40,7 +40,7 @@ finaldata |>
          y = "Time to diagnostics (days)",
          title = "Time from 1st UC symtomps to diagnostics against smoking") +
     theme(
-      plot.title = element_text(size = 12)   # << decrease title size
+      plot.title = element_text(size = 12)
     )
 ```
 
@@ -66,7 +66,7 @@ finaldata |>
          y = "Time to diagnostics (days)",
          title = "Time from 1st UC symtomps to diagnostics against age") +
     theme(
-      plot.title = element_text(size = 12)   # << decrease title size
+      plot.title = element_text(size = 12)
     )
 ```
 
@@ -132,7 +132,7 @@ de_by_loc <- finaldata |>
   mutate(inflammation_status = factor(inflammation_status,
                                       c("Uninflamed", "Inflamed"))) |>
   group_by(anatomic_location, gene_id) |>
-  # keep only genes where both groups are present in that location
+  #Keep only genes where both groups are present in that location
   filter(n_distinct(inflammation_status) == 2) |>
   summarise(
     log2FC  = mean(gene_expr[inflammation_status == "Inflamed"],   na.rm = TRUE) -
