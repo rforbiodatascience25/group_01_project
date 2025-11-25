@@ -51,3 +51,6 @@ rsconnect/
 # Data folders
 data/
 _raw/
+
+#Figures
+R/figure/
