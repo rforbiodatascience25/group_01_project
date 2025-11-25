@@ -3,3 +3,76 @@ title: "06_analysis_2"
 format: html
 ---
 
+```{r}
+finaldata <- read_csv("../data/finaldata.csv.gz")
+featuredata <- read_csv("../data/featuredata.csv.gz")
+```
+
+```{r}
+finaldata |> 
+    filter(!is.na(age_group)) |>
+    ggplot(mapping = aes(x = age_group, fill = inflammation_status))+
+       geom_bar(position = position_dodge2(preserve = "single", padding = 0), 
+        color = "black", 
+        alpha = 0.4)+
+      theme_minimal(base_size = 10) +
+      theme(
+        legend.position = "bottom"
+     ) +
+     labs(
+       x = "Age groups",
+        y = "n",
+       fill = "Inflammation-status"
+      )
+```
+
+```{r}
+finaldata |>
+  filter(!is.na(smoking_status)) |> 
+  ggplot(aes(x = smoking_status, y = gene_expr, 
+             fill = inflammation_status)) +
+  geom_violin(trim = FALSE, alpha = 0.5) +
+  geom_boxplot(width = 0.15, outlier.shape = NA, position = position_dodge(width = 0.9)) +
+  coord_flip() +
+  theme_minimal() +
+  labs(x = "Smoking status", y = "Gene expression")
+```
+
+```{r}
+finaldata |>
+  filter(time_untreated > 0) |> 
+  ggplot(aes(x = time_untreated, y = disease, 
+             fill = disease)) +
+  geom_violin(trim = FALSE, alpha = 0.5) +
+  theme_minimal() +
+  labs(x = "Time untreated (days)", y = NULL)
+```
+
+```{r}
+time_untreated_data <- finaldata |> 
+  filter(gene_id == sig_genes$gene_id) |> 
+  select(geo_accession, gene_id, time_untreated) |> 
+  left_join(sig_genes, finaldata, by = "gene_id")
+
+view(time_untreated_data)
+```
+
+```{r}
+time_untreated_data <- finaldata |>
+  #filter(gene_id == sig_genes$gene_id)
+  select(gene_id, time_untreated) |> 
+  left_join(sig_genes, finaldata, by = "gene_id")
+
+# time_untreated_data <- left_join(sig_genes, finaldata, by = "gene_id")
+view(time_untreated_data)
+```
+
+```{r}
+time_untreated_data |> 
+  filter(time_untreated > 0) |> 
+  ggplot(aes(x = time_untreated, y = gene_expr, 
+             fill = disease)) +
+  geom_violin(trim = FALSE, alpha = 0.5) +
+  theme_minimal() +
+  labs(x = "Time untreated (days)", y = NULL)
+```
