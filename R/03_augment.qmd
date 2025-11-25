@@ -90,12 +90,35 @@ de_results <- final_clean |>
 
 ## Preparation for Random Forest model
 
+Reformatting expression dataframe with classifier (y_value) ready for a Random Forest Classifier model
+
+```{r}
+disease_geo <- finaldata |> 
+  select(geo_accession, disease) |> 
+  distinct(geo_accession, disease)
+
+expr_df <- finaldata |> 
+  select(geo_accession, gene_id, gene_expr) |> 
+  filter(!is.na(gene_expr)) |> 
+  pivot_wider(names_from = gene_id,
+              values_from = gene_expr) |> 
+  rename_with(~ paste0("Gene_", .), 
+              .cols = -c(geo_accession)) |>
+  mutate(across(starts_with("Gene_"), ~replace_na(., 0))) |>
+  distinct(geo_accession, .keep_all = TRUE) |> 
+  left_join(disease_geo, by = "geo_accession") |> 
+  mutate(y_pred_UC = as.factor(case_when(disease == "Normal" ~ 0,
+                               disease == "UC" ~ 1)),
+         .keep = "unused")
+```
+
 ## Exporting to data/
 
 ```{r}
 write_csv(finaldata, file = "../data/03_dat_aug.csv.gz")
-write_csv(featuredata, file = "../data/featuredata.csv.gz")
+write_csv(featuredata, file = "../data/03_dat_genbank.csv.gz")
 write_csv(de_results, file = "../data/03_de_results.csv.gz")
+write_csv(expr_df, file = "../data/03_rf_expr_df.csv.gz")
 ```
 
 ## Cleaning environment

@@ -1,21 +1,19 @@
-<img width="588" height="297" alt="Skærmbillede 2025-11-25 kl  08 43 31" src="https://github.com/user-attachments/assets/51e6ea1a-403f-437b-9aac-e0df2cfe827c" /># Project Contributors
+# Project Contributors
 
 | Student Name           | Student ID | GitHub Username          |
 |------------------------|------------|---------------------------|
-| Asbjørn Hansen         | *ID here*  | azzy72                   |
-| Oliver S. Buch         | *ID here*  | Bucho01                  |
-| Emiliano Carrara       | *ID here*  | EmilianoCarrara          |
-| Trine Brøgger          | *ID here*  | trinebrogger             |
-| Magnus Helvig Eriksen  | *ID here*  | MagnusHelvigEriksen      |
-
-> Replace *ID here* with actual student IDs before submission.
+| Asbjørn Hansen         | *s215045*  | azzy72                   |
+| Oliver S. Buch         | *s215079*  | Bucho01                  |
+| Emiliano Carrara       | *s250828*  | EmilianoCarrara          |
+| Trine Brøgger          | *s211443*  | trinebrogger             |
+| Magnus Helvig Eriksen  | *s215066*  | MagnusHelvigEriksen      |
 
 ---
 
 <div align="center">
 
 # Group 01 – Gene Expression Analysis Project  
-### R for Bio Data Science 2025 — DTU
+### R for Bio Data Science 2025, DTU
 
 ![Rendered Report](https://img.shields.io/badge/Rendered%20Report-HTML-blue)  
 ![Language R](https://img.shields.io/badge/Language-R-276DC3?logo=r)  
@@ -31,21 +29,13 @@
 This repository contains the workflow, analysis code, and documentation for Group 01’s project on colonic gene expression.  
 The goal of the analysis is to explore transcriptional changes between **inflamed** and **uninflamed** colonic biopsies, identify significantly altered genes, and visualise global expression patterns.
 
-### Main components include:
-- Data import and wrangling  
-- Exploratory visualisation  
-- PCA and clustering  
-- Differential expression analysis  
-- Volcano plot and heatmap of top significant genes  
-- Reproducible Quarto workflow
-
 ---
 
 ## Presentation Link
 
 Direct link to the rendered project presentation:
 
-**https://github.com/rforbiodatascience25/group_01_project/blob/main/doc/presentation.html**
+**https://raw.githack.com/rforbiodatascience25/group_01_project/main/doc/presentation.html**
 
 ---
 ## Data Source
@@ -53,8 +43,7 @@ Direct link to the rendered project presentation:
 All data used in this project originates from the following peer-reviewed publication:
 
 **Burczynski et al., "Molecular profiling of ulcerative colitis from colon tissue", Gut (2008), 57:1398–1405.**  
-Full text:  
-https://gut.bmj.com/content/57/10/1398.long
+Full text: https://gut.bmj.com/content/57/10/1398.long
 
 The study is publicly available through the Gene Expression Omnibus (GEO) under:
 
