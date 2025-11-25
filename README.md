@@ -8,8 +8,6 @@
 | Trine Brøgger          | *s211443*  | trinebrogger             |
 | Magnus Helvig Eriksen  | *s215066*  | MagnusHelvigEriksen      |
 
-> Replace *ID here* with actual student IDs before submission.
-
 ---
 
 <div align="center">
