@@ -35,7 +35,7 @@ The goal of the analysis is to explore transcriptional changes between **inflame
 
 Direct link to the rendered project presentation:
 
-**https://github.com/rforbiodatascience25/group_01_project/blob/main/doc/presentation.html**
+**https://raw.githack.com/rforbiodatascience25/group_01_project/main/doc/presentation.html**
 
 ---
 ## Data Source
