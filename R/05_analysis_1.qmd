@@ -85,43 +85,6 @@ ggplot(patient_means, aes(x = inflammation_status, y = mean_expr)) +
 
 ## Identification of significant genes during dependent on inflammation state using a Volcano plot
 
-<<<<<<< HEAD
-```{r}
-final_clean <- finaldata |>
-  filter(!is.na(gene_expr),
-         !is.na(inflammation_status)) |>
-  mutate(
-    inflammation_status = factor(inflammation_status,
-                                 levels = c("Uninflamed", "Inflamed")) # control first
-  )
-```
-
-```{r}
-de_results <- final_clean |>
-  group_by(gene_id) |>
-  # keep only genes that have both groups present
-  filter(n_distinct(inflammation_status) == 2) |>
-  summarise(
-    mean_inflamed   = mean(gene_expr[inflammation_status == "Inflamed"],   na.rm = TRUE),
-    mean_uninflamed = mean(gene_expr[inflammation_status == "Uninflamed"], na.rm = TRUE),
-
-    # already log2 → fold change is just the difference
-    log2FC = mean_inflamed - mean_uninflamed,
-
-    p_value = tryCatch(
-      t.test(gene_expr ~ inflammation_status)$p.value,
-      error = function(e) NA_real_
-    ),
-    .groups = "drop"
-  ) |>
-  mutate(
-    neg_log10_p = -log10(p_value),
-    sig = p_value < 0.05   # or adjust later with p.adjust()
-  )
-```
-
-=======
->>>>>>> cdb87cfe9935da06b57538811aa919ed4ce342d2
 ```{r}
 lfc_cut <- 0.25   # minimum |log2FC| to call biologically relevant
 p_cut   <- 0.05   # p-value threshold for the dashed line
