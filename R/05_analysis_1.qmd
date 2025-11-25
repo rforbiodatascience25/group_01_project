@@ -20,6 +20,8 @@ featuredata <- read_csv("../data/featuredata.csv.gz")
 
 ## Overall gene expression distribution
 
+To get an idea of the distribution of the genes between samples categorized as either inflamed or uninflamed, we make a histogram (see Figure X), which shows that they have a normal distribution around 0.
+
 ```{r}
 finaldata |> 
   mutate(inflammation_status = factor(inflammation_status,
@@ -27,23 +29,43 @@ finaldata |>
   ggplot(aes(x = gene_expr, fill = inflammation_status)) +
   geom_histogram(position = "identity", alpha = 0.6, bins = 80) +
   labs(
-    fill = "Inflammation state"
+    fill = "Inflammation state",
+    title = "Distribution of gene expression in inflamed and uninflamed samples"
   )+
   theme_minimal()
 ```
 
 ## **Expression by anatomic location and inflammation**
 
+We then try to get an idea, if there is a difference in the gene expression pattern across anatomic locations and whether or not the sample experienced inflammation or not. From this plot it is not clear so we explore further.
+
 ```{r}
+loc_counts <- finaldata |>
+  count(anatomic_location)
+
 finaldata |> 
   ggplot(aes(x = anatomic_location, y = gene_expr, 
              fill = inflammation_status)) +
   geom_violin(trim = FALSE, alpha = 0.5) +
-  geom_boxplot(width = 0.15, outlier.shape = NA, position = position_dodge(width = 0.9)) +
+  geom_boxplot(width = 0.15, outlier.shape = NA,
+               position = position_dodge(width = 0.9)) +
   coord_flip() +
   theme_minimal() +
-  labs(x = "Anatomic location", y = "Gene expression")
+  scale_x_discrete(
+    labels = function(x) {
+      paste0(x, " (n = ", loc_counts$n[match(x, loc_counts$anatomic_location)], ")")
+    }
+  ) +
+  labs(
+    x = "Anatomic location",
+    y = "Gene expression",
+    fill = "Inflammation state"
+  )
 ```
+
+## Mean gene expression per patient across in inflamed and uninflamed samples
+
+We now examine the mean gene expression between inflamed and uninflamed samples on a patient basis, to see if that showcases a difference in gene expression.
 
 ```{r}
 patient_means <- finaldata |> 
@@ -57,98 +79,7 @@ ggplot(patient_means, aes(x = inflammation_status, y = mean_expr)) +
   labs(x = "Inflammation status", y = "Mean gene expression per patient")
 ```
 
-```{r}
-# compute counts per ethnicity
-eth_counts <- finaldata |>
-  distinct(patient, ethnicity) |>
-  count(ethnicity)
-
-# plotting with relabelled axis
-finaldata |> 
-  distinct(patient, inflammation_status, ethnicity) |> 
-  ggplot(aes(x = ethnicity, fill = inflammation_status)) +
-  geom_bar(position = "fill") +
-  scale_y_continuous(labels = scales::percent_format()) +
-  coord_flip() +
-  scale_x_discrete(
-    labels = function(x) {
-      paste0(x, " (", eth_counts$n[match(x, eth_counts$ethnicity)], ")")
-    }
-  ) +
-  theme_minimal() +
-  labs(x = "Ethnicity", y = "Proportion of patients", fill = "Inflammation")
-```
-
-```{r}
-finaldata_clean <- finaldata |> 
-  filter(is.finite(gene_expr))
-
-k_out <- kmeans(finaldata_clean$gene_expr, centers = 2)
-
-finaldata_k <- finaldata_clean |> 
-  mutate(cluster = factor(k_out$cluster))
-```
-
-```{r}
-expr_mat <- finaldata |> 
-  dplyr::select(sample_id = geo_accession, gene_id, gene_expr) |> 
-  pivot_wider(
-    names_from  = gene_id,
-    values_from = gene_expr
-)
-```
-
-```{r}
-# Extract gene matrix
-gene_mat <- expr_mat |> 
-  dplyr::select(-sample_id) |> 
-  as.matrix()
-
-# Drop genes with NA or zero variance
-keep_cols <- apply(gene_mat, 2, function(x) all(is.finite(x)) && var(x) > 0)
-gene_mat_clean <- gene_mat[, keep_cols]
-
-# Scale genes
-gene_mat_scaled <- scale(gene_mat_clean)
-
-# PCA on samples
-pca <- prcomp(gene_mat_scaled)
-
-# k-means on first 10 PCs (you can change)
-set.seed(1)
-k_out <- kmeans(pca$x[, 1:10], centers = 2)
-```
-
-```{r}
-sample_meta <- finaldata |> 
-  dplyr::select(sample_id = geo_accession,
-         inflammation_status = `inflammation_status`) |> 
-  distinct()
-```
-
-```{r}
-plot_df <- data.frame(
-  sample_id = expr_mat$sample_id,
-  PC1 = pca$x[,1],
-  PC2 = pca$x[,2],
-  cluster = factor(k_out$cluster)
-) |> 
-  left_join(sample_meta, by = "sample_id")
-```
-
-```{r}
-ggplot(plot_df, aes(PC1, PC2)) +
-  geom_point(aes(color = cluster, shape = inflammation_status), size = 1) +
-  theme_minimal() +
-  labs(
-    x = "PC1",
-    y = "PC2",
-    color = "k-means cluster",
-    shape = "Inflammation status"
-  )
-```
-
-## Volcano plot test
+## Identification of significant genes during dependent on inflammation state using a Volcano plot
 
 ```{r}
 final_clean <- finaldata |>
