@@ -12,6 +12,10 @@ format: html
 finaldata <- read_csv("../data/02_dat_clean.csv.gz")
 featuredata <- read_csv("../data/02_dat_genbank.csv.gz")
 
+library(ggrepel)
+library(dplyr)
+library(tidyverse)
+
 colnames(finaldata)
 colnames(featuredata)
 ```
