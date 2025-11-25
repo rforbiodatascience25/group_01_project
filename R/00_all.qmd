@@ -6,17 +6,18 @@ output-dir: ../results
 
 ```{r}
 #| warning: false
+#| include: false
 library(knitr)
 ```
 
 ```{r}
-#| include: false
-knit_child("01_load.qmd",    quiet = TRUE)
-knit_child("02_clean.qmd",   quiet = TRUE)
-knit_child("03_augment.qmd", quiet = TRUE)
-knit_child("04_describe.qmd", quiet = TRUE)
-knit_child("05_analysis_1.qmd", quiet = TRUE)
-knit_child("06_analysis_2.qmd", quiet = TRUE)
-knit_child("07_analysis.qmd",   quiet = TRUE)
-knit_child("08_analysis_rf.qmd", quiet = TRUE)
+#| child:
+#|   - "01_load.qmd"
+#|   - "02_clean.qmd"
+#|   - "03_augment.qmd"
+#|   - "04_describe.qmd"
+#|   - "05_analysis_1.qmd"
+#|   - "06_analysis_2.qmd"
+#|   - "07_analysis.qmd"
+#|   - "08_analysis_rf.qmd"
 ```
