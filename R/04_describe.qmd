@@ -68,7 +68,6 @@ fin_all$other_illnesses_clean<-factor(
   levels=c("None","Any comorbidity")
 )
 
-# Label per table1 (adattate alle variabili che esistono davvero)
 label(fin_all$neutrophils)<-"Neutrophils"
 label(fin_all$albumin)<-"Albumin"
 label(fin_all$ethnicity)<-"Ethnicity"
@@ -97,29 +96,48 @@ table1(
 )
 ```
 
-Ninety-three subjects were included, of whom 63 (67.7%) were diagnosed with ulcerative colitis (UC) and 30 (32.3%) with histologically normal mucosa (controls). UC patients were older than controls: the mean age was 50.9 ± 15.9 years in the UC group and 41.3 ± 16.3 years in the control group, with an overall median of 47 years (range 17–84). The age distribution confirms this trend, with a higher percentage of subjects over 60 years of age in the UC group (22.2% vs. 6.7%).
+# Finaldata interpretation:
 
-The ethnicity was predominantly Caucasian (90.3% of the entire cohort), with a small percentage of Asian subjects (3.2%, all in the UC group) and Jewish subjects (6.5%, all in the control group). Endoscopic inflammatory status showed a marked difference between the groups: in the ulcerative colitis group, over half of the samples came from macroscopically inflamed mucosa (54.0%), compared to 10.0% of the controls, in whom 90.0% of biopsies came from non-inflamed mucosa. The most frequently sampled anatomical site was the sigmoid colon (62.4%), followed by the ascending colon (17.2%), the descending colon (14.0%), and the terminal ileum (6.5%), with a similar distribution between the two groups.
+Ninety-three subjects were included, of whom 63 (67.7%) were diagnosed with ulcerative colitis (UC) and 30 (32.3%) with histologically normal mucosa (controls).
 
-Regarding clinical characteristics, almost all subjects had no joint problems (98.9%) or a family history of inflammatory bowel disease (IBD) (93.5%); only one patient with ulcerative colitis reported joint problems (1.6%), and six patients with ulcerative colitis (9.5%) reported a positive family history. Consistent with this, "relatives affected by IBD" were documented exclusively in the UC group (4 patients with 1-2 affected relatives), while this information was completely absent in the controls (all 30 subjects with missing data).
+The mean age of the UC group was 50.9 ± 15.9 years, while the control group had a median age of 47 years (range 17-84). In terms of age distribution, the trend is for a higher percentage of subjects older than 60 years in the UC group (22.2% vs. 6.7%).
 
-Smoking status and extraintestinal comorbidities were available only for the UC patients: in the UC group, 9.5% were current smokers, 34.9% were former smokers, and 52.4% had never smoked, with a minimal percentage of "unknown" smoking status (3.2%); in the controls, this variable was absent in 100% of subjects. Similarly, other concomitant conditions were reported exclusively in the UC group, where 60.3% of patients had no comorbidities and 39.7% reported at least one extraintestinal condition, while this information was missing in all controls (100%). The available laboratory parameters (neutrophils and albumin) were present only in a small subpopulation of UC patients (4 and 3 subjects, respectively), while they were completely absent in controls; consequently, although reported in the table for descriptive purposes, they were not considered for subsequent analyses.
+Laboratory parameters for neutrophilia and albumin were present only in a small portion of the UC group, in 4 and 3 subjects respectively, and were completely absent in the control group. They will therefore not be considered in subsequent investigations.
+
+The predominant ethnicity in the dataset is Caucasian (90.3%), followed by Asian (3.2% all in the UC group) and Jewish (6.5% all in the control group)
+
+In the UC group, 9.5% were current smokers, 34.9% were former smokers, and 52.4% had never smoked (and 3.2% were unknown). While in the control group, this variable was absent in 100% of cases.
+
+Similarly, other concomitant conditions were reported only in the UC group, where 60.3% had no comorbidities and 39.7% reported at least one extraintestinal condition, while this information was missing in 100% of controls.
+
+The most frequently sampled anatomical sites are approximately equal in the two groups and include:
+
+-   sigmoid colon (62.4%)
+
+-   ascending colon (17.2%)
+
+-   descending colon (14.0%)
+
+-   terminal ileum (6.5%)
+
+In the UC group, 54.0% of the samples came from macroscopically inflamed mucosa, while in the control group only 10%
+
+Almost all subjects in the dataset (98.8% and 93.5%, respectively) did not have any joint problems or a family history of inflammatory bowel disease (IBD).
+
+As for relatives affected by IBD, they are present only in the UC group (4 patients with 1 or 2 affected relatives), while they are totally absent in the control group.
 
 # Featuredata:
 
 ```{r}
 feat_all<-featuredata|>
   mutate(
-    # indici tecnici: sono già numerici, ma non fa male ribadire
     ID=suppressWarnings(as.numeric(ID)),
     COL=suppressWarnings(as.numeric(COL)),
     ROW=suppressWarnings(as.numeric(ROW)),
     GENE=suppressWarnings(as.numeric(GENE)),
 
-    # variabile categoriale vera
     CONTROL_TYPE=factor(CONTROL_TYPE),
 
-    # indicatori Yes/No per tutte le annotazioni testuali
     HAS_NAME=factor(ifelse(is.na(NAME)|NAME=="","No","Yes")),
     HAS_SPOT_ID=factor(ifelse(is.na(SPOT_ID)|SPOT_ID=="","No","Yes")),
     HAS_REFSEQ=factor(ifelse(is.na(REFSEQ)|REFSEQ=="","No","Yes")),
@@ -175,10 +193,154 @@ table1(
 )
 ```
 
-The gene expression dataset included a total of 2,909 probes. Of these, 2,028 (69.7%) were associated with a known gene symbol, while the remaining 881 (30.3%) were not. All considered probes had CONTROL_TYPE = FALSE, indicating they were "biological" probes and not technical controls, and had the probe sequence available (Has probe sequence = Yes for 100% of the probes).
+# Featuredata interpretation:
 
-The presence of a gene symbol was associated with a marked increase in annotation richness. Among probes with gene symbols, 91.8% had a RefSeq identifier (Ha RefSeq ID), 100% had a GenBank accession, 98.9% had a UniGene ID, and 86.4% had an Ensembl ID; In contrast, in the group of probes without gene symbols, such annotations were much less frequent (only 7.6% with RefSeq IDs, 52.2% with GenBank accessions, 46.4% with UniGene IDs, and 16.8% with Ensembl IDs). A similar trend was observed for other resources: 96.2% of probes with gene symbols had a TIGR ID and 100% a combined accession string, compared to 54.4% and 72.8%, respectively, in the group without gene symbols.
+This table does not tell us anything about expression values ​​or UC vs control differences, however it can provide us with valuable information regarding the quality of the probe annotations.
 
-Genomic information was also significantly more complete in probes annotated with gene symbols: almost all presented the chromosomal position (99.7%) and cytoband (99.3%), compared to 95.2% and 93.1% of probes without gene symbols, which nevertheless already had relatively good coverage for these two fields. The most notable difference concerned functional annotations: only 6.8% of probes without gene symbols contained at least one Gene Ontology term (GO annotation), while in the group with gene symbols, this percentage rose to 78.9%. Overall, 57.1% of all probes in the dataset had GO annotation, but almost exclusively among those with gene symbols.
+-   **Group sizes:**
 
-These results indicate that probes associated with a gene symbol represent a highly enriched subset of genomic and functional information (RefSeq, GenBank, UniGene, Ensembl, GO, etc.), while probes without gene symbols remain largely poorly annotated. Consequently, downstream analyses requiring biological interpretation (e.g., pathway analysis, functional enrichment) will likely focus primarily on probes with available gene symbols.
+    -   Normal group: N = 881
+
+    -   UC group: N = 2028
+
+    -   Overall: N = 2909
+
+-   **Control type (CONTROL_TYPE = FALSE):**
+
+```         
+-   Normal group: 881/881 (100%)
+
+-   UC group: 2028/2028 (100%)
+
+-   Overall: 2909/2909 (100%)
+```
+
+-   **Has RefSeq ID:**
+
+```         
+-    Normal group: No 814 (92.4%), Yes 67 (7.6%)
+
+-   UC group: No 167 (8.2%), Yes 1861 (91.8%)
+
+-   Overall: No 981 (33.7%), Yes 1928 (66.3%)
+```
+
+-   **Has GenBank accession:**
+
+```         
+-    Normal group: No 421 (47.8%), Yes 460 (52.2%)
+
+-   UC group: No 0 (0%), Yes 2028 (100%)
+
+-   Overall: No 421 (14.5%), Yes 2488 (85.5%)
+```
+
+<!-- -->
+
+-   **Has gene name:**
+
+```         
+-    Normal group: No 881 (100%), Yes 0 (0%)
+
+-   UC group: No 0 (0%), Yes 2028 (100%)
+
+-   Overall: No 881 (30.3%), Yes 2028 (69.7%)
+```
+
+<!-- -->
+
+-   **Has UniGene ID:**
+
+```         
+-    Normal group: No 472 (53.6%), Yes 409 (46.4%)
+
+-   UC group: No 23 (1.1%), Yes 2005 (98.9%)
+
+-   Overall: No 495 (17.0%), Yes 2414 (83.0%)
+```
+
+-   **Has Ensembl ID:**
+
+```         
+-    Normal group: No 733 (83.2%), Yes 148 (16.8%)
+
+-   UC group: No 275 (13.6%), Yes 1753 (86.4%)
+
+-   Overall: No 1008 (34.7%), Yes 1901 (65.3%)
+```
+
+-   **Has TIGR ID:**
+
+```         
+-    Normal group: No 402 (45.6%), Yes 479 (54.4%)
+
+-   UC group: No 77 (3.8%), Yes 1951 (96.2%)
+
+-   Overall: No 479 (16.5%), Yes 2430 (83.5%)
+```
+
+-   **Has accession string:**
+
+```         
+-    Normal group: No 240 (27.2%), Yes 641 (72.8%)
+
+-   UC group: No 0 (0%), Yes 2028 (100%)
+
+-   Overall: No 240 (8.3%), Yes 2669 (91.7%)
+```
+
+-   **Has chromosomal location:**
+
+```         
+-    Normal group: No 42 (4.8%), Yes 839 (95.2%)
+
+-    UC group: No 6 (0.3%), Yes 2022 (99.7%)
+
+-   Overall: No 48 (1.7%), Yes 2861 (98.4%)
+```
+
+-   **Has cytoband:**
+
+```         
+-    Normal group: No 61 (6.9%), Yes 820 (93.1%)
+
+-   UC group: No 15 (0.7%), Yes 2013 (99.3%)
+
+-   Overall: No 76 (2.6%), Yes 2833 (97.4%)
+```
+
+-   **Has description:**
+
+```         
+-    Normal group: No 342 (38.8%), Yes 539 (61.2%)
+
+-    UC group: No 0 (0%), Yes 2028 (100%)
+
+-    Overall: No 342 (11.8%), Yes 2567 (88.2%)
+```
+
+-   **Has GO annotation:**
+
+```         
+-    Normal group: No 821 (93.2%), Yes 60 (6.8%)
+
+-   UC group: No 427 (21.1%), Yes 1601 (78.9%)
+
+-   Overall: No 1248 (42.9%), Yes 1661 (57.1%)
+```
+
+-   **Has probe sequence:**
+
+```         
+-    Normal group: Yes 881 (100%)
+
+-   UC group: Yes 2028 (100%)
+
+-   Overall: Yes 2909 (100%)
+```
+
+# Cleaning environment:
+
+```{r}
+rm(list = ls())
+```
