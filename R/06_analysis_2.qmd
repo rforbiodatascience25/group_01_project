@@ -41,22 +41,5 @@ finaldata |>
 ```
 
 ```{r}
-time_untreated_data <- finaldata |> 
-  filter(gene_id == sig_genes$gene_id) |> 
-  select(geo_accession, gene_id, time_untreated, disease, family_history) |> 
-  left_join(sig_genes, finaldata, by = "gene_id")
+rm(list = ls())
 ```
-
-```{r}
-time_untreated_data |>
-  group_by(GENE_SYMBOL) %>% filter(n() >= 2) |> 
-  filter(time_untreated > 0) |> 
-  ggplot(aes(x = time_untreated, y = log2FC, 
-             color = sig_cat)) +
-  geom_point(alpha = 0.5) +
-  theme_minimal() +
-  labs(title = "Correlation between time untreated and expression of significant genes", x = "Time untreated (days)", y = "log2FC", color = "Inflammation status") + 
-  theme(legend.position = "bottom")
-```
-
-> > > > > > > 23cf40d79c24f7355740e3ec783ef96a3789d909
