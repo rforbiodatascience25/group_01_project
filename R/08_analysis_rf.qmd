@@ -10,36 +10,9 @@ format: html
 library(tidyverse)
 library(randomForest)
 
-finaldata <- read_csv("../data/03_dat_aug.csv.gz")
-featuredata <- read_csv("../data/featuredata.csv.gz")
+expr_df <- read_csv("../data/03_rf_expr_df.csv.gz")
+featuredata <- read_csv("../data/03_dat_genbank.csv.gz")
 de_results <- read_csv("../data/03_de_results.csv.gz")
-```
-
-### Reformatting expression dataset
-
-```{r}
-finaldata |> 
-  select(geo_accession, gene_id, gene_expr)
-```
-
-```{r}
-disease_geo <- finaldata |> 
-  select(geo_accession, disease) |> 
-  distinct(geo_accession, disease)
-
-expr_df <- finaldata |> 
-  select(geo_accession, gene_id, gene_expr) |> 
-  filter(!is.na(gene_expr)) |> 
-  pivot_wider(names_from = gene_id,
-              values_from = gene_expr) |> 
-  rename_with(~ paste0("Gene_", .), 
-              .cols = -c(geo_accession)) |>
-  mutate(across(starts_with("Gene_"), ~replace_na(., 0))) |>
-  distinct(geo_accession, .keep_all = TRUE) |> 
-  left_join(disease_geo, by = "geo_accession") |> 
-  mutate(y_pred_UC = as.factor(case_when(disease == "Normal" ~ 0,
-                               disease == "UC" ~ 1)),
-         .keep = "unused")
 ```
 
 ## Model Training
@@ -57,13 +30,18 @@ test_data <- expr_df[-train_index, ]
 ### Running the RF Classifier model
 
 ```{r}
+#y_pred_UC as factor was not implemented in 03_augment, despite the use of as.factor()
+train_data <- train_data |> 
+  mutate(y_pred_UC = as.factor(y_pred_UC))
+```
+
+```{r}
 # y_pred_UC ~ . 
 train_data.rf <- randomForest(y_pred_UC ~ . - geo_accession, 
-                           type = "classification",
-                           data = train_data, 
-                           mtry = 3,
-                           importance = TRUE,
-                           test = "confusion")
+                              type = "classification",
+                              data = train_data, 
+                              mtry = 3,
+                              importance = TRUE)
 ```
 
 ## Model Evaluation
@@ -112,16 +90,23 @@ The model emitted a 78% accuracy.
 ### Importance measure of Genes
 
 ```{r}
-var_importance <- as.data.frame(round(importance(expr_df.rf), 2))
+var_importance <- as.data.frame(round(importance(train_data.rf), 2))
+```
+
+```{r}
+var_importance <- var_importance |> 
+  mutate(gene_id = str_split_i(rownames(var_importance), "_", 2))
 ```
 
 ```{r}
 var_importance |> 
+  #mutate(gene_id = str_split_i(rownames(var_importance), "_", 2)) |> 
   arrange(desc(MeanDecreaseAccuracy)) |> 
   slice(1:15) |>
   ggplot(aes(
     # 1. Use reorder() to automatically sort the bars by the MeanDecreaseAccuracy value
-    x = reorder(rownames(var_importance), MeanDecreaseAccuracy), 
+    #x = rownames(var_importance),
+    x = reorder(gene_id, MeanDecreaseAccuracy), 
     y = MeanDecreaseAccuracy
   )) +
   geom_bar(stat = "identity", fill = "steelblue") +
@@ -171,7 +156,9 @@ print(most_contributing_gene_symbols)
 
 ## Redo vulcano plot from 02
 
-To visualize overlay
+To visualize overlay between significant genes found in 05_analysis, and the RandomForest model most contributing variables.
+
+The 05_analysis relied on inflammation status, and the model relied on disease state.
 
 ```{r}
 
@@ -182,4 +169,3 @@ To visualize overlay
 ```{r}
 rm(list = ls())
 ```
-
