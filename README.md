@@ -2,11 +2,11 @@
 
 | Student Name           | Student ID | GitHub Username          |
 |------------------------|------------|---------------------------|
-| Asbjørn Hansen         | *ID here*  | azzy72                   |
-| Oliver S. Buch         | *ID here*  | Bucho01                  |
-| Emiliano Carrara       | *ID here*  | EmilianoCarrara          |
-| Trine Brøgger          | *ID here*  | trinebrogger             |
-| Magnus Helvig Eriksen  | *ID here*  | MagnusHelvigEriksen      |
+| Asbjørn Hansen         | *s215045*  | azzy72                   |
+| Oliver S. Buch         | *s215079*  | Bucho01                  |
+| Emiliano Carrara       | *s250828*  | EmilianoCarrara          |
+| Trine Brøgger          | *s211443*  | trinebrogger             |
+| Magnus Helvig Eriksen  | *s215066*  | MagnusHelvigEriksen      |
 
 > Replace *ID here* with actual student IDs before submission.
 
