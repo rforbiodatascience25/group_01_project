@@ -88,6 +88,8 @@ de_results <- final_clean |>
   )
 ```
 
+## Preparation for Random Forest model
+
 ## Exporting to data/
 
 ```{r}
