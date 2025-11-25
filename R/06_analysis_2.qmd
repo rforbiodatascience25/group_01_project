@@ -56,3 +56,5 @@ time_untreated_data |>
   labs(title = "Correlation between time untreated and expression of significant genes", x = "Time untreated (days)", y = "log2FC", color = "Inflammation status") + 
   theme(legend.position = "bottom")
 ```
+
+> > > > > > > 23cf40d79c24f7355740e3ec783ef96a3789d909

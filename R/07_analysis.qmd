@@ -67,8 +67,93 @@ finaldata |>
     )
 ```
 
+# GC and AT content
+
+```{r}
+gc_content <- function(seq) {
+  seq <- toupper(seq)
+  chars <- strsplit(seq, "")[[1]]
+  g <- sum(chars == "G")
+  c <- sum(chars == "C")
+  return((g + c) / length(chars))
+}
+
+featuredata$GC_content <- sapply(featuredata$SEQUENCE, gc_content)
+
+
+names(featuredata)[names(featuredata) == "ID"] <- "gene_id"
+merged <- merge(featuredata, finaldata, by = "gene_id")
+
+boxplot(GC_content ~ disease,
+        data = merged,
+        col = c("lightblue", "lightpink"),
+        xlab = "Condition (disease)",
+        ylab = "GC-content",
+        main = "GC-content comparison between healthy and diseased subjects")
+
+```
+
+There is no significant difference in the amount of G and C in the sequences between the two groups of Patients and Controls
+
+```{r}
+at_content <- function(seq) {
+  seq <- toupper(seq)
+  chars <- strsplit(seq, "")[[1]]
+  a <- sum(chars == "A")
+  t <- sum(chars == "T")
+  return((a + t) / length(chars))
+}
+
+featuredata$at_content <- sapply(featuredata$SEQUENCE, at_content)
+
+
+names(featuredata)[names(featuredata) == "ID"] <- "gene_id"
+merged <- merge(featuredata, finaldata, by = "gene_id")
+
+boxplot(at_content ~ disease,
+        data = merged,
+        col = c("lightblue", "lightpink"),
+        xlab = "Condition (disease)",
+        ylab = "AT-content",
+        main = "AT-content comparison between healthy and diseased subjects")
+
+```
+
+There is no significant difference in the amount of A and T in the sequences between the two groups of Patients and Controls
+
+# Significance based on anatomical location
+
+```{r}
+library(dplyr)
+library(ggplot2)
+
+de_by_loc <- finaldata |>
+  filter(complete.cases(gene_expr, inflammation_status, anatomic_location)) |>
+  mutate(inflammation_status = factor(inflammation_status, c("Uninflamed","Inflamed"))) |>
+  group_by(anatomic_location, gene_id) |>
+  summarise(
+    log2FC  = mean(gene_expr[inflammation_status=="Inflamed"]) -
+              mean(gene_expr[inflammation_status=="Uninflamed"]),
+    p_value = t_safe(gene_expr, inflammation_status),
+    .groups = "drop"
+  ) |>
+  group_by(anatomic_location) |>
+  mutate(FDR = p.adjust(p_value, "BH"), sig = !is.na(FDR) & FDR < .05) |>
+  ungroup()
+
+de_by_loc |>
+  group_by(anatomic_location, sig) |>
+  summarise(n = n(), .groups = "drop") |>
+  ggplot(aes(anatomic_location, n, fill = sig)) +
+  geom_col(position = "dodge") +
+  coord_flip() +
+  theme_minimal()
+```
+
+The graph shows that significant variations in expression between inflamed and non-inflamed samples appear only in the descending colon and sigmoid colon. In the ascending colon, the differences do not exceed the significance threshold, while in the terminal ileum, the inflamed samples are too few to make a reliable comparison.
+
 ## Cleaning environment
 
 ```{r}
-rm(list = setdiff(ls(), c("finaldata", "featuredata")))
+rm(list = ls())
 ```
