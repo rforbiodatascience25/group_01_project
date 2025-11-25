@@ -1,4 +1,4 @@
-# Project Contributors
+<img width="588" height="297" alt="Skærmbillede 2025-11-25 kl  08 43 31" src="https://github.com/user-attachments/assets/51e6ea1a-403f-437b-9aac-e0df2cfe827c" /># Project Contributors
 
 | Student Name           | Student ID | GitHub Username          |
 |------------------------|------------|---------------------------|
@@ -45,8 +45,18 @@ The goal of the analysis is to explore transcriptional changes between **inflame
 
 Direct link to the rendered project presentation:
 
-**https://raw.githack.com/rforbiodatascience25/group_01_project/main/presentation.html**
-
-*(Update filename if your HTML export has a different name.)*
+**https://github.com/rforbiodatascience25/group_01_project/blob/main/doc/presentation.html**
 
 ---
+## Data Source
+
+All data used in this project originates from the following peer-reviewed publication:
+
+**Burczynski et al., "Molecular profiling of ulcerative colitis from colon tissue", Gut (2008), 57:1398–1405.**  
+Full text:  
+https://gut.bmj.com/content/57/10/1398.long
+
+The study is publicly available through the Gene Expression Omnibus (GEO) under:
+
+- **GSE11223**  
+- **GDS3268**
