@@ -41,13 +41,143 @@ expr_df <- finaldata |>
          .keep = "unused")
 ```
 
+## Model Training
+
+### Splitting dataset into train and test
+
 ```{r}
-expr_df.rf <- randomForest(y_pred_UC ~ . - geo_accession, 
-                           data = expr_df, 
+percent_train <- 0.8 #use 80% of the data for train 
+train_index <- sample(1:nrow(expr_df), 0.8 * nrow(expr_df))
+
+train_data <- expr_df[train_index, ]
+test_data <- expr_df[-train_index, ]
+```
+
+### Running the RF Classifier model
+
+```{r}
+# y_pred_UC ~ . 
+train_data.rf <- randomForest(y_pred_UC ~ . - geo_accession, 
+                           type = "classification",
+                           data = train_data, 
                            mtry = 3,
-                           importance = TRUE)
+                           importance = TRUE,
+                           test = "confusion")
+```
+
+## Model Evaluation
+
+### Deriving the Confusion Matrix of the RF model
+
+```{r}
+test_pred <- predict(train_data.rf, test_data)
+confusion_matrix <- table(Predicted = test_pred, Actual = test_data$y_pred_UC)
+print(confusion_matrix)
+```
+
+Confusion matrix shows the amount of times the model predicted 0 or 1 (rows), based on the actual values of 0 or 1 in the test dataset. It therefore shows:
+
+|     |     |
+|:---:|:---:|
+| TN  | FN  |
+| FP  | TP  |
+
+where;
+
+-   TN: True Negative
+
+-   FN: False Negative
+
+-   FP: False Positive
+
+-   TP: True Positive
+
+From the matrix, we can obtain an accuracy score.
+
+```{r}
+#Correct predictions; TN, TP
+TN <- confusion_matrix[1, 1]
+TP <- confusion_matrix[2, 2]
+FP <- confusion_matrix[2, 1]
+FN <- confusion_matrix[1, 2]
+
+total <- sum(confusion_matrix)
+acc <- (TN+TP)/total
+print(acc)
+```
+
+The model emitted a 78% accuracy.
+
+### Importance measure of Genes
+
+```{r}
+var_importance <- as.data.frame(round(importance(expr_df.rf), 2))
 ```
 
 ```{r}
-round(importance(expr_df.rf), 2)
+var_importance |> 
+  arrange(desc(MeanDecreaseAccuracy)) |> 
+  slice(1:15) |>
+  ggplot(aes(
+    # 1. Use reorder() to automatically sort the bars by the MeanDecreaseAccuracy value
+    x = reorder(rownames(var_importance), MeanDecreaseAccuracy), 
+    y = MeanDecreaseAccuracy
+  )) +
+  geom_bar(stat = "identity", fill = "steelblue") +
+  coord_flip() + 
+  labs(
+    title = "Top 15 Most Contributing Genes in RF",
+    x = "Gene",
+    y = "Mean decrease accuracy from RF"
+  ) +
+  theme_minimal()
+```
+
+Extract gene_ids as list
+
+```{r}
+most_contributing_vars <- var_importance |> 
+  arrange(desc(MeanDecreaseAccuracy)) |> 
+  slice(1:15) |> 
+  rownames()
+```
+
+### Match gene_id with gene_symbol to match other analysis
+
+GENE_SYMBOL can be found in featuredata
+
+```{r}
+#Splitting gene_id into only the number and converting to numeric
+most_contributing_vars <- most_contributing_vars |> 
+  str_split_i("_", 2) |> 
+  parse_number()
+
+most_contributing_vars <- as.data.frame(most_contributing_vars)
+most_contributing_vars <- most_contributing_vars |> 
+  mutate(ID = most_contributing_vars) |> 
+  select(ID)
+```
+
+```{r}
+most_contributing_gene_symbols <- featuredata |>
+  select(ID, GENE_SYMBOL) |> 
+  right_join(most_contributing_vars, featuredata, by="ID") |> 
+  select(GENE_SYMBOL) |>
+  filter(!is.na(GENE_SYMBOL))
+
+print(most_contributing_gene_symbols)
+```
+
+## Redo vulcano plot from 02
+
+To visualize overlay
+
+```{r}
+
+```
+
+## Cleaning environment
+
+```{r}
+rm(list = ls())
 ```
