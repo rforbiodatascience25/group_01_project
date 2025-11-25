@@ -53,7 +53,7 @@ fully_na <- exprs_geodf |>
   filter(if_all(starts_with("GSM"), is.na)) |> 
   select("ID_REF") 
 
-count(fully_na)
+dplyr::count(fully_na)
 ```
 
 There are 3299 identifiers with completely empty rows in the expression dataset, given in the list "fully_na". We cannot use the gene column name: "IDENTIFIER", as it contains duplicates. Lets exclude fully_na indexes from the dataset:
@@ -278,5 +278,5 @@ write_csv(featuredata, file = "../data/featuredata.csv.gz")
 ## Cleaning environment
 
 ```{r}
-rm(list = setdiff(ls(), c("finaldata", "featuredata")))
+rm(list = ls())
 ```

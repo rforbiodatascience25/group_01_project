@@ -8,40 +8,73 @@ format:
     footer: "Group 01 R for Bio data science 22160"
     highlight-style: github
     code-fold: false
+    slide-number: c/t
+    show-slide-number: all
 output-dir: doc
 ---
 
-# Introduction
-
--   Dataset from NCBI
--   Ulcerative colitis - Ulcers in the colon
--   Biopsies from the gut
-    - 202 samples
--   Gene expression
-
-# Materials of Methods
-## Initialization
-
-::::{.columns}
-:::{.column width="40%"}
-```{r Setup, echo=TRUE}
+```{r}
+#| eval: true
 library("tidyverse")
-#library("getGEO")
+finaldata <- read.csv(file = "../data/finaldata.csv.gz")
+```
+
+# Introduction 2
+
+::: {#Introduction style="font-size: 0.8em"}
+-   Dataset from NCBI
+
+-   Transcriptional profiling of colon epithelial from ulcerative colitis patients and healthy controls
+
+-   Ulcers in the colon
+
+-   chronic inflamation
+
+-   Aim to find and analyze variation between healthy controls and patients
+
+    -   what smoking does
+    -   Effect of genes
+:::
+
+# Materials of Methods 3
+
+::::: columns
+::: {.column width="50%" style="font-size: 0.9em"}
+-   Biopsies from the gut
+    -   202 samples
+
+    -   from 67 patients
+
+    -   30 healthy controls
+-   Gene expression
+-   Augtments to the data
+    -   Age and Age group
+    -   Time untreated
+:::
+
+::: {.column width="50%"}
+
+```{r}
+finaldata |> 
+  distinct(geo_accession, .keep_all = TRUE) |> 
+  ggplot(aes(x = age_group)
+) +
+  geom_bar()
+
 ```
 :::
-:::{.column width="60%"}
+:::::
 
-
-
-![](Initializing.gif){fig-align="center"}
+::: {#Source .Reference style="font-size: 0.6em"}
+*Noble CL, Abbas AR, Cornelius J, et al Regional variation in gene expression in the healthy colon is dysregulated in ulcerative colitis Gut 2008;**57:**1398-1405.*
 :::
-::::
 
-## Filtering data
+## Filtering data 4
 
-::::{.columns}
-:::{.column width="50%"}
+::::: columns
+::: {.column width="50%"}
 Removing one-type columns
+
 ```{r Cleaning_phenodata, echo=TRUE, eval=FALSE}
 phenodata <- phenodata |>
   select(
@@ -50,8 +83,10 @@ phenodata <- phenodata |>
         .x, na.rm = TRUE) > 1))
 ```
 :::
-:::{.column width="50%"}
-Removing low variance genes 
+
+::: {.column width="50%"}
+Removing low variance genes
+
 ```{r Cleaning_genes, echo=TRUE, eval=FALSE}
 gene_var <- exprs_df |> 
   # Drop the sample ID column, keep only expression values
@@ -72,19 +107,14 @@ exprs_filtered <- exprs_df |>
 
 ```
 :::
-::::
-## Joining Data
+:::::
 
-## Augmenting Data
+## Augmenting Data 5
 
-# Results 
-## Plot 1
+# Results 6
 
-## Plot 2
+# plot 7
 
-## Plot 3
+# Discussion 8
 
-
-
-# Discussion
-## Correlations and Causality
+## 
