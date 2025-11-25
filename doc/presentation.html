@@ -29,6 +29,71 @@
       margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
       vertical-align: middle;
     }
+    /* CSS for syntax highlighting */
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+      }
+    pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+    div.sourceCode
+      { color: #24292e;  }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span { color: #24292e; } /* Normal */
+    code span.al { color: #ff5555; font-weight: bold; } /* Alert */
+    code span.an { color: #6a737d; } /* Annotation */
+    code span.at { color: #d73a49; } /* Attribute */
+    code span.bn { color: #005cc5; } /* BaseN */
+    code span.bu { color: #d73a49; } /* BuiltIn */
+    code span.cf { color: #d73a49; } /* ControlFlow */
+    code span.ch { color: #032f62; } /* Char */
+    code span.cn { color: #005cc5; } /* Constant */
+    code span.co { color: #6a737d; } /* Comment */
+    code span.cv { color: #6a737d; } /* CommentVar */
+    code span.do { color: #6a737d; } /* Documentation */
+    code span.dt { color: #d73a49; } /* DataType */
+    code span.dv { color: #005cc5; } /* DecVal */
+    code span.er { color: #ff5555; text-decoration: underline; } /* Error */
+    code span.ex { color: #d73a49; font-weight: bold; } /* Extension */
+    code span.fl { color: #005cc5; } /* Float */
+    code span.fu { color: #6f42c1; } /* Function */
+    code span.im { color: #032f62; } /* Import */
+    code span.in { color: #6a737d; } /* Information */
+    code span.kw { color: #d73a49; } /* Keyword */
+    code span.op { color: #24292e; } /* Operator */
+    code span.ot { color: #6f42c1; } /* Other */
+    code span.pp { color: #d73a49; } /* Preprocessor */
+    code span.re { color: #6a737d; } /* RegionMarker */
+    code span.sc { color: #005cc5; } /* SpecialChar */
+    code span.ss { color: #032f62; } /* SpecialString */
+    code span.st { color: #032f62; } /* String */
+    code span.va { color: #e36209; } /* Variable */
+    code span.vs { color: #032f62; } /* VerbatimString */
+    code span.wa { color: #ff5555; } /* Warning */
   </style>
   <link rel="stylesheet" href="presentation_files/libs/revealjs/dist/theme/quarto.css">
   <link href="presentation_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
@@ -337,21 +402,101 @@ Asbjørn, Emiliano, Magnus, Oliver and Trine
 </div>
 
 </section>
-<section id="section" class="slide level2">
-<h2></h2>
-<p>Something is supposed to happen here</p>
+<section id="introduction" class="title-slide slide level1 center">
+<h1>Introduction</h1>
+<ul>
+<li>Dataset from NCBI</li>
+<li>Ulcerative colitis - Ulcers in the colon</li>
+<li>Biopsies from the gut
+<ul>
+<li>202 samples</li>
+</ul></li>
+<li>Gene expression</li>
+</ul>
 </section>
+
 <section>
 <section id="materials-of-methods" class="title-slide slide level1 center">
 <h1>Materials of Methods</h1>
 
 </section>
-<section id="going-to-sleep" class="slide level2">
-<h2>Going to sleep</h2>
-<ul>
-<li>Get in bed</li>
-<li>Count sheep</li>
-</ul>
+<section id="initialization" class="slide level2">
+<h2>Initialization</h2>
+<div class="columns">
+<div class="column" style="width:40%;">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href=""></a><span class="fu">library</span>(<span class="st">"tidyverse"</span>)</span>
+<span id="cb1-2"><a href=""></a><span class="fu">library</span>(<span class="st">"GEOquery"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div><div class="column" style="width:60%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="Initializing.gif" class="quarto-figure quarto-figure-center"></p>
+</figure>
+</div>
+</div></div>
+</section>
+<section id="filtering-data" class="slide level2">
+<h2>Filtering data</h2>
+<div class="columns">
+<div class="column" style="width:50%;">
+<p>Removing one-type columns</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href=""></a>phenodata <span class="ot">&lt;-</span> phenodata <span class="sc">|&gt;</span></span>
+<span id="cb2-2"><a href=""></a>  <span class="fu">select</span>(</span>
+<span id="cb2-3"><a href=""></a>    <span class="fu">where</span>(</span>
+<span id="cb2-4"><a href=""></a>      <span class="sc">~</span> <span class="fu">n_distinct</span>(</span>
+<span id="cb2-5"><a href=""></a>        .x, <span class="at">na.rm =</span> <span class="cn">TRUE</span>) <span class="sc">&gt;</span> <span class="dv">1</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div><div class="column" style="width:50%;">
+<p>Removing low variance genes</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href=""></a>gene_var <span class="ot">&lt;-</span> exprs_df <span class="sc">|&gt;</span> </span>
+<span id="cb3-2"><a href=""></a>  <span class="co"># Drop the sample ID column, keep only expression values</span></span>
+<span id="cb3-3"><a href=""></a>  <span class="fu">select</span>(<span class="sc">-</span>geo_accession) <span class="sc">|&gt;</span> </span>
+<span id="cb3-4"><a href=""></a>  <span class="fu">summarise</span>(<span class="fu">across</span>(<span class="fu">everything</span>(), <span class="sc">~</span> <span class="fu">var</span>(.x, <span class="at">na.rm =</span> <span class="cn">TRUE</span>))) <span class="sc">|&gt;</span> </span>
+<span id="cb3-5"><a href=""></a>  <span class="fu">pivot_longer</span>(</span>
+<span id="cb3-6"><a href=""></a>    <span class="at">cols      =</span> <span class="fu">everything</span>(),</span>
+<span id="cb3-7"><a href=""></a>    <span class="at">names_to  =</span> <span class="st">"gene"</span>,</span>
+<span id="cb3-8"><a href=""></a>    <span class="at">values_to =</span> <span class="st">"variance"</span></span>
+<span id="cb3-9"><a href=""></a>  )</span>
+<span id="cb3-10"><a href=""></a><span class="co"># Cutoff genes that does not vary more than 0.05 - 2909 genes remaining</span></span>
+<span id="cb3-11"><a href=""></a>genes_keep <span class="ot">&lt;-</span> gene_var <span class="sc">|&gt;</span> </span>
+<span id="cb3-12"><a href=""></a>  <span class="fu">filter</span>(variance <span class="sc">&gt;</span> <span class="fl">0.05</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb3-13"><a href=""></a>  <span class="fu">pull</span>(gene)</span>
+<span id="cb3-14"><a href=""></a></span>
+<span id="cb3-15"><a href=""></a>exprs_filtered <span class="ot">&lt;-</span> exprs_df <span class="sc">|&gt;</span> </span>
+<span id="cb3-16"><a href=""></a>  <span class="fu">select</span>(geo_accession, <span class="fu">all_of</span>(genes_keep))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div></div>
+</section>
+<section id="joining-data" class="slide level2">
+<h2>Joining Data</h2>
+</section>
+<section id="augmenting-data" class="slide level2">
+<h2>Augmenting Data</h2>
+</section></section>
+<section>
+<section id="results" class="title-slide slide level1 center">
+<h1>Results</h1>
+
+</section>
+<section id="plot-1" class="slide level2">
+<h2>Plot 1</h2>
+</section>
+<section id="plot-2" class="slide level2">
+<h2>Plot 2</h2>
+</section>
+<section id="plot-3" class="slide level2">
+<h2>Plot 3</h2>
+</section></section>
+<section>
+<section id="discussion" class="title-slide slide level1 center">
+<h1>Discussion</h1>
+
+</section>
+<section id="correlations-and-causality" class="slide level2">
+<h2>Correlations and Causality</h2>
 <div class="quarto-auto-generated-content">
 <div class="footer footer-default">
 <p>Group 01 R for Bio data science 22160</p>
@@ -514,7 +659,7 @@ Asbjørn, Emiliano, Magnus, Oliver and Trine
         previewLinks: false,
 
         // Transition style (none/fade/slide/convex/concave/zoom)
-        transition: 'fade',
+        transition: 'slide',
 
         // Transition speed (default/fast/slow)
         transitionSpeed: 'default',
