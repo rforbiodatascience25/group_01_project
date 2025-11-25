@@ -283,9 +283,45 @@ top_markers <- sig_genes |>
   dplyr::select(gene_id, GENE_SYMBOL)          # keep both id + symbol
 
 # join symbols onto finaldata
+# pick e.g. top 40 most significant genes
+top_markers <- sig_genes |>
+  slice_min(FDR, n = 40) |>
+  dplyr::select(gene_id, GENE_SYMBOL)          # keep both id + symbol
+
+# join symbols onto finaldata
 heat_df <- finaldata |>
-  inner_join(top_markers, by = "gene_id") |>   # adds GENE_SYMBOL column
-  distinct(patient, inflammation_status, GENE_SYMBOL, gene_expr)
+  inner_join(top_markers, by = "gene_id") |>
+  filter(!is.na(GENE_SYMBOL)) |>          # drop genes without symbol if you like
+  distinct(patient, inflammation_status, GENE_SYMBOL, gene_expr) |>
+  mutate(patient = factor(patient))       # <- make patient discrete
+
+# reorder symbols by average expression difference → nicer heatmap ordering
+symbol_order <- heat_df |>
+  group_by(GENE_SYMBOL) |>
+  summarise(mean_expr = mean(gene_expr, na.rm = TRUE)) |>
+  arrange(desc(mean_expr)) |>
+  pull(GENE_SYMBOL)
+
+heat_df$GENE_SYMBOL <- factor(heat_df$GENE_SYMBOL, levels = symbol_order)
+
+# draw heatmap
+ggplot(heat_df,
+       aes(x = patient, y = GENE_SYMBOL, fill = gene_expr)) +
+  geom_tile() +
+  scale_fill_viridis_c() +
+  facet_grid(~ inflammation_status, scales = "free_x", space = "free_x") +
+  labs(
+    x = "Patient",
+    y = "Gene symbol",
+    fill = "Expression",
+    title = "Top 40 differential genes across samples"
+  ) +
+  theme_minimal() +
+  theme(
+    axis.text.x  = element_blank(),
+    axis.ticks.x = element_blank(),
+    panel.grid   = element_blank()
+  )
 
 # reorder symbols by average expression difference → nicer heatmap ordering
 symbol_order <- heat_df |>
