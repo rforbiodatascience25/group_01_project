@@ -81,6 +81,8 @@ ggplot(patient_means, aes(x = inflammation_status, y = mean_expr)) +
 
 ## Identification of significant genes during dependent on inflammation state using a Volcano plot
 
+### Consider Moving to 03_augment
+
 ```{r}
 final_clean <- finaldata |>
   filter(!is.na(gene_expr),
@@ -114,6 +116,8 @@ de_results <- final_clean |>
     sig = p_value < 0.05   # or adjust later with p.adjust()
   )
 ```
+
+### --- To here
 
 ```{r}
 lfc_cut <- 0.25   # minimum |log2FC| to call biologically relevant
