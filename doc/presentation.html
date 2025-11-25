@@ -402,101 +402,110 @@ Asbjørn, Emiliano, Magnus, Oliver and Trine
 </div>
 
 </section>
-<section id="introduction" class="title-slide slide level1 center">
-<h1>Introduction</h1>
+<section id="introduction-2" class="title-slide slide level1 center">
+<h1>Introduction 2</h1>
+<div id="Introduction" style="font-size: 0.8em">
 <ul>
-<li>Dataset from NCBI</li>
-<li>Ulcerative colitis - Ulcers in the colon</li>
-<li>Biopsies from the gut
+<li><p>Dataset from NCBI</p></li>
+<li><p>Transcriptional profiling of colon epithelial from ulcerative colitis patients and healthy controls</p></li>
+<li><p>Ulcers in the colon</p></li>
+<li><p>chronic inflamation</p></li>
+<li><p>Aim to find and analyze variation between healthy controls and patients</p>
 <ul>
-<li>202 samples</li>
+<li>what smoking does</li>
+<li>Effect of genes</li>
 </ul></li>
-<li>Gene expression</li>
 </ul>
+</div>
 </section>
 
 <section>
-<section id="materials-of-methods" class="title-slide slide level1 center">
-<h1>Materials of Methods</h1>
-
-</section>
-<section id="initialization" class="slide level2">
-<h2>Initialization</h2>
+<section id="materials-of-methods-3" class="title-slide slide level1 center">
+<h1>Materials of Methods 3</h1>
 <div class="columns">
-<div class="column" style="width:40%;">
+<div class="column" style="font-size: 0.9em">
+<ul>
+<li>Biopsies from the gut
+<ul>
+<li><p>202 samples</p></li>
+<li><p>from 67 patients</p></li>
+<li><p>30 healthy controls</p></li>
+</ul></li>
+<li>Gene expression</li>
+</ul>
+</div><div class="column" style="width:50%;">
+<p>maybe a plot of the age distribution?</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href=""></a><span class="fu">library</span>(<span class="st">"tidyverse"</span>)</span>
-<span id="cb1-2"><a href=""></a><span class="fu">library</span>(<span class="st">"GEOquery"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-</div><div class="column" style="width:60%;">
-<div class="quarto-figure quarto-figure-center">
+<div class="cell-output-display">
+<div>
 <figure>
-<p><img data-src="Initializing.gif" class="quarto-figure quarto-figure-center"></p>
+<p><img data-src="presentation_files/figure-revealjs/unnamed-chunk-2-1.svg" width="960"></p>
 </figure>
 </div>
+</div>
+</div>
 </div></div>
+<div id="Source" class="Reference" style="font-size: 0.6em">
+<p><em>Noble CL, Abbas AR, Cornelius J, et al Regional variation in gene expression in the healthy colon is dysregulated in ulcerative colitis Gut 2008;<strong>57:</strong>1398-1405.</em></p>
+</div>
 </section>
-<section id="filtering-data" class="slide level2">
-<h2>Filtering data</h2>
+<section id="filtering-data-4" class="slide level2">
+<h2>Filtering data 4</h2>
 <div class="columns">
 <div class="column" style="width:50%;">
 <p>Removing one-type columns</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href=""></a>phenodata <span class="ot">&lt;-</span> phenodata <span class="sc">|&gt;</span></span>
-<span id="cb2-2"><a href=""></a>  <span class="fu">select</span>(</span>
-<span id="cb2-3"><a href=""></a>    <span class="fu">where</span>(</span>
-<span id="cb2-4"><a href=""></a>      <span class="sc">~</span> <span class="fu">n_distinct</span>(</span>
-<span id="cb2-5"><a href=""></a>        .x, <span class="at">na.rm =</span> <span class="cn">TRUE</span>) <span class="sc">&gt;</span> <span class="dv">1</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href=""></a>phenodata <span class="ot">&lt;-</span> phenodata <span class="sc">|&gt;</span></span>
+<span id="cb1-2"><a href=""></a>  <span class="fu">select</span>(</span>
+<span id="cb1-3"><a href=""></a>    <span class="fu">where</span>(</span>
+<span id="cb1-4"><a href=""></a>      <span class="sc">~</span> <span class="fu">n_distinct</span>(</span>
+<span id="cb1-5"><a href=""></a>        .x, <span class="at">na.rm =</span> <span class="cn">TRUE</span>) <span class="sc">&gt;</span> <span class="dv">1</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </div><div class="column" style="width:50%;">
 <p>Removing low variance genes</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href=""></a>gene_var <span class="ot">&lt;-</span> exprs_df <span class="sc">|&gt;</span> </span>
-<span id="cb3-2"><a href=""></a>  <span class="co"># Drop the sample ID column, keep only expression values</span></span>
-<span id="cb3-3"><a href=""></a>  <span class="fu">select</span>(<span class="sc">-</span>geo_accession) <span class="sc">|&gt;</span> </span>
-<span id="cb3-4"><a href=""></a>  <span class="fu">summarise</span>(<span class="fu">across</span>(<span class="fu">everything</span>(), <span class="sc">~</span> <span class="fu">var</span>(.x, <span class="at">na.rm =</span> <span class="cn">TRUE</span>))) <span class="sc">|&gt;</span> </span>
-<span id="cb3-5"><a href=""></a>  <span class="fu">pivot_longer</span>(</span>
-<span id="cb3-6"><a href=""></a>    <span class="at">cols      =</span> <span class="fu">everything</span>(),</span>
-<span id="cb3-7"><a href=""></a>    <span class="at">names_to  =</span> <span class="st">"gene"</span>,</span>
-<span id="cb3-8"><a href=""></a>    <span class="at">values_to =</span> <span class="st">"variance"</span></span>
-<span id="cb3-9"><a href=""></a>  )</span>
-<span id="cb3-10"><a href=""></a><span class="co"># Cutoff genes that does not vary more than 0.05 - 2909 genes remaining</span></span>
-<span id="cb3-11"><a href=""></a>genes_keep <span class="ot">&lt;-</span> gene_var <span class="sc">|&gt;</span> </span>
-<span id="cb3-12"><a href=""></a>  <span class="fu">filter</span>(variance <span class="sc">&gt;</span> <span class="fl">0.05</span>) <span class="sc">|&gt;</span> </span>
-<span id="cb3-13"><a href=""></a>  <span class="fu">pull</span>(gene)</span>
-<span id="cb3-14"><a href=""></a></span>
-<span id="cb3-15"><a href=""></a>exprs_filtered <span class="ot">&lt;-</span> exprs_df <span class="sc">|&gt;</span> </span>
-<span id="cb3-16"><a href=""></a>  <span class="fu">select</span>(geo_accession, <span class="fu">all_of</span>(genes_keep))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href=""></a>gene_var <span class="ot">&lt;-</span> exprs_df <span class="sc">|&gt;</span> </span>
+<span id="cb2-2"><a href=""></a>  <span class="co"># Drop the sample ID column, keep only expression values</span></span>
+<span id="cb2-3"><a href=""></a>  <span class="fu">select</span>(<span class="sc">-</span>geo_accession) <span class="sc">|&gt;</span> </span>
+<span id="cb2-4"><a href=""></a>  <span class="fu">summarise</span>(<span class="fu">across</span>(<span class="fu">everything</span>(), <span class="sc">~</span> <span class="fu">var</span>(.x, <span class="at">na.rm =</span> <span class="cn">TRUE</span>))) <span class="sc">|&gt;</span> </span>
+<span id="cb2-5"><a href=""></a>  <span class="fu">pivot_longer</span>(</span>
+<span id="cb2-6"><a href=""></a>    <span class="at">cols      =</span> <span class="fu">everything</span>(),</span>
+<span id="cb2-7"><a href=""></a>    <span class="at">names_to  =</span> <span class="st">"gene"</span>,</span>
+<span id="cb2-8"><a href=""></a>    <span class="at">values_to =</span> <span class="st">"variance"</span></span>
+<span id="cb2-9"><a href=""></a>  )</span>
+<span id="cb2-10"><a href=""></a><span class="co"># Cutoff genes that does not vary more than 0.05 - 2909 genes remaining</span></span>
+<span id="cb2-11"><a href=""></a>genes_keep <span class="ot">&lt;-</span> gene_var <span class="sc">|&gt;</span> </span>
+<span id="cb2-12"><a href=""></a>  <span class="fu">filter</span>(variance <span class="sc">&gt;</span> <span class="fl">0.05</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb2-13"><a href=""></a>  <span class="fu">pull</span>(gene)</span>
+<span id="cb2-14"><a href=""></a></span>
+<span id="cb2-15"><a href=""></a>exprs_filtered <span class="ot">&lt;-</span> exprs_df <span class="sc">|&gt;</span> </span>
+<span id="cb2-16"><a href=""></a>  <span class="fu">select</span>(geo_accession, <span class="fu">all_of</span>(genes_keep))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </div></div>
 </section>
-<section id="joining-data" class="slide level2">
-<h2>Joining Data</h2>
+<section id="joining-data-5" class="slide level2">
+<h2>Joining Data 5</h2>
 </section>
-<section id="augmenting-data" class="slide level2">
-<h2>Augmenting Data</h2>
+<section id="augmenting-data-6" class="slide level2">
+<h2>Augmenting Data 6</h2>
 </section></section>
-<section>
-<section id="results" class="title-slide slide level1 center">
-<h1>Results</h1>
+<section id="results-7" class="title-slide slide level1 center">
+<h1>Results 7</h1>
 
 </section>
-<section id="plot-1" class="slide level2">
-<h2>Plot 1</h2>
-</section>
-<section id="plot-2" class="slide level2">
-<h2>Plot 2</h2>
-</section>
-<section id="plot-3" class="slide level2">
-<h2>Plot 3</h2>
-</section></section>
-<section>
-<section id="discussion" class="title-slide slide level1 center">
-<h1>Discussion</h1>
+
+<section id="plot-8" class="title-slide slide level1 center">
+<h1>plot 8</h1>
 
 </section>
-<section id="correlations-and-causality" class="slide level2">
-<h2>Correlations and Causality</h2>
+
+<section>
+<section id="discussion-9" class="title-slide slide level1 center">
+<h1>Discussion 9</h1>
+
+</section>
+<section id="correlations-and-causality-10" class="slide level2">
+<h2>Correlations and Causality 10</h2>
 <div class="quarto-auto-generated-content">
 <div class="footer footer-default">
 <p>Group 01 R for Bio data science 22160</p>
@@ -554,7 +563,7 @@ Asbjørn, Emiliano, Magnus, Oliver and Trine
         progress: true,
 
         // Display the page number of the current slide
-        slideNumber: false,
+        slideNumber: 'c/t',
 
         // 'all', 'print', or 'speaker'
         showSlideNumber: 'all',
