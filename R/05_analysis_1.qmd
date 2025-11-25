@@ -14,6 +14,8 @@ library(ggrepel)
 # Load
 
 ```{r}
+#| message: false
+#| warning: false
 finaldata   <- read_csv("../data/03_dat_aug.csv.gz")
 featuredata <- read_csv("../data/featuredata.csv.gz")
 de_results <- read_csv("../data/03_de_results.csv.gz")
