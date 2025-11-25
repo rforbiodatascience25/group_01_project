@@ -13,7 +13,7 @@
 <div align="center">
 
 # Group 01 – Gene Expression Analysis Project  
-### R for Bio Data Science 2025 — DTU
+### R for Bio Data Science 2025, DTU
 
 ![Rendered Report](https://img.shields.io/badge/Rendered%20Report-HTML-blue)  
 ![Language R](https://img.shields.io/badge/Language-R-276DC3?logo=r)  
