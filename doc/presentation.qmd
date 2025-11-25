@@ -11,32 +11,43 @@ format:
 output-dir: doc
 ---
 
-# Introduction
+# Introduction 2
 
 -   Dataset from NCBI
--   Ulcerative colitis - Ulcers in the colon
+-   Transcriptional profiling of colon epithelial from ulcerative colitis patients and healthy controls
+-   Ulcers in the colon
+    -   chronic inflamation
 -   Biopsies from the gut
     -   202 samples
+    -   from 67 patients
+    -   30 healthy controls
 -   Gene expression
+-   Aim to find and analyze variation between healthy controls and patients
+    -   what smoking does
+    -   Effect of genes
 
-# Materials of Methods
+# Materials of Methods 3
 
-## Initialization
+::::::: columns
+::: {#Plot 2 .column width="40%"}
+Maybe put plot of age distribution / histogram
+:::
 
 ::::: columns
 ::: {.column width="40%"}
-```{r Setup, echo=TRUE}
-library("tidyverse")
-library("GEOquery")
-```
 :::
 
-::: {.column width="60%"}
-![](Initializing.gif){fig-align="center"}
+::: {.column width="20%"}
+Noble CL, Abbas AR, Cornelius J, et al
+
+Regional variation in gene expression in the healthy colon is dysregulated in ulcerative colitis
+
+Gut 2008;**57:**1398-1405.
 :::
 :::::
+:::::::
 
-## Filtering data
+## Filtering data 4
 
 ::::: columns
 ::: {.column width="50%"}
@@ -76,18 +87,15 @@ exprs_filtered <- exprs_df |>
 :::
 :::::
 
-## Joining Data
+## Joining Data 5 
 
-## Augmenting Data
+## Augmenting Data 6
 
-# Results
+# Results 7 
 
-## Plot 1
+# plot 8
 
-## Plot 2
+# Discussion 9
 
-## Plot 3
+## Correlations and Causality 10
 
-# Discussion
-
-## Correlations and Causality
