@@ -80,8 +80,8 @@ gds3268_expression
 underlying tables can be extracted from each when they're loaded as rds files, this ensures collectively of the two pulls when working with the data.
 
 ```{r}
-write_rds(gds3268, file=file.path(raw_dir,"/gds3268.rds"))
-write_rds(gse11223, file=file.path (raw_dir,"/gse11223.rds"))
+write_rds(gds3268, file=file.path(raw_dir,"/raw_expression_data.rds"))
+write_rds(gse11223, file=file.path (raw_dir,"/raw_meta_data.rds"))
 
 #write_rds(gds3268, file="../_raw/gds3268.rds")
 #write_rds(gse11223, file="../_raw/gse11223.rds")
