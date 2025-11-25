@@ -29,14 +29,6 @@
 This repository contains the workflow, analysis code, and documentation for Group 01’s project on colonic gene expression.  
 The goal of the analysis is to explore transcriptional changes between **inflamed** and **uninflamed** colonic biopsies, identify significantly altered genes, and visualise global expression patterns.
 
-### Main components include:
-- Data import and wrangling  
-- Exploratory visualisation  
-- PCA and clustering  
-- Differential expression analysis  
-- Volcano plot and heatmap of top significant genes  
-- Reproducible Quarto workflow
-
 ---
 
 ## Presentation Link
