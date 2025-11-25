@@ -67,7 +67,7 @@ final_clean <- finaldata |>
 ```{r}
 de_results <- final_clean |>
   group_by(gene_id) |>
-  # keep only genes that have both groups present
+  # keep only genes with both groups present
   filter(n_distinct(inflammation_status) == 2) |>
   summarise(
     mean_inflamed   = mean(gene_expr[inflammation_status == "Inflamed"],   na.rm = TRUE),

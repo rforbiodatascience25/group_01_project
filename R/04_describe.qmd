@@ -37,14 +37,14 @@ fin_all<-finaldata|>
     age,
     age_group
   )|>
-  distinct(patient,.keep_all=TRUE)|>
+  distinct(patient,.keep_all=TRUE)|>  # Keep one record per patient (remove duplicates if multiple biopsies exist)
   mutate(
-    neutrophils=suppressWarnings(as.numeric(neutrophils)),
+    neutrophils=suppressWarnings(as.numeric(neutrophils)),      # Convert to numeric; non-numeric values become NA
     albumin=suppressWarnings(as.numeric(albumin)),
-    smoking_amount=suppressWarnings(as.numeric(smoking_amount)),
-    age=suppressWarnings(as.numeric(age)),
+    smoking_amount=suppressWarnings(as.numeric(smoking_amount)),# Smoking amount as numeric
+    age=suppressWarnings(as.numeric(age)),                      # Age converted to numeric
     # fattori
-    ethnicity=factor(ethnicity),
+    ethnicity=factor(ethnicity),                                # Convert categorical variables to factors
     joint_problems=factor(joint_problems),
     uc_flare_up=factor(uc_flare_up),
     family_history=factor(family_history),
@@ -56,21 +56,21 @@ fin_all<-finaldata|>
     age_group=factor(age_group)
   )
 
-fin_all$neutrophils[fin_all$neutrophils==0]<-NA
+fin_all$neutrophils[fin_all$neutrophils==0]<-NA   # Replace 0 with NA
 fin_all$albumin[fin_all$albumin==0]<-NA
 
-fin_all$other_illnesses_clean<-dplyr::case_when(
+fin_all$other_illnesses_clean<-dplyr::case_when(   # Clean comorbidity field into a simple binary variable
   is.na(fin_all$other_illnesses)~NA_character_,
   fin_all$other_illnesses%in%c("none","None","NONE")~"None",
   TRUE~"Any comorbidity"
 )
 
-fin_all$other_illnesses_clean<-factor(
+fin_all$other_illnesses_clean<-factor(             # Convert cleaned comorbidity variable to factor
   fin_all$other_illnesses_clean,
   levels=c("None","Any comorbidity")
 )
 
-label(fin_all$neutrophils)<-"Neutrophils"
+label(fin_all$neutrophils)<-"Neutrophils"                  # Labels for table1() formatting
 label(fin_all$albumin)<-"Albumin"
 label(fin_all$ethnicity)<-"Ethnicity"
 label(fin_all$joint_problems)<-"Joint problems"
@@ -133,13 +133,14 @@ As for relatives affected by IBD, they are present only in the UC group (4 patie
 ```{r}
 feat_all<-featuredata|>
   mutate(
-    ID=suppressWarnings(as.numeric(ID)),
-    COL=suppressWarnings(as.numeric(COL)),
-    ROW=suppressWarnings(as.numeric(ROW)),
-    GENE=suppressWarnings(as.numeric(GENE)),
+    ID=suppressWarnings(as.numeric(ID)), # Convert ID fields to numeric
+    COL=suppressWarnings(as.numeric(COL)),  # Array column index
+    ROW=suppressWarnings(as.numeric(ROW)), # Array row index
+    GENE=suppressWarnings(as.numeric(GENE)), # Internal gene ID
 
-    CONTROL_TYPE=factor(CONTROL_TYPE),
+    CONTROL_TYPE=factor(CONTROL_TYPE), # Convert control-type field to factor
 
+    # Create binary indicators (Yes/No) for the presence of annotation fields
     HAS_NAME=factor(ifelse(is.na(NAME)|NAME=="","No","Yes")),
     HAS_SPOT_ID=factor(ifelse(is.na(SPOT_ID)|SPOT_ID=="","No","Yes")),
     HAS_REFSEQ=factor(ifelse(is.na(REFSEQ)|REFSEQ=="","No","Yes")),
@@ -157,7 +158,7 @@ feat_all<-featuredata|>
     HAS_SEQUENCE=factor(ifelse(is.na(SEQUENCE)|SEQUENCE=="","No","Yes"))
   )
 
-# Label per table1
+# Labels for table1
 label(feat_all$ID)<-"Probe ID"
 label(feat_all$COL)<-"Array column index"
 label(feat_all$ROW)<-"Array row index"
@@ -178,8 +179,6 @@ label(feat_all$HAS_CYTOBAND)<-"Has cytoband"
 label(feat_all$HAS_DESCRIPTION)<-"Has description"
 label(feat_all$HAS_GO)<-"Has GO annotation"
 label(feat_all$HAS_SEQUENCE)<-"Has probe sequence"
-
-
 ```
 
 ```{r}

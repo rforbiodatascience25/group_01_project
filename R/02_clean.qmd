@@ -171,14 +171,14 @@ phenodata
 library(stringr)
 
 phenodata <- phenodata |>
-  #Convert all columns starting with "characteristics_ch1" to long format
+  #Convert all columns with "characteristics_ch1" to long format
   pivot_longer(
     cols = starts_with("characteristics_ch1"),
     names_to = "old_col",
     values_to = "value"
   ) |>
   
-  #Split "prefix: content"
+  #Split
   separate(
     col  = value,
     into = c("prefix", "content"),
@@ -192,10 +192,9 @@ phenodata <- phenodata |>
     content = str_trim(content)
   ) |>
   
-  # remove the old column name
   select(-old_col) |>
   
-  # 4) Convert back to wide: each prefix becomes its own column
+  #Convert back to wide
   pivot_wider(
     names_from = prefix,
     values_from = content
@@ -264,7 +263,7 @@ featuredata <- pData(featureData(gse11223))
 Now we filter the same low variance genes from featuredata
 
 ```{r}
-featuredata <- featuredata |> 
+featuredata <- featuredata |>
   filter(ID %in% genes_keep)
 ```
 
