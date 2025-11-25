@@ -10,7 +10,7 @@ format: html
 library(tidyverse)
 library(randomForest)
 
-finaldata <- read_csv("../data/finaldata.csv.gz")
+finaldata <- read_csv("../data/03_dat_aug.csv.gz")
 featuredata <- read_csv("../data/featuredata.csv.gz")
 ```
 

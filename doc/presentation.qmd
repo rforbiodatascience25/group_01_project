@@ -16,7 +16,7 @@ output-dir: doc
 ```{r}
 #| eval: true
 library("tidyverse")
-finaldata <- read.csv(file = "../data/finaldata.csv.gz")
+finaldata <- read.csv(file = "../data/03_dat_aug.csv.gz")
 ```
 
 # Introduction 2
@@ -53,7 +53,6 @@ finaldata <- read.csv(file = "../data/finaldata.csv.gz")
 :::
 
 ::: {.column width="50%"}
-
 ```{r}
 finaldata |> 
   distinct(geo_accession, .keep_all = TRUE) |> 
