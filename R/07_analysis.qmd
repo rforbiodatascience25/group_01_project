@@ -3,21 +3,6 @@ title: "07_analysis"
 format: html
 ---
 
-# Analysis 3
-
-## Loading libraries
-
-```{r}
-#| message: false
-#| warning: false
-
-library("tidyverse")
-library("dplyr")
-library("ggplot2")
-```
-
-## Loading finaldata, featuredata and de_results
-
 ```{r}
 #| message: false
 #| warning: false
@@ -26,13 +11,16 @@ finaldata <- read_csv("../data/03_dat_aug.csv.gz")
 featuredata <- read_csv("../data/featuredata.csv.gz")
 source("99_proj_func.R")
 
+library(dplyr)
+library(ggplot2)
+
 colnames(finaldata)
 colnames(featuredata)
 ```
 
 ### Smoking
 
-```{r}
+```{r time_to_diagnosis_vs_smoking_status, fig-format="png"}
 finaldata |>  
   filter(!is.na(smoking_status)) |> 
   filter(!is.na(time_untreated)) |> 
@@ -58,7 +46,7 @@ finaldata |>
 
 #### Age
 
-```{r}
+```{r time_to_diagnosis_vs_age, fig-format="png"}
 finaldata |>  
   filter(!is.na(age_group)) |> 
   filter(!is.na(time_untreated)) |> 
@@ -82,9 +70,9 @@ finaldata |>
     )
 ```
 
-## GC and AT content
+# GC and AT content
 
-```{r}
+```{r gc_content_comparison_healthy_vs_diseased, fig-format="png"}
 gc_content <- function(seq) {
   seq <- toupper(seq)
   chars <- strsplit(seq, "")[[1]]
@@ -110,7 +98,7 @@ boxplot(GC_content ~ disease,
 
 There is no significant difference in the amount of G and C in the sequences between the two groups of Patients and Controls
 
-```{r}
+```{r at_content_comparison_healthy_vs_diseased, fig-format="png"}
 at_content <- function(seq) {
   seq <- toupper(seq)
   chars <- strsplit(seq, "")[[1]]
@@ -136,9 +124,9 @@ boxplot(at_content ~ disease,
 
 There is no significant difference in the amount of A and T in the sequences between the two groups of Patients and Controls
 
-## Significance based on anatomical location
+# Significance based on anatomical location
 
-```{r}
+```{r significant_gene_counts_by_anatomic_location, fig-format="png"}
 de_by_loc <- finaldata |>
   filter(complete.cases(gene_expr, inflammation_status, anatomic_location)) |>
   mutate(inflammation_status = factor(inflammation_status,
