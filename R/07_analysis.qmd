@@ -1,7 +1,15 @@
 ---
 title: "07_analysis"
-format: html
+format:
+  html:
+    fig-format: png
 ---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(dev = "png")
+```
+
+# Analysis 3
 
 ```{r}
 #| message: false
@@ -20,7 +28,7 @@ colnames(featuredata)
 
 ### Smoking
 
-```{r time_to_diagnosis_vs_smoking_status, fig-format="png"}
+```{r time_to_diagnosis_vs_smoking_status}
 finaldata |>  
   filter(!is.na(smoking_status)) |> 
   filter(!is.na(time_untreated)) |> 
@@ -46,7 +54,7 @@ finaldata |>
 
 #### Age
 
-```{r time_to_diagnosis_vs_age, fig-format="png"}
+```{r time_to_diagnosis_vs_age}
 finaldata |>  
   filter(!is.na(age_group)) |> 
   filter(!is.na(time_untreated)) |> 
@@ -70,9 +78,9 @@ finaldata |>
     )
 ```
 
-# GC and AT content
+## GC and AT content
 
-```{r gc_content_comparison_healthy_vs_diseased, fig-format="png"}
+```{r gc_content_comparison_healthy_vs_diseased}
 gc_content <- function(seq) {
   seq <- toupper(seq)
   chars <- strsplit(seq, "")[[1]]
@@ -98,7 +106,7 @@ boxplot(GC_content ~ disease,
 
 There is no significant difference in the amount of G and C in the sequences between the two groups of Patients and Controls
 
-```{r at_content_comparison_healthy_vs_diseased, fig-format="png"}
+```{r at_content_comparison_healthy_vs_diseased}
 at_content <- function(seq) {
   seq <- toupper(seq)
   chars <- strsplit(seq, "")[[1]]
@@ -124,9 +132,9 @@ boxplot(at_content ~ disease,
 
 There is no significant difference in the amount of A and T in the sequences between the two groups of Patients and Controls
 
-# Significance based on anatomical location
+## Significance based on anatomical location
 
-```{r significant_gene_counts_by_anatomic_location, fig-format="png"}
+```{r significant_gene_counts_by_anatomic_location}
 de_by_loc <- finaldata |>
   filter(complete.cases(gene_expr, inflammation_status, anatomic_location)) |>
   mutate(inflammation_status = factor(inflammation_status,

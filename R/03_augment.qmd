@@ -29,7 +29,7 @@ colnames(finaldata)
 colnames(featuredata)
 ```
 
-#### Calculating the Age from date of birth
+## Calculating the Age from date of birth
 
 Birth date reformat - input a date in string format, with "/" as spacer. Date format should be in MM/DD/YY
 
@@ -40,10 +40,10 @@ source(file = "99_proj_func.R")
 Making the age variable from the date of birth and the submission date for the article, to estimate the age. at the time of sampling. We identified some birth dates that were written as MM/DD/1060, we belive it is a typo and what was meant was 1960. Hence we changed it to 1960.
 
 ```{r}
-finaldata <- finaldata |> 
-  mutate(birth_date = reformat_dates(birth_date)) |> 
-  mutate(procedure_date = as.Date(procedure_date, "%m/%d/%y")) |> 
-  mutate(age = round(as.numeric(difftime(procedure_date, birth_date, units = "days")) / 365.25, 0), .after=procedure_date) |> 
+finaldata <- finaldata |>
+  mutate(birth_date = reformat_dates(birth_date)) |>
+  mutate(procedure_date = as.Date(procedure_date, "%m/%d/%y")) |>
+  mutate(age = round(as.numeric(difftime(procedure_date, birth_date, units = "days")) / 365.25, 0), .after=procedure_date) |>
    mutate(age_group = case_when(
     20 <= age & age < 30 ~ "(20,30]",
     30 <= age & age < 40 ~ "(30,40]",
@@ -54,7 +54,7 @@ finaldata <- finaldata |>
     ), .after=age)
 ```
 
-#### Reformatting symptoms_onset_date & diagnosis_date & Calculating the time difference from symptoms_onset to diagnosis_date
+## Reformatting symptoms_onset_date & diagnosis_date & Calculating the time difference from symptoms_onset to diagnosis_date
 
 Will reflect time between disease constetation and treatment. Shorter time from first symptom to treatment may slow the disease development.
 
