@@ -3,12 +3,21 @@ title: "08_analysis_umap"
 format: html
 ---
 
+# Analysis 4
+
+## Loading libraries
+
 ```{r}
 #| message: false
 #| warning: false
 
 library(tidyverse)
 library(randomForest)
+```
+
+```{r}
+#| message: false
+#| warning: false
 
 expr_df <- read_csv("../data/03_rf_expr_df.csv.gz")
 featuredata <- read_csv("../data/03_dat_genbank.csv.gz")

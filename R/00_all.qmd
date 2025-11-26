@@ -7,10 +7,15 @@ format:
 output-dir: ../results
 ---
 
+# All
+
+## Loading libraries
+
 ```{r}
 #| warning: false
 #| include: false
-library(knitr)
+
+library("knitr")
 ```
 
 ```{r}

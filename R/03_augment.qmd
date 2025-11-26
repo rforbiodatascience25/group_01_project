@@ -3,7 +3,20 @@ title: "03_augment"
 format: html
 ---
 
-#### Load finaldata and featuredata
+# Augmenting
+
+## Loading libraries
+
+```{r}
+#| message: false
+#| warning: false
+
+library("ggrepel")
+library("dplyr")
+library("tidyverse")
+```
+
+## Loading finaldata and featuredata
 
 ```{r}
 #| message: false
@@ -11,10 +24,6 @@ format: html
 
 finaldata <- read_csv("../data/02_dat_clean.csv.gz")
 featuredata <- read_csv("../data/02_dat_genbank.csv.gz")
-
-library(ggrepel)
-library(dplyr)
-library(tidyverse)
 
 colnames(finaldata)
 colnames(featuredata)

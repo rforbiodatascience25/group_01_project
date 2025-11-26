@@ -3,12 +3,20 @@ title: "04_describe"
 format: html
 ---
 
-# Load:
+# Describing
+
+## Loading libraries
 
 ```{r}
+#| message: false
+#| warning: false
+
 library("dplyr")
 library("table1")
+library("tidyverse")
 ```
+
+## Loading finaldata and featuredata
 
 ```{r}
 #| message: false
@@ -17,7 +25,7 @@ finaldata   <- read_csv("../data/03_dat_aug.csv.gz")
 featuredata <- read_csv("../data/featuredata.csv.gz")
 ```
 
-# Finaldata:
+## Finaldata:
 
 ```{r}
 fin_all<-finaldata|>
@@ -100,7 +108,7 @@ table1(
 )
 ```
 
-# Finaldata interpretation:
+## Finaldata interpretation:
 
 Ninety-three subjects were included, of whom 63 (67.7%) were diagnosed with ulcerative colitis (UC) and 30 (32.3%) with histologically normal mucosa (controls).
 
@@ -130,7 +138,7 @@ Almost all subjects in the dataset (98.8% and 93.5%, respectively) did not have 
 
 As for relatives affected by IBD, they are present only in the UC group (4 patients with 1 or 2 affected relatives), while they are totally absent in the control group.
 
-# Featuredata:
+## Featuredata:
 
 ```{r}
 feat_all<-featuredata|>
@@ -196,7 +204,7 @@ table1(
 )
 ```
 
-# Featuredata interpretation:
+## Featuredata interpretation:
 
 This table does not tell us anything about expression values ​​or UC vs control differences, however it can provide us with valuable information regarding the quality of the probe annotations.
 
@@ -270,7 +278,7 @@ This table does not tell us anything about expression values ​​or UC vs cont
     UC group: Yes 2028 (100%)\
     Overall: Yes 2909 (100%)
 
-# Cleaning environment:
+## Cleaning environment:
 
 ```{r}
 rm(list = ls())
