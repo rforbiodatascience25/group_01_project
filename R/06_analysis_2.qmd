@@ -1,6 +1,7 @@
 ---
 title: "06_analysis_2"
 format: html
+  fig-format: png
 ---
 
 # Analysis 2
@@ -15,7 +16,7 @@ library("tidyverse")
 
 ## Loading finaldata and featuredata
 
-```{r}
+```{r age_group_distribution_by_inflammation_status}
 #| message: false
 #| warning: false
 
@@ -23,7 +24,7 @@ finaldata <- read_csv("../data/03_dat_aug.csv.gz")
 featuredata <- read_csv("../data/featuredata.csv.gz")
 ```
 
-```{r age_groups_distribution_inflammation_status, fig-format="png"}
+```{r age_groups_distribution_inflammation_status}
 finaldata |> 
     filter(!is.na(age_group)) |>
     ggplot(mapping = aes(x = age_group, fill = inflammation_status))+
@@ -41,7 +42,7 @@ finaldata |>
       )
 ```
 
-```{r gene_expression_by_smoking_status_and_inflammation, fig-format="png"}
+```{r gene_expression_by_smoking_status_and_inflammation}
 finaldata |>
   filter(!is.na(smoking_status)) |> 
   ggplot(aes(x = smoking_status, y = gene_expr, 
