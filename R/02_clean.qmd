@@ -1,9 +1,9 @@
 ---
 title: "02_clean"
-format:
-  html:
+format: html
     fig-format: png
 ---
+
 
 # Cleaning data
 
