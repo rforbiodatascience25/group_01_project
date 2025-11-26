@@ -231,31 +231,23 @@ up_in_uninflamed <- sig_genes |>
 
 ## 4) Volcano plot with Highlighted Genes
 ggplot(plot_df,
-       # Use the original sig_cat for the base layer
-       aes(x = log2FC, y = neg_log10_p, colour = sig_cat)) +
-  # 1. Base points (all genes, colored by sig_cat)
-  geom_point(size = 1.3, alpha = 0.8) +
-  
-  # Highlighted points (overlaid with a distinct color/border)
-  # Filter plot_df to only include highlighted genes
+       aes(x = log2FC, y = neg_log10_p)) +
+
+  # 1. Base points (coloured by sig_cat)
+  geom_point(aes(color = sig_cat), size = 1.3, alpha = 0.8) +
+
+  # 2. Overlay highlighted genes (colored by highlight_cat)
   geom_point(data = filter(plot_df, highlight_cat == "Most Contributing"),
-             aes(x = log2FC, y = neg_log10_p),
-             colour = "black", # border color
-             size = 2,
-             show.legend = FALSE) +
-  # Re-plot the point itself in a new color
-  geom_point(data = filter(plot_df, highlight_cat == "Most Contributing"),
-             aes(x = log2FC, y = neg_log10_p),
-             colour = "green", # highlight color
-             size = 2,
-             show.legend = FALSE) +
-  
+             aes(color = highlight_cat),
+             size = 1.3) +
+
   # cutoff lines
   geom_hline(yintercept = -log10(p_cut),
              linetype = "dashed", linewidth = 0.3) +
   geom_vline(xintercept = c(-lfc_cut, lfc_cut),
              linetype = "dashed", linewidth = 0.3) +
-  # labels for strongest hits (using label_df as before)
+
+  # labels for strongest hits
   geom_text_repel(
     data = label_df,
     aes(label = GENE_SYMBOL),
@@ -267,17 +259,24 @@ ggplot(plot_df,
     segment.size = 0.2,
     show.legend = FALSE
   ) +
-  # nicer colours (for the sig_cat legend)
-  scale_colour_manual(
+
+  # unified color scale (sig categories + highlighted category)
+  scale_color_manual(
     values = c(
       "Up in inflamed"   = "#d73027",
       "Up in uninflamed" = "#4575b4",
-      "Non significant"  = "grey80"
-      # Note: The highlighted genes are colored by the added geom_point layers,
-      # so you don't need to add the highlight color here unless you want a separate legend entry.
+      "Non significant"  = "grey80",
+      "Most Contributing" = "green"
     ),
-    name = NULL
+    name = NULL,
+    labels = c(
+      "Up in inflamed"   = "Up in inflamed",
+      "Up in uninflamed" = "Up in uninflamed",
+      "Non significant"  = "Non significant",
+      "Most Contributing" = "Genes present in RF model"
+    )
   ) +
+
   labs(
     title = "Volcano plot of colonic gene expression",
     subtitle = "Inflamed vs uninflamed biopsies (Gut 57:1398–1405)",
