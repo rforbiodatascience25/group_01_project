@@ -1,7 +1,8 @@
 ---
 title: "05_analysis_1"
 format: html
-  fig-format: png
+  html:
+    fig-format: png
 ---
 
 # Analysis 1
