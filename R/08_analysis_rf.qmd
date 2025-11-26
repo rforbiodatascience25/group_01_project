@@ -13,7 +13,7 @@ format: html
 
 library(tidyverse)
 library(randomForest)
-set.seed(1234)
+set.seed(6969)
 ```
 
 ```{r}
@@ -299,4 +299,3 @@ ggplot(plot_df,
 ```{r}
 rm(list = ls())
 ```
-
