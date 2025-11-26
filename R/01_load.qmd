@@ -72,12 +72,14 @@ gds3268 is the curated dataset for the project, meaning that the meta data of sa
 
 ```{r}
 gds3268_meta <- Meta(gds3268)
-gds3268_meta
+
+gds3268
 ```
 
 ```{r}
 gds3268_expression <- Table(gds3268)
-gds3268_expression
+
+slice_sample( gds3268_expression, n = 10)
 ```
 
 **Save gse11223 & gds3268 objects in \_raw/**
