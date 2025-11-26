@@ -135,6 +135,7 @@ ggplot(gene_var, aes(x = variance)) +
   geom_histogram(bins = 100) +
   coord_cartesian(xlim = c(0, 0.5)) +
   theme_minimal()
+ggsave("variance_distribution_across_genes.png", path = "../results", dpi = 300, width = 20, height = 12, units = "cm")
 ```
 
 We decide the cutoff genes with a variance below 0.05, and have 2909 genes remaining

@@ -127,6 +127,7 @@ var_importance |>
     y = "Mean decrease accuracy from RF"
   ) +
   theme_minimal()
+ggsave("top15_most_contributing_genes_RF.png", path = "../results", dpi = 300, width = 20, height = 12, units = "cm")
 ```
 
 Extract gene_ids as list
@@ -165,7 +166,7 @@ most_contributing_gene_symbols <- featuredata |>
 print(most_contributing_gene_symbols)
 ```
 
-## Comparison of identified genes impacting inflammation with disease state 
+## Comparison of identified genes impacting inflammation with disease state
 
 To visualize overlay between significant genes found in 05_analysis, and the RandomForest model most contributing variables.
 
@@ -292,6 +293,7 @@ ggplot(plot_df,
     plot.subtitle = element_text(size = 11),
     axis.title = element_text(size = 12)
   )
+ggsave("volcano_plot_colonic_gene_expression_RF.png", path = "../results", dpi = 300, width = 20, height = 12, units = "cm")
 ```
 
 ## Cleaning environment

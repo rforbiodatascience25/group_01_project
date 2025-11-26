@@ -44,6 +44,7 @@ finaldata |>
         y = "n",
        fill = "Inflammation-status"
       )
+ggsave("age_groups_distribution_inflammation_status.png", path = "../results", dpi = 300, width = 20, height = 12, units = "cm")
 ```
 
 ## Correlation between gene expression, inflammation status and smoking status
@@ -65,6 +66,7 @@ finaldata |>
         legend.position = "bottom"
      ) +
   labs(x = "Smoking status", y = "n", fill = "Inflammation-status")
+ggsave("gene_expression_by_smoking_status_and_inflammation.png", path = "../results", dpi = 300, width = 20, height = 12, units = "cm")
 ```
 
 ## Cleaning the environment

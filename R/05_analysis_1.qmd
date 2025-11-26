@@ -29,7 +29,7 @@ de_results <- read_csv("../data/03_de_results.csv.gz")
 To get an idea of the distribution of the genes between samples categorized as either inflamed or uninflamed, we make a histogram (see Figure X), which shows that they have a normal distribution around 0.
 
 ```{r distribution_gene_expression_inflamed_uninflamed}
-finaldata |> 
+p <- finaldata |> 
   mutate(inflammation_status = factor(inflammation_status,
                                       levels = c("Uninflamed", "Inflamed"))) |>
   ggplot(aes(x = gene_expr, fill = inflammation_status)) +
@@ -39,6 +39,9 @@ finaldata |>
     title = "Distribution of gene expression in inflamed and uninflamed samples"
   )+
   theme_minimal()
+p
+
+ggsave("distribution_gene_expression_inflamed_uninflamed.png", path = "../results", dpi = 300, width = 20, height = 12, units = "cm")
 ```
 
 ## **Expression by anatomic location and inflammation**
@@ -49,7 +52,7 @@ We then try to get an idea, if there is a difference in the gene expression patt
 loc_counts <- finaldata |>
   dplyr::count(anatomic_location)
 
-finaldata |> 
+p <- finaldata |> 
   ggplot(aes(x = anatomic_location, y = gene_expr, 
              fill = inflammation_status)) +
   geom_violin(trim = FALSE, alpha = 0.5) +
@@ -67,6 +70,9 @@ finaldata |>
     y = "Gene expression",
     fill = "Inflammation state"
   )
+p
+
+ggsave("gene_expression_by_anatomic_location_and_inflammation.png", path = "../results", dpi = 300, width = 20, height = 12, units = "cm")
 ```
 
 ## Mean gene expression per patient across in inflamed and un-inflamed samples
@@ -83,6 +89,7 @@ ggplot(patient_means, aes(x = inflammation_status, y = mean_expr)) +
   geom_jitter(width = 0.15, alpha = 0.6) +
   theme_minimal() +
   labs(x = "Inflammation status", y = "Mean gene expression per patient")
+ggsave("mean_gene_expression_per_patient_inflamed_uninflamed.png", path = "../results", dpi = 300, width = 20, height = 12, units = "cm")
 ```
 
 ## Identification of significant genes during dependent on inflammation state using a Volcano plot
@@ -183,6 +190,7 @@ ggplot(plot_df,
     plot.subtitle = element_text(size = 11),
     axis.title = element_text(size = 12)
   )
+ggsave("volcano_plot_colonic_gene_expression.png", path = "../results", dpi = 300, width = 20, height = 12, units = "cm")
 ```
 
 ## Expression of the 40 most significant genes
@@ -229,6 +237,7 @@ ggplot(heat_df,
     axis.ticks.x = element_blank(),
     panel.grid   = element_blank()
   )
+ggsave("top40_differential_genes_across_samples.png", path = "../results", dpi = 300, width = 20, height = 12, units = "cm")
 ```
 
 ## Correlation between time untreated and gene expression
@@ -248,6 +257,7 @@ finaldata |>
   theme_minimal() +
   labs(title = "Correlation between time untreated and expression of significant genes", x = "Time untreated (days)", y = "log2FC", color = "Inflammation status") + 
   theme(legend.position = "bottom")
+ggsave("correlation_time_untreated_significant_genes.png", path = "../results", dpi = 300, width = 20, height = 12, units = "cm")
 ```
 
 ## Cleaning environment
