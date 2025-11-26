@@ -1,8 +1,6 @@
 ---
 title: "06_analysis_2"
-format:
-  html:
-    fig-format: png
+format: html
 ---
 
 ```{r setup, include=FALSE}
