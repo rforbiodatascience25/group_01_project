@@ -4,8 +4,6 @@ format:
   html:
     fig-format: png
     fig-dpi: 300
-    fig-width: 1
-    fig-height: 6
 output-dir: ../results
 ---
 
