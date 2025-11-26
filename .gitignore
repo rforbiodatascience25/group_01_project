@@ -52,5 +52,4 @@ rsconnect/
 data/
 _raw/
 
-#Figures
-R/figure/
+/.quarto/
