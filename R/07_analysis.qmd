@@ -7,6 +7,18 @@ format:
 
 # Analysis 3
 
+## Loading libraries
+
+```{r}
+#| message: false
+#| warning: false
+
+library("dplyr")
+library("ggplot2")
+```
+
+## Loading finaldata and featuredata
+
 ```{r}
 #| message: false
 #| warning: false
@@ -15,40 +27,37 @@ finaldata <- read_csv("../data/03_dat_aug.csv.gz")
 featuredata <- read_csv("../data/featuredata.csv.gz")
 source("99_proj_func.R")
 
-library(dplyr)
-library(ggplot2)
-
 colnames(finaldata)
 colnames(featuredata)
 ```
 
-### Smoking
+## Looking at age groups
 
-```{r time_to_diagnosis_vs_smoking_status}
-finaldata |>  
-  filter(!is.na(smoking_status)) |> 
-  filter(!is.na(time_untreated)) |> 
-  filter(time_untreated > 0) |> 
-  group_by(smoking_status) |> 
-  summarise(n = n()) 
+### Correlation between age group and diagnosis time
 
-finaldata |>  
-  filter(!is.na(smoking_status)) |> 
-  filter(!is.na(time_untreated)) |> 
-  filter(time_untreated > 0) |> 
-  group_by(smoking_status) |> 
-  ggplot(aes(x = smoking_status, y = time_untreated)) +
-    geom_boxplot() + 
-    theme_minimal() + 
-    labs(x = "Smoking Status",
-         y = "Time to diagnostics (days)",
-         title = "Time from 1st UC symtomps to diagnostics against smoking") +
-    theme(
-      plot.title = element_text(size = 12)
-    )
+```{r age_groups_distribution_inflammation_status}
+finaldata |>
+    distinct(geo_accession, .keep_all = TRUE) |>
+    filter(!is.na(age_group)) |>
+    ggplot(mapping = aes(x = age_group, fill = inflammation_status))+
+       geom_bar(position = position_dodge2(preserve = "single", padding = 0), 
+        color = "black", 
+        alpha = 0.4)+
+      theme_minimal(base_size = 10) +
+      theme(
+        legend.position = "bottom"
+     ) +
+     labs(
+       x = "Age groups",
+        y = "n",
+       fill = "Inflammation-status"
+      )
+ggsave("age_groups_distribution_inflammation_status.png", path = "../results", dpi = 300, width = 20, height = 12, units = "cm")
 ```
 
-#### Age
+## Age group and diagnosis time
+
+Plotting the correlation between the different age groups and diagnosis time to see if there is a correlation between the two. Although the medians in the age groups are all similar, some patients in the age group (50,60) takes a long time to get diagnosed. The patients in the age group (30,40\] takes the shortest time to get diagnosed.
 
 ```{r time_to_diagnosis_vs_age}
 finaldata |>  
@@ -72,63 +81,65 @@ finaldata |>
     theme(
       plot.title = element_text(size = 12)
     )
+ggsave("time_to_diagnosis_vs_age.png", path = "../results", dpi = 300, width = 20, height = 12, units = "cm")
 ```
 
-## GC and AT content
+## Impact of smoking on inflammation status
 
-```{r gc_content_comparison_healthy_vs_diseased}
-gc_content <- function(seq) {
-  seq <- toupper(seq)
-  chars <- strsplit(seq, "")[[1]]
-  g <- sum(chars == "G")
-  c <- sum(chars == "C")
-  return((g + c) / length(chars))
-}
+### Correlation between gene expression, inflammation status and smoking status
 
-featuredata$GC_content <- sapply(featuredata$SEQUENCE, gc_content)
+Plotting the correlation between gene expression, inflammation status and smoking status. Most patients are either ex-smokers or have never smoked. The group of patients thats do smoke as well as the ones that have never smoked have a slightly higher subset that are inflamed.
 
+```{r gene_expression_by_smoking_status_and_inflammation}
 
-names(featuredata)[names(featuredata) == "ID"] <- "gene_id"
-merged <- merge(featuredata, finaldata, by = "gene_id")
-
-boxplot(GC_content ~ disease,
-        data = merged,
-        col = c("lightblue", "lightpink"),
-        xlab = "Condition (disease)",
-        ylab = "GC-content",
-        main = "GC-content comparison between healthy and diseased subjects")
-
+finaldata |>
+  distinct(geo_accession, .keep_all = TRUE) |>
+  filter(!is.na(smoking_status)) |> 
+  ggplot(aes(x = smoking_status, 
+             fill = inflammation_status)) +
+  geom_bar(position = position_dodge2(preserve = "single", padding = 0),
+        color = "black", 
+        alpha = 0.4) +
+  theme_minimal() +
+   theme(
+        legend.position = "bottom"
+     ) +
+  labs(x = "Smoking status", y = "n", fill = "Inflammation-status")
+ggsave("gene_expression_by_smoking_status_and_inflammation.png", path = "../results", dpi = 300, width = 20, height = 12, units = "cm")
 ```
 
-There is no significant difference in the amount of G and C in the sequences between the two groups of Patients and Controls
+### Correlation between smoking and the diagnosis time
 
-```{r at_content_comparison_healthy_vs_diseased}
-at_content <- function(seq) {
-  seq <- toupper(seq)
-  chars <- strsplit(seq, "")[[1]]
-  a <- sum(chars == "A")
-  t <- sum(chars == "T")
-  return((a + t) / length(chars))
-}
+Plotting to see the correlation between patients that are smokers and how long it takes for them to get diagnosed. The patient group that whose smoking habits are unknown takes the shortest time to get diagnosed, followed by the current smokers. The group of patients that have never smoked takes the longest time to get diagnosed. However, since the "smoker" group and the "unknown" group are the much smaller than the "ex" and the "never" group, the results may be unreliable. Moreover, there are two three outliers in the plot who have all taken a very long time to get diagnosed.
 
-featuredata$at_content <- sapply(featuredata$SEQUENCE, at_content)
+```{r time_to_diagnosis_vs_smoking_status}
+finaldata |>  
+  filter(!is.na(smoking_status)) |> 
+  filter(!is.na(time_untreated)) |> 
+  filter(time_untreated > 0) |> 
+  group_by(smoking_status) |> 
+  summarise(n = n()) 
 
-
-names(featuredata)[names(featuredata) == "ID"] <- "gene_id"
-merged <- merge(featuredata, finaldata, by = "gene_id")
-
-boxplot(at_content ~ disease,
-        data = merged,
-        col = c("lightblue", "lightpink"),
-        xlab = "Condition (disease)",
-        ylab = "AT-content",
-        main = "AT-content comparison between healthy and diseased subjects")
-
+finaldata |>  
+  filter(!is.na(smoking_status)) |> 
+  filter(!is.na(time_untreated)) |> 
+  filter(time_untreated > 0) |> 
+  group_by(smoking_status) |> 
+  ggplot(aes(x = smoking_status, y = time_untreated)) +
+    geom_boxplot() + 
+    theme_minimal() + 
+    labs(x = "Smoking Status",
+         y = "Time to diagnostics (days)",
+         title = "Time from 1st UC symtomps to diagnostics against smoking") +
+    theme(
+      plot.title = element_text(size = 12)
+    )
+ggsave("time_to_diagnosis_vs_smoking_status.png", path = "../results", dpi = 300, width = 20, height = 12, units = "cm")
 ```
-
-There is no significant difference in the amount of A and T in the sequences between the two groups of Patients and Controls
 
 ## Significance based on anatomical location
+
+The graph shows that significant variations in expression between inflamed and non-inflamed samples appear only in the descending colon and sigmoid colon. In the ascending colon, the differences do not exceed the significance threshold, while in the terminal ileum, the inflamed samples are too few to make a reliable comparison.
 
 ```{r significant_gene_counts_by_anatomic_location}
 de_by_loc <- finaldata |>
@@ -162,9 +173,8 @@ de_by_loc |>
   geom_col(position = "dodge") +
   coord_flip() +
   theme_minimal()
+ggsave("significant_gene_count_by_anatomic_location.png", path = "../results", dpi = 300, width = 20, height = 12, units = "cm")
 ```
-
-The graph shows that significant variations in expression between inflamed and non-inflamed samples appear only in the descending colon and sigmoid colon. In the ascending colon, the differences do not exceed the significance threshold, while in the terminal ileum, the inflamed samples are too few to make a reliable comparison.
 
 ## Cleaning environment
 
