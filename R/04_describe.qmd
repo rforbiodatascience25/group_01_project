@@ -27,6 +27,8 @@ featuredata <- read_csv("../data/featuredata.csv.gz")
 
 ## Finaldata:
 
+Here we select all the the meta data to make a table, so we get an entry for each patient, so we can see their smoking habits, ethnicity, blood status and more.
+
 ```{r}
 fin_all<-finaldata|>
   select(
@@ -96,6 +98,8 @@ label(fin_all$age)<-"Age"
 label(fin_all$age_group)<-"Age group"
 ```
 
+Here we create a table of the data using table1 using the variables shown in the code.
+
 ```{r}
 table1(
   ~ age + neutrophils + albumin +
@@ -114,7 +118,7 @@ Ninety-three subjects were included, of whom 63 (67.7%) were diagnosed with ulce
 
 The mean age of the UC group was 50.9 ± 15.9 years, while the control group had a median age of 47 years (range 17-84). In terms of age distribution, the trend is for a higher percentage of subjects older than 60 years in the UC group (22.2% vs. 6.7%).
 
-Laboratory parameters for neutrophilia and albumin were present only in a small portion of the UC group, in 4 and 3 subjects respectively, and were completely absent in the control group. They will therefore not be considered in subsequent investigations.
+Laboratory parameters for neutrophilis and albumin were present only in a small portion of the UC group, in 4 and 3 subjects respectively, and were completely absent in the control group. They will therefore not be considered in subsequent investigations.
 
 The predominant ethnicity in the dataset is Caucasian (90.3%), followed by Asian (3.2% all in the UC group) and Jewish (6.5% all in the control group)
 
@@ -139,6 +143,8 @@ Almost all subjects in the dataset (98.8% and 93.5%, respectively) did not have 
 As for relatives affected by IBD, they are present only in the UC group (4 patients with 1 or 2 affected relatives), while they are totally absent in the control group.
 
 ## Featuredata:
+
+here we gather featuredata and investigate which information is available about the gene meta data.
 
 ```{r}
 feat_all<-featuredata|>
@@ -190,6 +196,8 @@ label(feat_all$HAS_DESCRIPTION)<-"Has description"
 label(feat_all$HAS_GO)<-"Has GO annotation"
 label(feat_all$HAS_SEQUENCE)<-"Has probe sequence"
 ```
+
+Creating a table for summarising the gene meta data.
 
 ```{r}
 table1(
