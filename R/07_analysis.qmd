@@ -167,7 +167,7 @@ de_by_loc <- finaldata |>
   ungroup()
 
 de_by_loc |>
-  group_by(anatomic_location, sig) |>
+  group_by(anatomic_location, significanse) |>
   summarise(n = n(), .groups = "drop") |>
   ggplot(aes(anatomic_location, n, fill = significance)) +
   geom_col(position = "dodge") +
