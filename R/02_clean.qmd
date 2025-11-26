@@ -116,6 +116,8 @@ Now we see the data transposed with 202 rows and 40,992 columns, as opposed to t
 
 ## Removing low variance genes
 
+To lighten the load on the server we also removed low variance genes, also if there is little to no variance the genes are probably not important.
+
 ```{r}
 gene_var <- exprs_df |> 
   # drop the sample ID column, keep only expression values
@@ -150,7 +152,7 @@ length(genes_keep)
 
 ## phenoData\$data from \_raw/gse11223.rds
 
-Metadata concerning samples (patients)
+Metadata concerning samples (patients), extracting the nested data frame phenodata, while removing
 
 ```{r}
 gse11223 <- read_rds(file = file.path(data_dir,"01_load_meta_data.rds")) 
@@ -265,7 +267,7 @@ Metadata concerning genes
 featuredata <- pData(featureData(gse11223))
 ```
 
-Now we filter the same low variance genes from featuredata
+Now we filter the same low variance genes from featuredata using the gene ID in genes_keep
 
 ```{r}
 featuredata <- featuredata |>
