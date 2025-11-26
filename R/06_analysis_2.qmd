@@ -23,8 +23,13 @@ finaldata <- read_csv("../data/03_dat_aug.csv.gz")
 featuredata <- read_csv("../data/featuredata.csv.gz")
 ```
 
-```{r age_groups_distribution_inflammation_status}
-finaldata |> 
+## Distribution of age and inflammation status 
+
+Plotting the age groups and the inflammation status. For all age groups, there are uninflamed patients than inflamed.
+
+```{r age_groups_distribution_inflammation_status, fig-format="png"}
+finaldata |>
+    distinct(geo_accession, .keep_all = TRUE) |>
     filter(!is.na(age_group)) |>
     ggplot(mapping = aes(x = age_group, fill = inflammation_status))+
        geom_bar(position = position_dodge2(preserve = "single", padding = 0), 
@@ -41,17 +46,28 @@ finaldata |>
       )
 ```
 
-```{r gene_expression_by_smoking_status_and_inflammation}
+## Correlation between gene expression, inflammation status and smoking status
+
+Plotting the correlation between gene expression, inflammation status and smoking status. For the people who are currently smoking as well as people who have never smoked, there are slightly more that are inflamed.
+
+```{r gene_expression_by_smoking_status_and_inflammation, fig-format="png"}
+
 finaldata |>
+  distinct(geo_accession, .keep_all = TRUE) |>
   filter(!is.na(smoking_status)) |> 
-  ggplot(aes(x = smoking_status, y = gene_expr, 
+  ggplot(aes(x = smoking_status, 
              fill = inflammation_status)) +
-  geom_violin(trim = FALSE, alpha = 0.5) +
-  geom_boxplot(width = 0.15, outlier.shape = NA, position = position_dodge(width = 0.9)) +
-  coord_flip() +
+  geom_bar(position = position_dodge2(preserve = "single", padding = 0),
+        color = "black", 
+        alpha = 0.4) +
   theme_minimal() +
-  labs(x = "Smoking status", y = "Gene expression")
+   theme(
+        legend.position = "bottom"
+     ) +
+  labs(x = "Smoking status", y = "n", fill = "Inflammation-status")
 ```
+
+## Cleaning the environment
 
 ```{r}
 rm(list = ls())
