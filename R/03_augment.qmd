@@ -67,6 +67,8 @@ finaldata <- finaldata |>
 
 ## Preparation for volcano plot
 
+First we remove the NA from both gene_expr and inflammation_status as if we try to do a t-test without removing these NAs it would not work. We are this is only for use in the vulcano plot as it might skew the other analysis.
+
 ```{r}
 final_clean <- finaldata |>
   filter(!is.na(gene_expr),
@@ -76,6 +78,10 @@ final_clean <- finaldata |>
                                  levels = c("Uninflamed", "Inflamed")) # control first
   )
 ```
+
+Here we get group the data by Gene id. We take the mean of gene expression for both the inflammed group and the uninflammed group. We used tryCatch to make sure the code is run and returns NA if the it fails. we save the significant p-values and negative log 10 p- value.
+
+The t-test significance are done with a 95% confidence interval hence any values outside of the 95 % confidence interval would be considered significant.
 
 ```{r}
 de_results <- final_clean |>
