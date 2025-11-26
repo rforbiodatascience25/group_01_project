@@ -69,9 +69,9 @@ finaldata |>
   )
 ```
 
-## Mean gene expression per patient across in inflamed and uninflamed samples
+## Mean gene expression per patient across in inflamed and un-inflamed samples
 
-We now examine the mean gene expression between inflamed and uninflamed samples on a patient basis, to see if that showcases a difference in gene expression.
+We now examine the mean gene expression between inflamed and un-inflamed samples on a patient basis, to see if that showcases a difference in gene expression. The mean gene expression is lower for the un-inflamed patients than for the inflamed patients.
 
 ```{r mean_gene_expression_per_patient_inflamed_uninflamed}
 patient_means <- finaldata |> 
@@ -86,6 +86,10 @@ ggplot(patient_means, aes(x = inflammation_status, y = mean_expr)) +
 ```
 
 ## Identification of significant genes during dependent on inflammation state using a Volcano plot
+
+Creating a volcano plot to see which genes are significnalty (p \< 0.05 ) up-regulated in the un-inflamed and inflamed patients. The biologically relevant genes are selected (the ones with a minimum of log2 fold change of 0.25). The blue dots represent the genes that are significnatly up-regulated in un-inflamed patients and the red dots represent the genes that are significantly up-regulated in the inflamed patients. They grey dots represent the genes that did not show any significant up-regulation. The genes that are very significantly up-regulated (p \> 10\^-10) are labeled.
+
+As can be seen in the plot, there are more genes that are up-regulated in inflamed patients than in non-inflamed patients. Some of the genes that are strongly up-regulated are associated with the immune system, e.g. LCN2 and IGHG1, suggesting increased immune activation.
 
 ```{r volcano_plot_colonic_gene_expression}
 lfc_cut <- 0.25   # Minimum |log2FC| to call biologically relevant
@@ -181,6 +185,10 @@ ggplot(plot_df,
   )
 ```
 
+## Expression of the 40 most significant genes
+
+Plotting the expression of the 40 most significant genes in both inflamed and un-inflamed patients. The inflamed patients have a higher expression of some of the genes associated with immune activation compared to the un-inflamed patients. This is for example LCN2 and IGHG1 which is in compliance with the results from the volcano plot. Some of the genes that are down-regulated include GCNT2 and UGT2A3 which are housekeeping genes that are suppressed to free up resources.
+
 ```{r top40_differential_genes_across_samples}
 #Pick top 40 most significant genes
 top_markers <- sig_genes |>
@@ -225,7 +233,7 @@ ggplot(heat_df,
 
 ## Correlation between time untreated and gene expression
 
-Plotting the correlation between the time patients went untreated and the gene expression of significant genes. Looking at the genes that were up-regulated in inflamed patients (red) it can be seen that some of the patients with the genes that were the most upregulated went to the doctor earlier compared to some of the patients that had genes that were the least upregulated.
+Plotting the correlation between the time patients went untreated and the gene expression of significant genes. Looking at the genes that were up-regulated in inflamed patients (red) it can be seen that some of the patients with the genes that were the most up-regulated went to the doctor earlier compared to some of the patients that had genes that were the least up-regulated.
 
 ```{r correlation_time_untreated_significant_genes}
 finaldata |>
