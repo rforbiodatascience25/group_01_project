@@ -1,6 +1,7 @@
-------------------------------------------------------------------------
-
-title: "00_all" format: html: fig-format: png fig-dpi: 300 fig-width: 1 fig-height: 6
+---
+title: "00_all"
+format: html
+---
 
 # All
 
