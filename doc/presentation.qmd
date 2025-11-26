@@ -110,21 +110,51 @@ exprs_filtered <- exprs_df |>
 
 # Results Emiliano 4
 
-![](Put_file_path_and_file_here)
+::::: columns
+::: {#Results .column width="30%"}
+-   Key points
+:::
 
-Double click above to edit
+::: {.column width="70%"}
+![](Double_click_me)
+:::
+:::::
 
 # plot Trine 5
 
-![](Same%20as%20above)
+::::: columns
+::: {.column width="30%"}
+-   key points
+:::
+
+::: {.column width="70%"}
+![](Double_click_me)
+:::
+:::::
 
 # Plot Oliver 6
 
-![](plot3)
+::::: columns
+::: {.column width="30%"}
+-   key points
+:::
+
+::: {.column width="70%"}
+![](Double_click_me)
+:::
+:::::
 
 # Plot asbjørn 7
 
-![](plot%204)
+::::: columns
+::: {.column width="30%"}
+-   key points
+:::
+
+::: {.column width="70%"}
+![](Double_click_me)
+:::
+:::::
 
 # Discussion 8
 
