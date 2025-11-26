@@ -3,6 +3,21 @@ title: "07_analysis"
 format: html
 ---
 
+# Analysis 3
+
+## Loading libraries
+
+```{r}
+#| message: false
+#| warning: false
+
+library("tidyverse")
+library("dplyr")
+library("ggplot2")
+```
+
+## Loading finaldata, featuredata and de_results
+
 ```{r}
 #| message: false
 #| warning: false
@@ -10,9 +25,6 @@ format: html
 finaldata <- read_csv("../data/03_dat_aug.csv.gz")
 featuredata <- read_csv("../data/featuredata.csv.gz")
 source("99_proj_func.R")
-
-library(dplyr)
-library(ggplot2)
 
 colnames(finaldata)
 colnames(featuredata)
@@ -70,7 +82,7 @@ finaldata |>
     )
 ```
 
-# GC and AT content
+## GC and AT content
 
 ```{r}
 gc_content <- function(seq) {
@@ -124,7 +136,7 @@ boxplot(at_content ~ disease,
 
 There is no significant difference in the amount of A and T in the sequences between the two groups of Patients and Controls
 
-# Significance based on anatomical location
+## Significance based on anatomical location
 
 ```{r}
 de_by_loc <- finaldata |>
