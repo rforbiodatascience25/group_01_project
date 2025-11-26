@@ -21,16 +21,6 @@ library("knitr")
 ```
 
 ```{r}
-#| include: false
-
-knitr::opts_chunk$set(
-  dev = "png",      # <- force png device
-  fig.width = 10,   # optional, full-width-ish
-  fig.height = 6
-)
-```
-
-```{r}
 #| child:
 #|   - "01_load.qmd"
 #|   - "02_clean.qmd"
