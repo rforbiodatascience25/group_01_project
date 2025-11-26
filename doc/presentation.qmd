@@ -13,14 +13,6 @@ format:
 output-dir: doc
 ---
 
-```{r}
-#| eval: true
-
-# Delete this when we can source the pngs
-library("tidyverse")
-finaldata <- read.csv(file = "../data/03_dat_aug.csv.gz")
-```
-
 # Introduction 1
 
 ::: {#Introduction style="font-size: 0.8em"}
@@ -41,7 +33,7 @@ finaldata <- read.csv(file = "../data/03_dat_aug.csv.gz")
 # Materials of Methods 2
 
 ::::: columns
-::: {.column width="50%" style="font-size: 0.9em"}
+::: {.column width="50%" style="font-size: 0.8em"}
 -   Biopsies from the gut
     -   202 samples
 
@@ -55,14 +47,7 @@ finaldata <- read.csv(file = "../data/03_dat_aug.csv.gz")
 :::
 
 ::: {.column width="50%"}
-```{r}
-finaldata |> 
-  distinct(geo_accession, .keep_all = TRUE) |> 
-  ggplot(aes(x = age_group)
-) +
-  geom_bar()
-
-```
+![](images/age_groups_distribution_inflammation_status.png)
 :::
 :::::
 
@@ -73,7 +58,7 @@ finaldata |>
 ## Filtering data 3
 
 ::::: columns
-::: {.column width="40%"}
+::: {.column width="50%" style="font-size: 0.9em"}
 Removing one-type columns
 
 ```{r Cleaning_phenodata, echo=TRUE, eval=FALSE}
@@ -83,10 +68,12 @@ phenodata <- phenodata |>
       ~ n_distinct(
         .x, na.rm = TRUE) > 1))
 ```
+
+![](images/variance_distribution_across_genes.png)
 :::
 
-::: {.column width="60%"}
-Removing low variance genes - 37000 of 40000
+::: {.column width="50%" style="font-size: 0.9em"}
+Removing low variance genes - 37000 of 40000 leaving 10 %
 
 ```{r Cleaning_genes, echo=TRUE, eval=FALSE}
 gene_var <- exprs_df |> 
@@ -113,12 +100,12 @@ exprs_filtered <- exprs_df |>
 # Results 4
 
 ::::: columns
-::: {#Results .column width="30%"}
+::: {.column width="30%"}
 -   Key points
 :::
 
 ::: {.column width="70%"}
-![](Double_click_me)
+![](images/volcano_plot_colonic_gene_expression_RF-01.png)
 :::
 :::::
 
@@ -130,7 +117,7 @@ exprs_filtered <- exprs_df |>
 :::
 
 ::: {.column width="70%"}
-![](Double_click_me)
+![](images/top40_differential_genes_across_samples.png)
 :::
 :::::
 
@@ -142,19 +129,7 @@ exprs_filtered <- exprs_df |>
 :::
 
 ::: {.column width="70%"}
-![](Double_click_me)
-:::
-:::::
-
-# Plot 7
-
-::::: columns
-::: {.column width="30%"}
--   key points
-:::
-
-::: {.column width="70%"}
-![](Double_click_me)
+![](images/significant_gene_count_by_anatomic_location.png)
 :::
 :::::
 

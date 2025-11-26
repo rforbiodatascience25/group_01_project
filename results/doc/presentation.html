@@ -423,7 +423,7 @@ Asbjørn, Emiliano, Magnus, Oliver and Trine
 <section id="materials-of-methods-2" class="title-slide slide level1 center">
 <h1>Materials of Methods 2</h1>
 <div class="columns">
-<div class="column" style="font-size: 0.9em">
+<div class="column" style="font-size: 0.8em">
 <ul>
 <li>Biopsies from the gut
 <ul>
@@ -439,15 +439,7 @@ Asbjørn, Emiliano, Magnus, Oliver and Trine
 </ul></li>
 </ul>
 </div><div class="column" style="width:50%;">
-<div class="cell">
-<div class="cell-output-display">
-<div>
-<figure>
-<p><img data-src="presentation_files/figure-revealjs/unnamed-chunk-2-1.svg" width="960"></p>
-</figure>
-</div>
-</div>
-</div>
+<p><img data-src="images/age_groups_distribution_inflammation_status.png"></p>
 </div></div>
 <div id="Source" class="Reference" style="font-size: 0.4em">
 <p><em>Noble CL, Abbas AR, Cornelius J, et al Regional variation in gene expression in the healthy colon is dysregulated in ulcerative colitis Gut 2008;<strong>57:</strong>1398-1405.</em></p>
@@ -456,7 +448,7 @@ Asbjørn, Emiliano, Magnus, Oliver and Trine
 <section id="filtering-data-3" class="slide level2">
 <h2>Filtering data 3</h2>
 <div class="columns">
-<div class="column" style="width:50%;">
+<div class="column" style="font-size: 0.9em">
 <p>Removing one-type columns</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href=""></a>phenodata <span class="ot">&lt;-</span> phenodata <span class="sc">|&gt;</span></span>
@@ -465,8 +457,9 @@ Asbjørn, Emiliano, Magnus, Oliver and Trine
 <span id="cb1-4"><a href=""></a>      <span class="sc">~</span> <span class="fu">n_distinct</span>(</span>
 <span id="cb1-5"><a href=""></a>        .x, <span class="at">na.rm =</span> <span class="cn">TRUE</span>) <span class="sc">&gt;</span> <span class="dv">1</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-</div><div class="column" style="width:50%;">
-<p>Removing low variance genes</p>
+<p><img data-src="images/variance_distribution_across_genes.png"></p>
+</div><div class="column" style="font-size: 0.9em">
+<p>Removing low variance genes - 37000 of 40000 leaving 10 %</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href=""></a>gene_var <span class="ot">&lt;-</span> exprs_df <span class="sc">|&gt;</span> </span>
 <span id="cb2-2"><a href=""></a>  <span class="co"># Drop the sample ID column, keep only expression values</span></span>
@@ -487,51 +480,39 @@ Asbjørn, Emiliano, Magnus, Oliver and Trine
 </div>
 </div></div>
 </section></section>
-<section id="results-emiliano-4" class="title-slide slide level1 center">
-<h1>Results Emiliano 4</h1>
+<section id="results-4" class="title-slide slide level1 center">
+<h1>Results 4</h1>
 <div class="columns">
-<div id="Results" class="column" style="width:30%;">
+<div class="column" style="width:30%;">
 <ul>
 <li>Key points</li>
 </ul>
 </div><div class="column" style="width:70%;">
-<p><img data-src="Double_click_me.png"></p>
+<p><img data-src="images/volcano_plot_colonic_gene_expression_RF-01.png"></p>
 </div></div>
 </section>
 
-<section id="plot-trine-5" class="title-slide slide level1 center">
-<h1>plot Trine 5</h1>
+<section id="plot-5" class="title-slide slide level1 center">
+<h1>plot 5</h1>
 <div class="columns">
 <div class="column" style="width:30%;">
 <ul>
 <li>key points</li>
 </ul>
 </div><div class="column" style="width:70%;">
-<p><img data-src="Double_click_me.png"></p>
+<p><img data-src="images/top40_differential_genes_across_samples.png"></p>
 </div></div>
 </section>
 
-<section id="plot-oliver-6" class="title-slide slide level1 center">
-<h1>Plot Oliver 6</h1>
+<section id="plot-6" class="title-slide slide level1 center">
+<h1>Plot 6</h1>
 <div class="columns">
 <div class="column" style="width:30%;">
 <ul>
 <li>key points</li>
 </ul>
 </div><div class="column" style="width:70%;">
-<p><img data-src="Double_click_me.png"></p>
-</div></div>
-</section>
-
-<section id="plot-asbjørn-7" class="title-slide slide level1 center">
-<h1>Plot asbjørn 7</h1>
-<div class="columns">
-<div class="column" style="width:30%;">
-<ul>
-<li>key points</li>
-</ul>
-</div><div class="column" style="width:70%;">
-<p><img data-src="Double_click_me.png"></p>
+<p><img data-src="images/significant_gene_count_by_anatomic_location.png"></p>
 </div></div>
 </section>
 
