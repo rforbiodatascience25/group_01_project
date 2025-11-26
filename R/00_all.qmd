@@ -4,6 +4,8 @@ format:
   html:
     fig-format: png
     fig-dpi: 300
+    fig-width: 1
+    fig-height: 6
 output-dir: ../results
 ---
 
@@ -16,6 +18,16 @@ output-dir: ../results
 #| include: false
 
 library("knitr")
+```
+
+```{r}
+#| include: false
+
+knitr::opts_chunk$set(
+  dev = "png",      # <- force png device
+  fig.width = 10,   # optional, full-width-ish
+  fig.height = 6
+)
 ```
 
 ```{r}
