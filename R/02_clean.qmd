@@ -174,7 +174,6 @@ phenodata <- phenodata |>
   select(where(~ n_distinct(.x, na.rm = TRUE) > 1))
 
 names(phenodata)
-phenodata
 ```
 
 Then we remove the duplicate columns and rename them appropriately
@@ -219,7 +218,6 @@ phenodata <- phenodata |>
 
 
 names(phenodata)
-phenodata
 ```
 
 ```{r}

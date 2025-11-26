@@ -72,8 +72,6 @@ gds3268 is the curated dataset for the project, meaning that the meta data of sa
 
 ```{r}
 gds3268_meta <- Meta(gds3268)
-
-gds3268
 ```
 
 ```{r}

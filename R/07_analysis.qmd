@@ -3,6 +3,8 @@ title: "07_analysis"
 format: html
 ---
 
+# Analysis 3
+
 ```{r}
 #| message: false
 #| warning: false
@@ -70,7 +72,7 @@ finaldata |>
     )
 ```
 
-# GC and AT content
+## GC and AT content
 
 ```{r gc_content_comparison_healthy_vs_diseased, fig-format="png"}
 gc_content <- function(seq) {
@@ -124,7 +126,7 @@ boxplot(at_content ~ disease,
 
 There is no significant difference in the amount of A and T in the sequences between the two groups of Patients and Controls
 
-# Significance based on anatomical location
+## Significance based on anatomical location
 
 ```{r significant_gene_counts_by_anatomic_location, fig-format="png"}
 de_by_loc <- finaldata |>
