@@ -73,7 +73,7 @@ finaldata |>
 ## Filtering data 3
 
 ::::: columns
-::: {.column width="50%"}
+::: {.column width="40%"}
 Removing one-type columns
 
 ```{r Cleaning_phenodata, echo=TRUE, eval=FALSE}
@@ -85,8 +85,8 @@ phenodata <- phenodata |>
 ```
 :::
 
-::: {.column width="50%"}
-Removing low variance genes
+::: {.column width="60%"}
+Removing low variance genes - 37000 of 40000
 
 ```{r Cleaning_genes, echo=TRUE, eval=FALSE}
 gene_var <- exprs_df |> 
