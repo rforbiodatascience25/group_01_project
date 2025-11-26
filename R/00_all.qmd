@@ -1,6 +1,9 @@
 ---
 title: "00_all"
-format: html
+format:
+  html:
+    fig-format: png
+    fig-dpi: 300
 output-dir: ../results
 ---
 
