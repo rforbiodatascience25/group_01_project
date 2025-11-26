@@ -5,6 +5,16 @@ format: html
 
 # Cleaning data
 
+## Loading libraries
+
+```{r}
+#| message: false
+#| warning: false
+
+library("stringr")
+library("tidyverse")
+```
+
 Clean \_raw/ data to data/
 
 Converts each of the following to a tibble dataframe in the tidy format
@@ -36,7 +46,7 @@ Expression data of patients with different genes. (patient) Samples are stored a
 
 ```{r}
 #Applying the Table function from GEOquery to extract the dataframe.
-exprs_geodf <- Table(read_rds(file.path(raw_dir,"raw_expression_data.rds")))
+exprs_geodf <- Table(read_rds(file.path(data_dir,"01_load_expression_data.rds")))
 #exprs_geodf <- Table(read_rds("../_raw/gds3268.rds"))
 exprs_geodf <- as_tibble(exprs_geodf)
 exprs_geodf
@@ -143,7 +153,7 @@ length(genes_keep)
 Metadata concerning samples (patients)
 
 ```{r}
-gse11223 <- read_rds(file = file.path(raw_dir,"raw_meta_data.rds")) 
+gse11223 <- read_rds(file = file.path(data_dir,"01_load_meta_data.rds")) 
 
 phenodata <- pData(phenoData(gse11223[1]))
 
@@ -170,8 +180,6 @@ phenodata
 Then we remove the duplicate columns and rename them appropriately
 
 ```{r}
-library(stringr)
-
 phenodata <- phenodata |>
   #Convert all columns with "characteristics_ch1" to long format
   pivot_longer(

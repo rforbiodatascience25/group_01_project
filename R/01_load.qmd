@@ -3,7 +3,17 @@ title: "01_load"
 format: html
 ---
 
-# Load data
+# Loading data
+
+## Loading libraries
+
+```{r}
+#| message: false
+#| warning: false
+
+library("GEOquery")
+library("tidyverse")
+```
 
 ### Make \_raw dir
 
@@ -25,16 +35,6 @@ if (!dir.exists(raw_dir)) {
 #dir.create("../data/")
 ```
 
-### Loading libraries
-
-```{r}
-#| message: false
-#| warning: false
-
-library("GEOquery")
-library("tidyverse")
-```
-
 ### Loading GEO data using GEOquery
 
 <https://warwick.ac.uk/fac/sci/moac/people/students/peter_cock/r/geo/>
@@ -47,6 +47,13 @@ The getGEO function from GEOquery obtains queries GEO datasets with the GEO id (
 #| message: false
 gse11223 <- getGEO(GEO="GSE11223")
 gds3268 <- getGEO(GEO="GDS3268")
+```
+
+Making raw data files
+
+```{r}
+write_rds(gds3268, file=file.path(raw_dir,"/raw_expression_data.rds"))
+write_rds(gse11223, file=file.path (raw_dir,"/raw_meta_data.rds"))
 ```
 
 #### Working with the raw "gse" data
@@ -65,12 +72,14 @@ gds3268 is the curated dataset for the project, meaning that the meta data of sa
 
 ```{r}
 gds3268_meta <- Meta(gds3268)
-gds3268_meta
+
+gds3268
 ```
 
 ```{r}
 gds3268_expression <- Table(gds3268)
-gds3268_expression
+
+slice_sample( gds3268_expression, n = 10)
 ```
 
 **Save gse11223 & gds3268 objects in \_raw/**
@@ -78,8 +87,8 @@ gds3268_expression
 underlying tables can be extracted from each when they're loaded as rds files, this ensures collectively of the two pulls when working with the data.
 
 ```{r}
-write_rds(gds3268, file=file.path(raw_dir,"/raw_expression_data.rds"))
-write_rds(gse11223, file=file.path (raw_dir,"/raw_meta_data.rds"))
+write_rds(gds3268, file=file.path(data_dir,"01_load_expression_data.rds"))
+write_rds(gse11223, file=file.path (data_dir,"01_load_meta_data.rds"))
 
 #write_rds(gds3268, file="../_raw/gds3268.rds")
 #write_rds(gse11223, file="../_raw/gse11223.rds")
