@@ -49,6 +49,13 @@ gse11223 <- getGEO(GEO="GSE11223")
 gds3268 <- getGEO(GEO="GDS3268")
 ```
 
+Making raw data files
+
+```{r}
+write_rds(gds3268, file=file.path(raw_dir,"/raw_expression_data.rds"))
+write_rds(gse11223, file=file.path (raw_dir,"/raw_meta_data.rds"))
+```
+
 #### Working with the raw "gse" data
 
 For GSE11223, getGEO pulls the data into a list of length 1. The file GSE11223_series_matrix.txt.gz is extracted into the first (and only) position of that list. We therefore extract the data, getting rid of the parent list:
@@ -78,8 +85,8 @@ gds3268_expression
 underlying tables can be extracted from each when they're loaded as rds files, this ensures collectively of the two pulls when working with the data.
 
 ```{r}
-write_rds(gds3268, file=file.path(raw_dir,"/raw_expression_data.rds"))
-write_rds(gse11223, file=file.path (raw_dir,"/raw_meta_data.rds"))
+write_rds(gds3268, file=file.path(data_dir,"01_load_expression_data.rds"))
+write_rds(gse11223, file=file.path (data_dir,"01_load_meta_data.rds"))
 
 #write_rds(gds3268, file="../_raw/gds3268.rds")
 #write_rds(gse11223, file="../_raw/gse11223.rds")
