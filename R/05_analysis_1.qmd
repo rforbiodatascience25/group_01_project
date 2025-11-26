@@ -5,6 +5,10 @@ format:
     fig-format: png
 ---
 
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(dev = "png")
+```
+
 # Analysis 1
 
 ## Loading libraries
