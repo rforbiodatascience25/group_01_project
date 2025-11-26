@@ -15,7 +15,7 @@ library("tidyverse")
 
 ## Loading finaldata and featuredata
 
-```{r age_group_distribution_by_inflammation_status}
+```{r}
 #| message: false
 #| warning: false
 
