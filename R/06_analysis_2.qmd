@@ -29,11 +29,11 @@ finaldata <- read_csv("../data/03_dat_aug.csv.gz")
 featuredata <- read_csv("../data/featuredata.csv.gz")
 ```
 
-## Distribution of age and inflammation status 
+## Distribution of age and inflammation status
 
 Plotting the age groups and the inflammation status. For all age groups, there are uninflamed patients than inflamed.
 
-```{r age_groups_distribution_inflammation_status, fig-format="png"}
+```{r age_groups_distribution_inflammation_status}
 finaldata |>
     distinct(geo_accession, .keep_all = TRUE) |>
     filter(!is.na(age_group)) |>
@@ -56,7 +56,7 @@ finaldata |>
 
 Plotting the correlation between gene expression, inflammation status and smoking status. For the people who are currently smoking as well as people who have never smoked, there are slightly more that are inflamed.
 
-```{r gene_expression_by_smoking_status_and_inflammation, fig-format="png"}
+```{r gene_expression_by_smoking_status_and_inflammation}
 
 finaldata |>
   distinct(geo_accession, .keep_all = TRUE) |>

@@ -1,6 +1,8 @@
 ---
 title: "02_clean"
-format: html
+format:
+  html:
+    fig-format: png
 ---
 
 # Cleaning data
@@ -118,7 +120,7 @@ Now we see the data transposed with 202 rows and 40,992 columns, as opposed to t
 
 To lighten the load on the server we also removed low variance genes, also if there is little to no variance the genes are probably not important.
 
-```{r variance_distribution_across_genes, fig-format="png"}
+```{r variance_distribution_across_genes}
 gene_var <- exprs_df |> 
   # drop the sample ID column, keep only expression values
   select(-geo_accession) |> 
