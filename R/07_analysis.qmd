@@ -162,14 +162,14 @@ de_by_loc <- finaldata |>
   group_by(anatomic_location) |>
   mutate(
     FDR = p.adjust(p_value, "BH"),
-    significance = !is.na(FDR) & FDR < 0.05
+    sig = !is.na(FDR) & FDR < 0.05
   ) |>
   ungroup()
 
 de_by_loc |>
-  group_by(anatomic_location, significanse) |>
+  group_by(anatomic_location, sig) |>
   summarise(n = n(), .groups = "drop") |>
-  ggplot(aes(anatomic_location, n, fill = significance)) +
+  ggplot(aes(anatomic_location, n, fill = sig)) +
   geom_col(position = "dodge") +
   coord_flip() +
   theme_minimal()
