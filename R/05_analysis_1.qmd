@@ -3,20 +3,22 @@ title: "05_analysis_1"
 format: html
 ---
 
-# Analysis
+# Analysis 1
 
-## Init
+## Loading libraries
 
 ```{r}
-library(ggrepel)
-library(dplyr)
+library("ggrepel")
+library("dplyr")
+library("tidyverse")
 ```
 
-# Load
+## Loading finaldata, featuredata and de_results
 
 ```{r}
 #| message: false
 #| warning: false
+
 finaldata   <- read_csv("../data/03_dat_aug.csv.gz")
 featuredata <- read_csv("../data/featuredata.csv.gz")
 de_results <- read_csv("../data/03_de_results.csv.gz")
@@ -26,7 +28,7 @@ de_results <- read_csv("../data/03_de_results.csv.gz")
 
 To get an idea of the distribution of the genes between samples categorized as either inflamed or uninflamed, we make a histogram (see Figure X), which shows that they have a normal distribution around 0.
 
-```{r}
+```{r distribution_gene_expression_inflamed_uninflamed, fig-format="png"}
 finaldata |> 
   mutate(inflammation_status = factor(inflammation_status,
                                       levels = c("Uninflamed", "Inflamed"))) |>
@@ -43,7 +45,7 @@ finaldata |>
 
 We then try to get an idea, if there is a difference in the gene expression pattern across anatomic locations and whether or not the sample experienced inflammation or not. From this plot it is not clear so we explore further.
 
-```{r}
+```{r gene_expression_by_anatomic_location_and_inflammation, fig-format="png"}
 loc_counts <- finaldata |>
   dplyr::count(anatomic_location)
 
@@ -71,7 +73,7 @@ finaldata |>
 
 We now examine the mean gene expression between inflamed and uninflamed samples on a patient basis, to see if that showcases a difference in gene expression.
 
-```{r}
+```{r mean_gene_expression_per_patient_inflamed_uninflamed, fig-format="png"}
 patient_means <- finaldata |> 
   group_by(patient, inflammation_status) |> 
   summarise(mean_expr = mean(gene_expr, na.rm = TRUE), .groups = "drop")
@@ -85,7 +87,7 @@ ggplot(patient_means, aes(x = inflammation_status, y = mean_expr)) +
 
 ## Identification of significant genes during dependent on inflammation state using a Volcano plot
 
-```{r}
+```{r volcano_plot_colonic_gene_expression, fig-format="png"}
 lfc_cut <- 0.25   # Minimum |log2FC| to call biologically relevant
 p_cut   <- 0.05   # p-value threshold
 
@@ -179,7 +181,7 @@ ggplot(plot_df,
   )
 ```
 
-```{r}
+```{r top40_differential_genes_across_samples, fig-format="png"}
 #Pick top 40 most significant genes
 top_markers <- sig_genes |>
   slice_min(FDR, n = 40) |>
@@ -225,7 +227,7 @@ ggplot(heat_df,
 
 Plotting the correlation between the time patients went untreated and the gene expression of significant genes. Looking at the genes that were up-regulated in inflamed patients (red) it can be seen that some of the patients with the genes that were the most upregulated went to the doctor earlier compared to some of the patients that had genes that were the least upregulated.
 
-```{r}
+```{r correlation_time_untreated_significant_genes, fig-format="png"}
 finaldata |>
   filter(gene_id == sig_genes$gene_id) |> 
   select(geo_accession, gene_id, time_untreated, disease, family_history) |> 
@@ -240,7 +242,7 @@ finaldata |>
   theme(legend.position = "bottom")
 ```
 
-# Cleaning environment
+## Cleaning environment
 
 ```{r}
 rm(list = ls())

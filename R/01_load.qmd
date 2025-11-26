@@ -3,7 +3,17 @@ title: "01_load"
 format: html
 ---
 
-# Load data
+# Loading data
+
+## Loading libraries
+
+```{r}
+#| message: false
+#| warning: false
+
+library("GEOquery")
+library("tidyverse")
+```
 
 ### Make \_raw dir
 
@@ -23,16 +33,6 @@ if (!dir.exists(raw_dir)) {
   
 #dir.create("../_raw/")
 #dir.create("../data/")
-```
-
-### Loading libraries
-
-```{r}
-#| message: false
-#| warning: false
-
-library("GEOquery")
-library("tidyverse")
 ```
 
 ### Loading GEO data using GEOquery
