@@ -1,7 +1,13 @@
 ---
 title: "06_analysis_2"
-format: html
+format:
+  html:
+    fig-format: png
 ---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(dev = "png")
+```
 
 # Analysis 2
 
@@ -15,7 +21,7 @@ library("tidyverse")
 
 ## Loading finaldata and featuredata
 
-```{r}
+```{r age_group_distribution_by_inflammation_status}
 #| message: false
 #| warning: false
 
