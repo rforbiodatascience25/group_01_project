@@ -64,7 +64,7 @@ finaldata |>
 :::
 :::::
 
-::: {#Source .Reference style="font-size: 0.6em"}
+::: {#Source .Reference style="font-size: 0.4em"}
 *Noble CL, Abbas AR, Cornelius J, et al Regional variation in gene expression in the healthy colon is dysregulated in ulcerative colitis Gut 2008;**57:**1398-1405.*
 :::
 
@@ -110,12 +110,58 @@ exprs_filtered <- exprs_df |>
 
 # Results Emiliano 4
 
+![](Put_file_path_and_file_here)
+
+Double click above to edit
+
 # plot Trine 5
+
+![](Same%20as%20above)
 
 # Plot Oliver 6
 
+![](plot3)
+
 # Plot asbjørn 7
+
+![](plot%204)
 
 # Discussion 8
 
+::: {#Discussion style="font-size: 0.8em"}
+-   What causes UC
+
+    -   We investigated if there is a genetic bias in getting UC
+
+    -   We investigated the role of smoking
+
+-   Limited sample size (67 patients + 30 controls)
+
+-   Could be caused by
+
+    -   Immune-system issue i.e. an auto immune diesise
+
+    -   Gut bacteria imbalance
+
+    -   Genetic traits
+
+    -   Environmental impact
+
+-   An inconsistent data set - Meta data
+:::
+
+::: {#Source2 style="font-size: 0.4em"}
+<https://www.mayoclinic.org/diseases-conditions/ulcerative-colitis/symptoms-causes/syc-20353326>
+:::
+
 # Conclusion 9
+
+::: {#Conclusion style="font-size: 0.8em"}
+-   Correlation and causality
+
+We showed a Correlation between some genes and ulcerative colitis (UC). However this does not show us if it is caused by the UC or the cause of the UC.
+
+We developed a randomforest model which predicts the significance of genes in UC so this could be used either as a diagnostic tool or for prediction of a future UC patient, however to test this model we would need more data. probably do a genome wide association study
+
+We did not find a correlation between UC and smoking nor a correlation between UC and age. Proving it can become an issue for all people
+:::
