@@ -5,6 +5,16 @@ format: html
 
 # Cleaning data
 
+## Loading libraries
+
+```{r}
+#| message: false
+#| warning: false
+
+library("stringr")
+library("tidyverse")
+```
+
 Clean \_raw/ data to data/
 
 Converts each of the following to a tibble dataframe in the tidy format
@@ -170,8 +180,6 @@ phenodata
 Then we remove the duplicate columns and rename them appropriately
 
 ```{r}
-library(stringr)
-
 phenodata <- phenodata |>
   #Convert all columns with "characteristics_ch1" to long format
   pivot_longer(
