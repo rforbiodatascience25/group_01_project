@@ -27,7 +27,7 @@ featuredata <- read_csv("../data/featuredata.csv.gz")
 
 ## Finaldata:
 
-Here we select all the the meta data to make a table, so we get an entry for each patient, so we can see their smoking habits, ethnicity, blood status and more.
+Here we select all the the meta data to make a table, so we get an entry for each patient, in order to see their smoking habits, ethnicity, blood status and more.
 
 ```{r}
 fin_all<-finaldata|>
@@ -98,7 +98,7 @@ label(fin_all$age)<-"Age"
 label(fin_all$age_group)<-"Age group"
 ```
 
-Here we create a table of the data using table1 using the variables shown in the code.
+Here we create a table of the data using the `table1` package using the variables shown in the code.
 
 ```{r}
 table1(
@@ -197,7 +197,7 @@ label(feat_all$HAS_GO)<-"Has GO annotation"
 label(feat_all$HAS_SEQUENCE)<-"Has probe sequence"
 ```
 
-Creating a table for summarising the gene meta data.
+Creating a table for summarizing the gene meta data.
 
 ```{r}
 table1(

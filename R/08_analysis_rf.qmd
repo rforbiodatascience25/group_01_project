@@ -116,8 +116,13 @@ var_importance <- as.data.frame(round(importance(train_data.rf), 2))
 ```
 
 ```{r}
-var_importance <- var_importance |> 
-  mutate(gene_id = str_split_i(rownames(var_importance), "_", 2))
+var_importance <- var_importance |>
+  mutate(gene_id = str_split_i(rownames(var_importance), "_", 2)) |>
+  mutate(
+    GENE_SYMBOL = featuredata$GENE_SYMBOL[
+      match(gene_id, featuredata$ID)
+    ]
+  )
 ```
 
 ```{r}
@@ -127,7 +132,7 @@ var_importance |>
   slice(1:15) |>
   ggplot(aes(
     # Use reorder() to automatically sort the bars by the MeanDecreaseAccuracy value
-    x = reorder(gene_id, MeanDecreaseAccuracy), 
+    x = reorder(GENE_SYMBOL, MeanDecreaseAccuracy), 
     y = MeanDecreaseAccuracy
   )) +
   geom_bar(stat = "identity", fill = "steelblue") +
@@ -190,7 +195,7 @@ de_results <- read_csv("../data/03_de_results.csv.gz")
 ```
 
 ```{r}
-lfc_cut <- 0.25   # minimum |log2FC| to call biologically relevant
+lfc_cut <- 0.25   # minimum |log2FC|
 p_cut   <- 0.05   # p-value threshold for the dashed line
 
 # Add gene symbol by matching finaldata$gene_id --> featuredata$ID
@@ -208,7 +213,7 @@ label_df <- de_results_annot |>
     !is.na(GENE_SYMBOL)
   )
 
-# Prepare plotting data: FDR + 3-level significance category
+# Prepare plotting data
 plot_df <- de_results_annot |>
   filter(!is.na(p_value)) |>
   mutate(

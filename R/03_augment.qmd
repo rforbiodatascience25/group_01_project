@@ -56,7 +56,7 @@ finaldata <- finaldata |>
 
 ## Reformatting symptoms_onset_date & diagnosis_date & Calculating the time difference from symptoms_onset to diagnosis_date
 
-Will reflect time between disease constetation and treatment. Shorter time from first symptom to treatment may slow the disease development.
+Will reflect time between time of diagnosis and treatment. Shorter time from first symptom to treatment may slow the disease development.
 
 ```{r}
 finaldata <- finaldata |> 
@@ -67,7 +67,7 @@ finaldata <- finaldata |>
 
 ## Preparation for volcano plot
 
-First we remove the NA from both gene_expr and inflammation_status as if we try to do a t-test without removing these NAs it would not work. We are this is only for use in the vulcano plot as it might skew the other analysis.
+First we remove the NA from both gene_expr and inflammation_status as if we try to do a t-test without removing these NAs it would not work. We are this is only for use in the vulcano plot as it might skew the other analysis. An `mutate()` `inflammation_status` in order to create binary factors for the t-test.
 
 ```{r}
 final_clean <- finaldata |>
@@ -79,7 +79,7 @@ final_clean <- finaldata |>
   )
 ```
 
-Here we get group the data by Gene id. We take the mean of gene expression for both the inflammed group and the uninflammed group. We used tryCatch to make sure the code is run and returns NA if the it fails. we save the significant p-values and negative log 10 p- value.
+Here we get group the data by Gene id. We take the mean of gene expression for both the inflammed group and the uninflammed group. We used tryCatch to make sure the code is run and returns NA if the it fails. We save the significant p-values and negative log 10 p- value.
 
 The t-test significance are done with a 95% confidence interval hence any values outside of the 95 % confidence interval would be considered significant.
 
@@ -92,7 +92,7 @@ de_results <- final_clean |>
     mean_inflamed   = mean(gene_expr[inflammation_status == "Inflamed"],   na.rm = TRUE),
     mean_uninflamed = mean(gene_expr[inflammation_status == "Uninflamed"], na.rm = TRUE),
 
-    # already log2 → fold change is just the difference
+    # calculate fold change and p values
     log2FC = mean_inflamed - mean_uninflamed,
 
     p_value = tryCatch(
@@ -103,7 +103,7 @@ de_results <- final_clean |>
   ) |>
   mutate(
     neg_log10_p = -log10(p_value),
-    sig = p_value < 0.05   # or adjust later with p.adjust()
+    sig = p_value < 0.05
   )
 ```
 

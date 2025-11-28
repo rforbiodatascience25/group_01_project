@@ -140,7 +140,7 @@ ggplot(gene_var, aes(x = variance)) +
 ggsave("variance_distribution_across_genes.png", path = "../results", dpi = 300, width = 20, height = 12, units = "cm")
 ```
 
-We decide the cutoff genes with a variance below 0.05, and have 2909 genes remaining
+We decide to cutoff genes with a variance below 0.05, and have 2909 genes remaining
 
 ```{r}
 genes_keep <- gene_var |> 
