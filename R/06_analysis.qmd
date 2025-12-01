@@ -195,7 +195,7 @@ ggsave("volcano_plot_colonic_gene_expression.png", path = "../results", dpi = 30
 
 ## Expression of the 40 most significant genes
 
-Plotting the expression of the 40 most significant genes in both inflamed and un-inflamed patients. The inflamed patients have a higher expression of some of the genes associated with immune activation compared to the un-inflamed patients. This is for example LCN2 and IGHG1 which is in compliance with the results from the volcano plot. Some of the genes that are down-regulated include GCNT2 and UGT2A3 which are housekeeping genes that are suppressed to free up resources.
+Plotting the expression of the 40 most significant genes in both inflamed and un-inflamed patients. The inflamed patients have a higher expression of some of the genes associated with immune activation compared to the un-inflamed patients. This is for example LCN2 and IGHG1 which is in compliance with the results from the volcano plot. Some of the genes that are up-regulated in non-inflamed patients include the non-immune related genes GCNT2 and UGT2A3.
 
 ```{r top40_differential_genes_across_samples}
 #Pick top 40 most significant genes
