@@ -1,11 +1,9 @@
 ---
-title: "07_analysis"
-format:
-  html:
-    fig-format: png
+title: "08_analysis_umap"
+format: html
 ---
 
-# Analysis 1
+# Analysis 3
 
 ## Loading libraries
 
@@ -13,167 +11,305 @@ format:
 #| message: false
 #| warning: false
 
-library("dplyr")
-library("ggplot2")
+library(tidyverse)
+library(randomForest)
+set.seed(6969) #Setting seed for reproducability
 ```
-
-## Loading finaldata and featuredata
 
 ```{r}
 #| message: false
 #| warning: false
 
-finaldata <- read_csv("../data/03_dat_aug.csv.gz")
-featuredata <- read_csv("../data/featuredata.csv.gz")
-source("99_proj_func.R")
-
-colnames(finaldata)
-colnames(featuredata)
+expr_df <- read_csv("../data/03_rf_expr_df.csv.gz") #used for input nodes
+featuredata <- read_csv("../data/03_dat_genbank.csv.gz") #used for classifier target
+de_results <- read_csv("../data/03_de_results.csv.gz") #required for vulcano plot
 ```
 
-## Looking at age groups
+## Model Training
 
-### Correlation between age group and diagnosis time
+### Splitting dataset into train and test
 
-```{r age_groups_distribution_inflammation_status}
-finaldata |>
-    distinct(geo_accession, .keep_all = TRUE) |>
-    filter(!is.na(age_group)) |>
-    ggplot(mapping = aes(x = age_group, fill = inflammation_status))+
-       geom_bar(position = position_dodge2(preserve = "single", padding = 0), 
-        color = "black", 
-        alpha = 0.4)+
-      theme_minimal(base_size = 10) +
-      theme(
-        legend.position = "bottom"
-     ) +
-     labs(
-       x = "Age groups",
-        y = "n",
-       fill = "Inflammation-status"
-      )
-ggsave("age_groups_distribution_inflammation_status.png", path = "../results", dpi = 300, width = 20, height = 12, units = "cm")
+We start by splitting the data into train and test data sets. The model is allowed to "learn" correlations on train, and it's performance can then be evaluated using test_data.
+
+```{r}
+percent_train <- 0.8 #use 80% of the data for train 
+train_index <- sample(1:nrow(expr_df), 0.8 * nrow(expr_df))
+
+train_data <- expr_df[train_index, ]
+test_data <- expr_df[-train_index, ]
 ```
 
-## Age group and diagnosis time
+Its important that the model never "sees" the test data, as we need the model performance metrics to be truly independent. This reduces the chance of the model fitting to correlations specific to the data values, rather than a biological signal.
 
-Plotting the correlation between the different age groups and diagnosis time to see, if there is a correlation between the two. Although the medians in the age groups are all similar, some patients in the age group (50,60) takes a long time to get diagnosed. The patients in the age group (30,40\] takes the shortest time to get diagnosed.
+### Running the RF Classifier model
 
-```{r time_to_diagnosis_vs_age}
-finaldata |>  
-  filter(!is.na(age_group)) |> 
-  filter(!is.na(time_untreated)) |> 
-  filter(time_untreated > 0) |> 
-  group_by(age_group) |> 
-  summarise(n = n())
+The target value "y_pred_UC" for the model is whether the sample was from an individual with (1) or without (0) UC. This column is prepared previously in 03_augment.qmd.
 
-finaldata |>  
-  filter(!is.na(age_group)) |> 
-  filter(!is.na(time_untreated)) |> 
-  filter(time_untreated > 0) |> 
-  group_by(age_group) |> 
-  ggplot(aes(x = age_group, y = time_untreated)) +
-    geom_boxplot() + 
-    theme_minimal() + 
-    labs(x = "Age Groups",
-         y = "Time to diagnostics (days)",
-         title = "Time from 1st UC symtomps to diagnostics against age") +
-    theme(
-      plot.title = element_text(size = 12)
-    )
-ggsave("time_to_diagnosis_vs_age.png", path = "../results", dpi = 300, width = 20, height = 12, units = "cm")
+```{r}
+#y_pred_UC as factor was not implemented in 03_augment, despite the use of as.factor()
+train_data <- train_data |> 
+  mutate(y_pred_UC = as.factor(y_pred_UC))
 ```
 
-## Impact of smoking on inflammation status
+Each gene is its own input node for the model.
 
-### Correlation between gene expression, inflammation status and smoking status
+```{r}
+# y_pred_UC ~ . 
+train_data.rf <- randomForest(y_pred_UC ~ . - geo_accession, 
+                              type = "classification",
+                              data = train_data, 
+                              mtry = 3,
+                              importance = TRUE)
 
-Plotting the correlation between gene expression, inflammation status and smoking status. Most patients are either ex-smokers or have never smoked. The group of patients thats do smoke as well as the ones that have never smoked have a slightly higher subset that are inflamed.
-
-```{r gene_expression_by_smoking_status_and_inflammation}
-
-finaldata |>
-  distinct(geo_accession, .keep_all = TRUE) |>
-  filter(!is.na(smoking_status)) |> 
-  ggplot(aes(x = smoking_status, 
-             fill = inflammation_status)) +
-  geom_bar(position = position_dodge2(preserve = "single", padding = 0),
-        color = "black", 
-        alpha = 0.4) +
-  theme_minimal() +
-   theme(
-        legend.position = "bottom"
-     ) +
-  labs(x = "Smoking status", y = "n", fill = "Inflammation-status")
-ggsave("gene_expression_by_smoking_status_and_inflammation.png", path = "../results", dpi = 300, width = 20, height = 12, units = "cm")
+# importance = True is used to obtain most contributing inputs; aka genes
 ```
 
-### Correlation between smoking and the diagnosis time
+## Model Evaluation
 
-Plotting to see the correlation between patients that are smokers and how long it takes for them to get diagnosed. The patient group that whose smoking habits are unknown takes the shortest time to get diagnosed, followed by the current smokers. The group of patients that have never smoked takes the longest time to get diagnosed. However, since the "smoker" group and the "unknown" group are the much smaller than the "ex" and the "never" group, the results may be unreliable. Moreover, there are two three outliers in the plot who have all taken a very long time to get diagnosed.
+### Deriving the Confusion Matrix of the RF model
 
-```{r time_to_diagnosis_vs_smoking_status}
-finaldata |>  
-  filter(!is.na(smoking_status)) |> 
-  filter(!is.na(time_untreated)) |> 
-  filter(time_untreated > 0) |> 
-  group_by(smoking_status) |> 
-  summarise(n = n()) 
-
-finaldata |>  
-  filter(!is.na(smoking_status)) |> 
-  filter(!is.na(time_untreated)) |> 
-  filter(time_untreated > 0) |> 
-  group_by(smoking_status) |> 
-  ggplot(aes(x = smoking_status, y = time_untreated)) +
-    geom_boxplot() + 
-    theme_minimal() + 
-    labs(x = "Smoking Status",
-         y = "Time to diagnostics (days)",
-         title = "Time from 1st UC symtomps to diagnostics against smoking") +
-    theme(
-      plot.title = element_text(size = 12)
-    )
-ggsave("time_to_diagnosis_vs_smoking_status.png", path = "../results", dpi = 300, width = 20, height = 12, units = "cm")
+```{r}
+test_pred <- predict(train_data.rf, test_data)
+confusion_matrix <- table(Predicted = test_pred, Actual = test_data$y_pred_UC)
+print(confusion_matrix)
 ```
 
-## Significance based on anatomical location
+Confusion matrix shows the amount of times the model predicted 0 or 1 (rows), based on the actual values of 0 or 1 in the test dataset. It therefore shows:
 
-The graph shows that significant variations in expression between inflamed and non-inflamed samples appear only in the descending colon and sigmoid colon. In the ascending colon, the differences do not exceed the significance threshold, while in the terminal ileum, the inflamed samples are too few to make a reliable comparison.
+|     |     |
+|:---:|:---:|
+| TN  | FN  |
+| FP  | TP  |
 
-```{r significant_gene_counts_by_anatomic_location}
-de_by_loc <- finaldata |>
-  filter(complete.cases(gene_expr, inflammation_status, anatomic_location)) |>
-  mutate(inflammation_status = factor(inflammation_status,
-                                      c("Uninflamed", "Inflamed"))) |>
-  group_by(anatomic_location, gene_id) |>
-  #Keep only genes where both groups are present in that location
-  filter(n_distinct(inflammation_status) == 2) |>
-  summarise(
-    log2FC  = mean(gene_expr[inflammation_status == "Inflamed"],   na.rm = TRUE) -
-              mean(gene_expr[inflammation_status == "Uninflamed"], na.rm = TRUE),
+where;
 
-    p_value = tryCatch(
-      t.test(gene_expr ~ inflammation_status)$p.value,
-      error = function(e) NA_real_
-    ),
-    .groups = "drop"
-  ) |>
-  group_by(anatomic_location) |>
+-   TN: True Negative
+
+-   FN: False Negative
+
+-   FP: False Positive
+
+-   TP: True Positive
+
+From the matrix, we can obtain an accuracy score.
+
+```{r}
+#Correct predictions; TN, TP
+TN <- confusion_matrix[1, 1]
+TP <- confusion_matrix[2, 2]
+FP <- confusion_matrix[2, 1]
+FN <- confusion_matrix[1, 2]
+
+total <- sum(confusion_matrix)
+acc <- (TN+TP)/total
+print(acc)
+```
+
+The model emitted a 78% accuracy.
+
+### Importance measure of Genes
+
+We would like to find the model contributing genes in the model, to see which genes (at least in the eyes of the model), speaks to samples with and without UC.
+
+```{r}
+var_importance <- as.data.frame(round(importance(train_data.rf), 2))
+```
+
+```{r}
+var_importance <- var_importance |>
+  mutate(gene_id = str_split_i(rownames(var_importance), "_", 2)) |>
   mutate(
-    FDR = p.adjust(p_value, "BH"),
-    sig = !is.na(FDR) & FDR < 0.05
-  ) |>
-  ungroup()
+    GENE_SYMBOL = featuredata$GENE_SYMBOL[
+      match(gene_id, featuredata$ID)
+    ]
+  )
+```
 
-de_by_loc |>
-  group_by(anatomic_location, sig) |>
-  summarise(n = n(), .groups = "drop") |>
-  ggplot(aes(anatomic_location, n, fill = sig)) +
-  geom_col(position = "dodge") +
-  coord_flip() +
+```{r}
+var_importance |> 
+  #mutate(gene_id = str_split_i(rownames(var_importance), "_", 2)) |> 
+  arrange(desc(MeanDecreaseAccuracy)) |> 
+  slice(1:12) |>
+  ggplot(aes(
+    # Use reorder() to automatically sort the bars by the MeanDecreaseAccuracy value
+    x = reorder(GENE_SYMBOL, MeanDecreaseAccuracy), 
+    y = MeanDecreaseAccuracy
+  )) +
+  geom_bar(stat = "identity", fill = "steelblue") +
+  coord_flip() + 
+  labs(
+    title = "Top 12 Most Contributing Genes in RF",
+    x = "Gene",
+    y = "Mean decrease accuracy from RF"
+  ) +
   theme_minimal()
-ggsave("significant_gene_count_by_anatomic_location.png", path = "../results", dpi = 300, width = 20, height = 12, units = "cm")
+ggsave("top15_most_contributing_genes_RF.png", path = "../results", dpi = 300, width = 20, height = 12, units = "cm")
+```
+
+Extract gene_ids as list
+
+```{r}
+most_contributing_vars <- var_importance |> 
+  arrange(desc(MeanDecreaseAccuracy)) |> 
+  slice(1:12) |> 
+  rownames()
+```
+
+### Match gene_id with gene_symbol to match other analysis
+
+GENE_SYMBOL can be found in featuredata. This is used to map to the results of the vulcano plot.
+
+```{r}
+#Splitting gene_id into only the number and converting to numeric
+most_contributing_vars <- most_contributing_vars |> 
+  str_split_i("_", 2) |> 
+  parse_number()
+
+most_contributing_vars <- as.data.frame(most_contributing_vars)
+most_contributing_vars <- most_contributing_vars |> 
+  mutate(ID = most_contributing_vars) |> 
+  select(ID)
+```
+
+```{r}
+most_contributing_gene_symbols <- featuredata |>
+  select(ID, GENE_SYMBOL) |> 
+  right_join(most_contributing_vars, featuredata, by="ID") |> 
+  select(GENE_SYMBOL) |>
+  filter(!is.na(GENE_SYMBOL)) |> 
+  pull(GENE_SYMBOL)
+
+print(most_contributing_gene_symbols)
+```
+
+## Comparison of identified genes impacting inflammation with disease state
+
+To visualize overlay between significant genes found in 05_analysis, and the RandomForest model most contributing variables.
+
+The 05_analysis relied on inflammation status, and the model relied on disease state.
+
+```{r}
+#| warning: false
+#| message: false
+de_results <- read_csv("../data/03_de_results.csv.gz")
+```
+
+```{r}
+lfc_cut <- 0.25   # minimum |log2FC|
+p_cut   <- 0.05   # p-value threshold for the dashed line
+
+# Add gene symbol by matching finaldata$gene_id --> featuredata$ID
+de_results_annot <- de_results |>
+  mutate(
+    GENE_SYMBOL = featuredata$GENE_SYMBOL[
+      match(gene_id, featuredata$ID)
+    ]
+  )
+
+# Label only highly significant genes with valid symbols
+label_df <- de_results_annot |>
+  filter(
+    neg_log10_p > 10,         
+    !is.na(GENE_SYMBOL)
+  )
+
+# Prepare plotting data
+plot_df <- de_results_annot |>
+  filter(!is.na(p_value)) |>
+  mutate(
+    FDR = p.adjust(p_value, method = "BH"),
+    sig_cat = case_when(
+      FDR < 0.05 & log2FC >=  lfc_cut ~ "Up in inflamed",
+      FDR < 0.05 & log2FC <= -lfc_cut ~ "Up in uninflamed",
+      TRUE                           ~ "Non significant"
+    ),
+    sig_cat = factor(sig_cat,
+                     levels = c("Up in inflamed", "Up in uninflamed", "Non significant")),
+    
+    # Identify genes from the highlight list
+    highlight_cat = case_when(
+      GENE_SYMBOL %in% most_contributing_gene_symbols ~ "Most Contributing",
+      TRUE ~ "Other"
+    )
+  )
+
+sig_genes <- plot_df |>
+  filter(sig_cat != "Non significant") |>
+  dplyr::select(gene_id, GENE_SYMBOL, log2FC, p_value, FDR, sig_cat) |>
+  arrange(FDR)
+
+# split into up in inflamed / up in uninflamed
+up_in_inflamed <- sig_genes |>
+  filter(sig_cat == "Up in inflamed") |>
+  pull(GENE_SYMBOL)
+
+up_in_uninflamed <- sig_genes |>
+  filter(sig_cat == "Up in uninflamed") |>
+  pull(GENE_SYMBOL)
+
+# Volcano plot with Highlighted Genes
+ggplot(plot_df,
+       aes(x = log2FC, y = neg_log10_p)) +
+
+  # 1. Base points (coloured by sig_cat)
+  geom_point(aes(color = sig_cat), size = 1.3, alpha = 0.8) +
+
+  # 2. Overlay highlighted genes (colored by highlight_cat)
+  geom_point(data = filter(plot_df, highlight_cat == "Most Contributing"),
+             aes(color = highlight_cat),
+             size = 1.3) +
+
+  # cutoff lines
+  geom_hline(yintercept = -log10(p_cut),
+             linetype = "dashed", linewidth = 0.3) +
+  geom_vline(xintercept = c(-lfc_cut, lfc_cut),
+             linetype = "dashed", linewidth = 0.3) +
+
+  # labels for strongest hits
+  geom_text_repel(
+    data = label_df,
+    aes(label = GENE_SYMBOL),
+    size = 3,
+    colour = "black",
+    max.overlaps = 30,
+    box.padding = 0.4,
+    point.padding = 0.3,
+    segment.size = 0.2,
+    show.legend = FALSE
+  ) +
+
+  # unified color scale (sig categories + highlighted category)
+  scale_color_manual(
+    values = c(
+      "Up in inflamed"   = "#d73027",
+      "Up in uninflamed" = "#4575b4",
+      "Non significant"  = "grey80",
+      "Most Contributing" = "green"
+    ),
+    name = NULL,
+    labels = c(
+      "Up in inflamed"   = "Up in inflamed",
+      "Up in uninflamed" = "Up in uninflamed",
+      "Non significant"  = "Non significant",
+      "Most Contributing" = "Genes affecting UC diagnosis present in RF model"
+    )
+  ) +
+
+  labs(
+    title = "Volcano plot of colonic gene expression",
+    subtitle = "Inflamed vs uninflamed biopsies (Gut 57:1398–1405)",
+    x = "log2 fold change (Inflamed – Uninflamed)",
+    y = expression(-log[10](italic(p)~value))
+  ) +
+  theme_minimal(base_size = 10) +
+  theme(
+    panel.grid.minor = element_blank(),
+    legend.position = "bottom",
+    plot.title = element_text(face = "bold", size = 16),
+    plot.subtitle = element_text(size = 11),
+    axis.title = element_text(size = 12)
+  )
+ggsave("volcano_plot_colonic_gene_expression_RF.png", path = "../results", dpi = 300, width = 20, height = 12, units = "cm")
 ```
 
 ## Cleaning environment
