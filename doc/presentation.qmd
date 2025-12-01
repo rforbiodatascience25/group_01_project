@@ -100,11 +100,13 @@ exprs_filtered <- exprs_df |>
 # Results 4
 
 ::::: columns
-::: {.column width="30%"}
+::: {.column width="40%"}
 -   Key points
+
+![](images/confusion_matrix_rf.png)
 :::
 
-::: {.column width="70%"}
+::: {.column width="60%"}
 ![](images/volcano_plot_colonic_gene_expression_RF-01.png)
 :::
 :::::
