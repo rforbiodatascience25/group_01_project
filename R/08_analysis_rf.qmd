@@ -129,7 +129,7 @@ var_importance <- var_importance |>
 var_importance |> 
   #mutate(gene_id = str_split_i(rownames(var_importance), "_", 2)) |> 
   arrange(desc(MeanDecreaseAccuracy)) |> 
-  slice(1:15) |>
+  slice(1:12) |>
   ggplot(aes(
     # Use reorder() to automatically sort the bars by the MeanDecreaseAccuracy value
     x = reorder(GENE_SYMBOL, MeanDecreaseAccuracy), 
@@ -138,7 +138,7 @@ var_importance |>
   geom_bar(stat = "identity", fill = "steelblue") +
   coord_flip() + 
   labs(
-    title = "Top 15 Most Contributing Genes in RF",
+    title = "Top 12 Most Contributing Genes in RF",
     x = "Gene",
     y = "Mean decrease accuracy from RF"
   ) +
@@ -151,7 +151,7 @@ Extract gene_ids as list
 ```{r}
 most_contributing_vars <- var_importance |> 
   arrange(desc(MeanDecreaseAccuracy)) |> 
-  slice(1:15) |> 
+  slice(1:12) |> 
   rownames()
 ```
 
