@@ -57,7 +57,7 @@ ggsave("age_groups_distribution_inflammation_status.png", path = "../results", d
 
 ## Age group and diagnosis time
 
-Plotting the correlation between the different age groups and diagnosis time to see if there is a correlation between the two. Although the medians in the age groups are all similar, some patients in the age group (50,60) takes a long time to get diagnosed. The patients in the age group (30,40\] takes the shortest time to get diagnosed.
+Plotting the correlation between the different age groups and diagnosis time to see, if there is a correlation between the two. Although the medians in the age groups are all similar, some patients in the age group (50,60) takes a long time to get diagnosed. The patients in the age group (30,40\] takes the shortest time to get diagnosed.
 
 ```{r time_to_diagnosis_vs_age}
 finaldata |>  
@@ -162,14 +162,14 @@ de_by_loc <- finaldata |>
   group_by(anatomic_location) |>
   mutate(
     FDR = p.adjust(p_value, "BH"),
-    significance = !is.na(FDR) & FDR < 0.05
+    sig = !is.na(FDR) & FDR < 0.05
   ) |>
   ungroup()
 
 de_by_loc |>
-  group_by(anatomic_location, significanse) |>
+  group_by(anatomic_location, sig) |>
   summarise(n = n(), .groups = "drop") |>
-  ggplot(aes(anatomic_location, n, fill = significance)) +
+  ggplot(aes(anatomic_location, n, fill = sig)) +
   geom_col(position = "dodge") +
   coord_flip() +
   theme_minimal()

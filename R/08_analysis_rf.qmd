@@ -13,21 +13,23 @@ format: html
 
 library(tidyverse)
 library(randomForest)
-set.seed(6969)
+set.seed(6969) #Setting seed for reproducability
 ```
 
 ```{r}
 #| message: false
 #| warning: false
 
-expr_df <- read_csv("../data/03_rf_expr_df.csv.gz")
-featuredata <- read_csv("../data/03_dat_genbank.csv.gz")
-de_results <- read_csv("../data/03_de_results.csv.gz")
+expr_df <- read_csv("../data/03_rf_expr_df.csv.gz") #used for input nodes
+featuredata <- read_csv("../data/03_dat_genbank.csv.gz") #used for classifier target
+de_results <- read_csv("../data/03_de_results.csv.gz") #required for vulcano plot
 ```
 
 ## Model Training
 
 ### Splitting dataset into train and test
+
+We start by splitting the data into train and test data sets. The model is allowed to "learn" correlations on train, and it's performance can then be evaluated using test_data.
 
 ```{r}
 percent_train <- 0.8 #use 80% of the data for train 
@@ -37,13 +39,19 @@ train_data <- expr_df[train_index, ]
 test_data <- expr_df[-train_index, ]
 ```
 
+Its important that the model never "sees" the test data, as we need the model performance metrics to be truly independent. This reduces the chance of the model fitting to correlations specific to the data values, rather than a biological signal.
+
 ### Running the RF Classifier model
+
+The target value "y_pred_UC" for the model is whether the sample was from an individual with (1) or without (0) UC. This column is prepared previously in 03_augment.qmd.
 
 ```{r}
 #y_pred_UC as factor was not implemented in 03_augment, despite the use of as.factor()
 train_data <- train_data |> 
   mutate(y_pred_UC = as.factor(y_pred_UC))
 ```
+
+Each gene is its own input node for the model.
 
 ```{r}
 # y_pred_UC ~ . 
@@ -52,6 +60,8 @@ train_data.rf <- randomForest(y_pred_UC ~ . - geo_accession,
                               data = train_data, 
                               mtry = 3,
                               importance = TRUE)
+
+# importance = True is used to obtain most contributing inputs; aka genes
 ```
 
 ## Model Evaluation
@@ -99,30 +109,36 @@ The model emitted a 78% accuracy.
 
 ### Importance measure of Genes
 
+We would like to find the model contributing genes in the model, to see which genes (at least in the eyes of the model), speaks to samples with and without UC.
+
 ```{r}
 var_importance <- as.data.frame(round(importance(train_data.rf), 2))
 ```
 
 ```{r}
-var_importance <- var_importance |> 
-  mutate(gene_id = str_split_i(rownames(var_importance), "_", 2))
+var_importance <- var_importance |>
+  mutate(gene_id = str_split_i(rownames(var_importance), "_", 2)) |>
+  mutate(
+    GENE_SYMBOL = featuredata$GENE_SYMBOL[
+      match(gene_id, featuredata$ID)
+    ]
+  )
 ```
 
 ```{r}
 var_importance |> 
   #mutate(gene_id = str_split_i(rownames(var_importance), "_", 2)) |> 
   arrange(desc(MeanDecreaseAccuracy)) |> 
-  slice(1:15) |>
+  slice(1:12) |>
   ggplot(aes(
-    # 1. Use reorder() to automatically sort the bars by the MeanDecreaseAccuracy value
-    #x = rownames(var_importance),
-    x = reorder(gene_id, MeanDecreaseAccuracy), 
+    # Use reorder() to automatically sort the bars by the MeanDecreaseAccuracy value
+    x = reorder(GENE_SYMBOL, MeanDecreaseAccuracy), 
     y = MeanDecreaseAccuracy
   )) +
   geom_bar(stat = "identity", fill = "steelblue") +
   coord_flip() + 
   labs(
-    title = "Top 15 Most Contributing Genes in RF",
+    title = "Top 12 Most Contributing Genes in RF",
     x = "Gene",
     y = "Mean decrease accuracy from RF"
   ) +
@@ -135,13 +151,13 @@ Extract gene_ids as list
 ```{r}
 most_contributing_vars <- var_importance |> 
   arrange(desc(MeanDecreaseAccuracy)) |> 
-  slice(1:15) |> 
+  slice(1:12) |> 
   rownames()
 ```
 
 ### Match gene_id with gene_symbol to match other analysis
 
-GENE_SYMBOL can be found in featuredata
+GENE_SYMBOL can be found in featuredata. This is used to map to the results of the vulcano plot.
 
 ```{r}
 #Splitting gene_id into only the number and converting to numeric
@@ -179,10 +195,10 @@ de_results <- read_csv("../data/03_de_results.csv.gz")
 ```
 
 ```{r}
-lfc_cut <- 0.25   # minimum |log2FC| to call biologically relevant
+lfc_cut <- 0.25   # minimum |log2FC|
 p_cut   <- 0.05   # p-value threshold for the dashed line
 
-## 1) Add gene symbol by matching finaldata$gene_id --> featuredata$ID
+# Add gene symbol by matching finaldata$gene_id --> featuredata$ID
 de_results_annot <- de_results |>
   mutate(
     GENE_SYMBOL = featuredata$GENE_SYMBOL[
@@ -190,14 +206,14 @@ de_results_annot <- de_results |>
     ]
   )
 
-## 2) Label only highly significant genes with valid symbols
+# Label only highly significant genes with valid symbols
 label_df <- de_results_annot |>
   filter(
-    neg_log10_p > 10,          # very strong p-values
+    neg_log10_p > 10,         
     !is.na(GENE_SYMBOL)
   )
 
-## 3) Prepare plotting data: FDR + 3-level significance category
+# Prepare plotting data
 plot_df <- de_results_annot |>
   filter(!is.na(p_value)) |>
   mutate(
@@ -231,7 +247,7 @@ up_in_uninflamed <- sig_genes |>
   filter(sig_cat == "Up in uninflamed") |>
   pull(GENE_SYMBOL)
 
-## 4) Volcano plot with Highlighted Genes
+# Volcano plot with Highlighted Genes
 ggplot(plot_df,
        aes(x = log2FC, y = neg_log10_p)) +
 

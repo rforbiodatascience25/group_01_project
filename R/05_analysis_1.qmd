@@ -26,7 +26,7 @@ de_results <- read_csv("../data/03_de_results.csv.gz")
 
 ## Overall gene expression distribution
 
-To get an idea of the distribution of the genes between samples categorized as either inflamed or uninflamed, we make a histogram (see Figure X), which shows that they have a normal distribution around 0.
+To get an idea of the distribution of the genes between samples categorized as either inflamed or uninflamed, we make a histogram (see Figure X), which shows that they have a normal distribution around with a mean slightly above 0. However both distributions appear similar, though the count of genes with uninflamed is higher.
 
 ```{r distribution_gene_expression_inflamed_uninflamed}
 p <- finaldata |> 
@@ -46,7 +46,7 @@ ggsave("distribution_gene_expression_inflamed_uninflamed.png", path = "../result
 
 ## **Expression by anatomic location and inflammation**
 
-We then try to get an idea, if there is a difference in the gene expression pattern across anatomic locations and whether or not the sample experienced inflammation or not. From this plot it is not clear so we explore further.
+We then try to get an idea, if there is a difference in the gene expression pattern across anatomic locations i.e. different parts of the intestinal tract and whether or not the sample was inflamed or not. From this plot it is not clear, so we explore further.
 
 ```{r gene_expression_by_anatomic_location_and_inflammation}
 loc_counts <- finaldata |>
@@ -94,12 +94,12 @@ ggsave("mean_gene_expression_per_patient_inflamed_uninflamed.png", path = "../re
 
 ## Identification of significant genes during dependent on inflammation state using a Volcano plot
 
-Creating a volcano plot to see which genes are significnalty (p \< 0.05 ) up-regulated in the un-inflamed and inflamed patients. The biologically relevant genes are selected (the ones with a minimum of log2 fold change of 0.25). The blue dots represent the genes that are significnatly up-regulated in un-inflamed patients and the red dots represent the genes that are significantly up-regulated in the inflamed patients. They grey dots represent the genes that did not show any significant up-regulation. The genes that are very significantly up-regulated (p \> 10\^-10) are labeled.
+Creating a volcano plot to see which genes are significantly (p \< 0.05 ) up-regulated in the un-inflamed and inflamed patients. The biologically relevant genes are selected (the ones with a minimum of log2 fold change of 0.25). The blue dots represent the genes that are significantly up-regulated in un-inflamed patients and the red dots represent the genes that are significantly up-regulated in the inflamed patients. They grey dots represent the genes that did not show any significant up-regulation. The genes that are very significantly up-regulated (p \> 10\^-10) are labeled.
 
 As can be seen in the plot, there are more genes that are up-regulated in inflamed patients than in non-inflamed patients. Some of the genes that are strongly up-regulated are associated with the immune system, e.g. LCN2 and IGHG1, suggesting increased immune activation.
 
 ```{r volcano_plot_colonic_gene_expression}
-lfc_cut <- 0.25   # Minimum |log2FC| to call biologically relevant
+lfc_cut <- 0.25   # Minimum |log2FC|
 p_cut   <- 0.05   # p-value threshold
 
 #Add gene symbol by matching finaldata$gene_id with featuredata$ID
@@ -117,7 +117,7 @@ label_df <- de_results_annot |>
     !is.na(GENE_SYMBOL)
   )
 
-#Prepare plotting data: FDR + 3-level significance category
+#Prepare plotting data
 plot_df <- de_results_annot |>
   filter(!is.na(p_value)) |>
   mutate(
