@@ -3,7 +3,7 @@ title: "05_analysis_1"
 format: html
 ---
 
-# Analysis 1
+# Analysis
 
 ## Loading libraries
 

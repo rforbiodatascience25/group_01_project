@@ -3,7 +3,7 @@ title: "08_analysis_umap"
 format: html
 ---
 
-# Analysis 4
+# Analysis 3
 
 ## Loading libraries
 

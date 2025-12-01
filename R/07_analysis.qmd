@@ -5,7 +5,7 @@ format:
     fig-format: png
 ---
 
-# Analysis 3
+# Analysis 1
 
 ## Loading libraries
 
