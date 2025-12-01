@@ -49,14 +49,17 @@ fin_all<-finaldata|>
     age,
     age_group
   )|>
-  distinct(patient,.keep_all=TRUE)|>  # Keep one record per patient (remove duplicates if multiple biopsies exist)
+  distinct(patient,.keep_all=TRUE)|>  
+  # Keep one record per patient (remove duplicates if multiple biopsies exist)
   mutate(
-    neutrophils=suppressWarnings(as.numeric(neutrophils)),      # Convert to numeric; non-numeric values become NA
+    neutrophils=suppressWarnings(as.numeric(neutrophils)),  
+    # Convert to numeric; non-numeric values become NA
     albumin=suppressWarnings(as.numeric(albumin)),
-    smoking_amount=suppressWarnings(as.numeric(smoking_amount)),# Smoking amount as numeric
-    age=suppressWarnings(as.numeric(age)),                      # Age converted to numeric
-    # fattori
-    ethnicity=factor(ethnicity),                                # Convert categorical variables to factors
+    smoking_amount=suppressWarnings(as.numeric(smoking_amount)),
+    age=suppressWarnings(as.numeric(age)),
+    
+    #factors
+    ethnicity=factor(ethnicity),    # Convert categorical variables to factors
     joint_problems=factor(joint_problems),
     uc_flare_up=factor(uc_flare_up),
     family_history=factor(family_history),
@@ -77,12 +80,13 @@ fin_all$other_illnesses_clean<-dplyr::case_when(   # Clean comorbidity field int
   TRUE~"Any comorbidity"
 )
 
-fin_all$other_illnesses_clean<-factor(             # Convert cleaned comorbidity variable to factor
+fin_all$other_illnesses_clean<-factor(             
+  # Convert cleaned comorbidity variable to factor
   fin_all$other_illnesses_clean,
   levels=c("None","Any comorbidity")
 )
 
-label(fin_all$neutrophils)<-"Neutrophils"                  # Labels for table1() formatting
+label(fin_all$neutrophils)<-"Neutrophils"    # Labels for table1() formatting
 label(fin_all$albumin)<-"Albumin"
 label(fin_all$ethnicity)<-"Ethnicity"
 label(fin_all$joint_problems)<-"Joint problems"
