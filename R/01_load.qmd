@@ -29,10 +29,7 @@ if (!dir.exists(data_dir)) {
 
 if (!dir.exists(raw_dir)) {
   dir.create(raw_dir)
-}  
-  
-#dir.create("../_raw/")
-#dir.create("../data/")
+}
 ```
 
 ### Loading GEO data using GEOquery
@@ -88,9 +85,6 @@ underlying tables can be extracted from each when they're loaded as rds files, t
 ```{r}
 write_rds(gds3268, file=file.path(data_dir,"01_load_expression_data.rds"))
 write_rds(gse11223, file=file.path (data_dir,"01_load_meta_data.rds"))
-
-#write_rds(gds3268, file="../_raw/gds3268.rds")
-#write_rds(gse11223, file="../_raw/gse11223.rds")
 ```
 
 \_raw/ will indeed only contain raw data pulls (apart from the disturbing list extraction for gse11223...)

@@ -37,7 +37,6 @@ Converts each of the following to a tibble dataframe in the tidy format
 
 data_dir <- "../data/"
 raw_dir <- "../data/_raw/"
-
 ```
 
 ## GEODataTable from raw/raw_expression_data.rds
@@ -47,9 +46,7 @@ raw_dir <- "../data/_raw/"
 Expression data of patients with different genes. (patient) Samples are stored as columns and gene names as rows, which we would like to flip, to align with tidy standards. But first we load the data from \_raw/
 
 ```{r}
-#Applying the Table function from GEOquery to extract the dataframe.
 exprs_geodf <- Table(read_rds(file.path(data_dir,"01_load_expression_data.rds")))
-#exprs_geodf <- Table(read_rds("../_raw/gds3268.rds"))
 exprs_geodf <- as_tibble(exprs_geodf)
 exprs_geodf
 ```
@@ -219,8 +216,6 @@ phenodata <- phenodata |>
     !ends_with(":ch1"),
     ends_with(":ch1")
   )
-
-
 
 names(phenodata)
 ```
