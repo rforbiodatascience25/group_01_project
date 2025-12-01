@@ -13,37 +13,34 @@ format:
 output-dir: doc
 ---
 
-# Introduction 1
+# Introduction
 
 ::: {#Introduction style="font-size: 0.8em"}
--   Dataset from NCBI
+-   Dataset from GEO-NCBI
 
--   Transcriptional profiling of colon epithelial from ulcerative colitis patients and healthy controls
+-   Ulcerative colitis = ulcers in the colon
 
--   Ulcers in the colon
+    -   Chronic inflammation
 
--   chronic inflamation
-
--   Aim to find and analyze variation between healthy controls and patients
-
-    -   what smoking does
-    -   Effect of genes
+-   Scope: Find and analyze variation between gene expression in healthy controls and patients
 :::
 
-# Materials of Methods 2
+# Materials and Methods
 
 ::::: columns
 ::: {.column width="50%" style="font-size: 0.8em"}
--   Biopsies from the gut
+-   Biopsies from 4 anatomical locations in the gut
     -   202 samples
 
-    -   from 67 patients
+    -   67 patients with UC
 
-    -   30 healthy controls
--   Gene expression
--   Augtments to the data
+    -   31 healthy control
+
+        -   23 non-inflamed
+
+        -   8 inflamed non-inflammatory bowel disease
+-   Augments to the data
     -   Age and Age group
-    -   Time untreated
 :::
 
 ::: {.column width="50%"}
@@ -55,7 +52,7 @@ output-dir: doc
 *Noble CL, Abbas AR, Cornelius J, et al Regional variation in gene expression in the healthy colon is dysregulated in ulcerative colitis Gut 2008;**57:**1398-1405.*
 :::
 
-## Filtering data 3
+## Filtering data
 
 ::::: columns
 ::: {.column width="50%" style="font-size: 0.9em"}
@@ -73,7 +70,7 @@ phenodata <- phenodata |>
 :::
 
 ::: {.column width="50%" style="font-size: 0.9em"}
-Removing low variance genes - 37000 of 40000 leaving 10 %
+Removing low variance genes (lower than 0.05) - 37000 of 40000 leaving 10 %
 
 ```{r Cleaning_genes, echo=TRUE, eval=FALSE}
 gene_var <- exprs_df |> 
@@ -97,11 +94,44 @@ exprs_filtered <- exprs_df |>
 :::
 :::::
 
-# Results 4
+# Results: Heatmap of top 40 significant genes for inflammation {style="font-size: 0.6em"}
+
+::::: columns
+::: {.column width="30%"}
+-   Overview of gene expression of significant genes
+-   Immune related genes (LCN2 and IGHG1)
+-   Non-immune related genes (GCNT2 and UGT2A3)
+-   Variance inflammed vs uninflammed
+:::
+
+::: {.column width="70%"}
+![](images/top40_differential_genes_across_samples.png)
+:::
+:::::
+
+# Significant genes in anatomic locations {style="font-size: 0.8em"}
+
+::::: columns
+::: {.column width="30%"}
+-   Significant genes sublocation:
+    -   Sigmoid colon
+    -   Descending colon
+:::
+
+::: {.column width="70%"}
+![](images/significant_gene_count_by_anatomic_location.png)
+:::
+:::::
+
+# Significant genes in UC and inflammation {style="font-size: 0.5em"}
 
 ::::: columns
 ::: {.column width="40%"}
--   Key points
+-   Upregulated genes in inflammed (red) vs uninflammed (blue) biopsies
+    -   coloured dots: p-value \< 0.05 & log2 fold change above 0.25
+-   Random forest model (green): Most contributing genes
+-   Inflammation vs UC diagnostics
+    -   Little overlay for genes in the 2 analysis
 
 ![](images/confusion_matrix_rf.png)
 :::
@@ -111,50 +141,30 @@ exprs_filtered <- exprs_df |>
 :::
 :::::
 
-# plot 5
+# Discussion:
 
-::::: columns
-::: {.column width="30%"}
--   key points
-:::
-
-::: {.column width="70%"}
-![](images/top40_differential_genes_across_samples.png)
-:::
-:::::
-
-# Plot 6
-
-::::: columns
-::: {.column width="30%"}
--   key points
-:::
-
-::: {.column width="70%"}
-![](images/significant_gene_count_by_anatomic_location.png)
-:::
-:::::
-
-# Discussion 8
-
-::: {#Discussion style="font-size: 0.8em"}
+::: {#Discussion style="font-size: 0.6em"}
 -   What causes UC
 
-    -   We investigated if there is a genetic bias in getting UC
+    -   We investigated if there is a genetic link in getting UC
 
-    -   We investigated the role of smoking
+-   UC caused by various factors
 
--   Limited sample size (67 patients + 30 controls)
-
--   Could be caused by
-
-    -   Immune-system issue i.e. an auto immune diesise
+    -   Immune-system issue i.e. an auto immune disease
 
     -   Gut bacteria imbalance
 
     -   Genetic traits
 
     -   Environmental impact
+
+-   What causes inflammation
+
+    -   Key genes in inflammation
+
+    -   Inflammation overshadowing UC diagnosis?
+
+-   Limited sample size (67 patients + 30 controls)
 
 -   An inconsistent data set - Meta data
 :::
@@ -163,14 +173,8 @@ exprs_filtered <- exprs_df |>
 <https://www.mayoclinic.org/diseases-conditions/ulcerative-colitis/symptoms-causes/syc-20353326>
 :::
 
-# Conclusion 9
+# Conclusion
 
 ::: {#Conclusion style="font-size: 0.8em"}
--   Correlation and causality
-
-We showed a Correlation between some genes and ulcerative colitis (UC). However this does not show us if it is caused by the UC or the cause of the UC.
-
-We developed a randomforest model which predicts the significance of genes in UC so this could be used either as a diagnostic tool or for prediction of a future UC patient, however to test this model we would need more data. probably do a genome wide association study
-
-We did not find a correlation between UC and smoking nor a correlation between UC and age. Proving it can become an issue for all people
+We show that there is a correlation between some genes and the inflammation (blue/red dots). The genes that we found to be influencing the development of UC (random forest analysis) do not align with this.
 :::

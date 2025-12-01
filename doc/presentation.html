@@ -402,40 +402,39 @@ Asbjørn, Emiliano, Magnus, Oliver and Trine
 </div>
 
 </section>
-<section id="introduction-1" class="title-slide slide level1 center">
-<h1>Introduction 1</h1>
+<section id="introduction" class="title-slide slide level1 center">
+<h1>Introduction</h1>
 <div id="Introduction" style="font-size: 0.8em">
 <ul>
-<li><p>Dataset from NCBI</p></li>
-<li><p>Transcriptional profiling of colon epithelial from ulcerative colitis patients and healthy controls</p></li>
-<li><p>Ulcers in the colon</p></li>
-<li><p>chronic inflamation</p></li>
-<li><p>Aim to find and analyze variation between healthy controls and patients</p>
+<li><p>Dataset from GEO-NCBI</p></li>
+<li><p>Ulcerative colitis = ulcers in the colon</p>
 <ul>
-<li>what smoking does</li>
-<li>Effect of genes</li>
+<li>Chronic inflammation</li>
 </ul></li>
+<li><p>Scope: Find and analyze variation between gene expression in healthy controls and patients</p></li>
 </ul>
 </div>
 </section>
 
 <section>
-<section id="materials-of-methods-2" class="title-slide slide level1 center">
-<h1>Materials of Methods 2</h1>
+<section id="materials-and-methods" class="title-slide slide level1 center">
+<h1>Materials and Methods</h1>
 <div class="columns">
 <div class="column" style="font-size: 0.8em">
 <ul>
-<li>Biopsies from the gut
+<li>Biopsies from 4 anatomical locations in the gut
 <ul>
 <li><p>202 samples</p></li>
-<li><p>from 67 patients</p></li>
-<li><p>30 healthy controls</p></li>
+<li><p>67 patients with UC</p></li>
+<li><p>31 healthy control</p>
+<ul>
+<li><p>23 non-inflamed</p></li>
+<li><p>8 inflamed non-inflammatory bowel disease</p></li>
 </ul></li>
-<li>Gene expression</li>
-<li>Augtments to the data
+</ul></li>
+<li>Augments to the data
 <ul>
 <li>Age and Age group</li>
-<li>Time untreated</li>
 </ul></li>
 </ul>
 </div><div class="column" style="width:50%;">
@@ -445,8 +444,8 @@ Asbjørn, Emiliano, Magnus, Oliver and Trine
 <p><em>Noble CL, Abbas AR, Cornelius J, et al Regional variation in gene expression in the healthy colon is dysregulated in ulcerative colitis Gut 2008;<strong>57:</strong>1398-1405.</em></p>
 </div>
 </section>
-<section id="filtering-data-3" class="slide level2">
-<h2>Filtering data 3</h2>
+<section id="filtering-data" class="slide level2">
+<h2>Filtering data</h2>
 <div class="columns">
 <div class="column" style="font-size: 0.9em">
 <p>Removing one-type columns</p>
@@ -459,7 +458,7 @@ Asbjørn, Emiliano, Magnus, Oliver and Trine
 </div>
 <p><img data-src="images/variance_distribution_across_genes.png"></p>
 </div><div class="column" style="font-size: 0.9em">
-<p>Removing low variance genes - 37000 of 40000 leaving 10 %</p>
+<p>Removing low variance genes (lower than 0.05) - 37000 of 40000 leaving 10 %</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href=""></a>gene_var <span class="ot">&lt;-</span> exprs_df <span class="sc">|&gt;</span> </span>
 <span id="cb2-2"><a href=""></a>  <span class="co"># Drop the sample ID column, keep only expression values</span></span>
@@ -480,12 +479,51 @@ Asbjørn, Emiliano, Magnus, Oliver and Trine
 </div>
 </div></div>
 </section></section>
-<section id="results-4" class="title-slide slide level1 center">
-<h1>Results 4</h1>
+<section id="results-heatmap-of-top-40-significant-genes-for-inflammation" class="title-slide slide level1 center" style="font-size: 0.6em">
+<h1>Results: Heatmap of top 40 significant genes for inflammation</h1>
+<div class="columns">
+<div class="column" style="width:30%;">
+<ul>
+<li>Overview of gene expression of significant genes</li>
+<li>Immune related genes (LCN2 and IGHG1)</li>
+<li>Non-immune related genes (GCNT2 and UGT2A3)</li>
+<li>Variance inflammed vs uninflammed</li>
+</ul>
+</div><div class="column" style="width:70%;">
+<p><img data-src="images/top40_differential_genes_across_samples.png"></p>
+</div></div>
+</section>
+
+<section id="significant-genes-in-anatomic-locations" class="title-slide slide level1 center" style="font-size: 0.8em">
+<h1>Significant genes in anatomic locations</h1>
+<div class="columns">
+<div class="column" style="width:30%;">
+<ul>
+<li>Significant genes sublocation:
+<ul>
+<li>Sigmoid colon</li>
+<li>Descending colon</li>
+</ul></li>
+</ul>
+</div><div class="column" style="width:70%;">
+<p><img data-src="images/significant_gene_count_by_anatomic_location.png"></p>
+</div></div>
+</section>
+
+<section id="significant-genes-in-uc-and-inflammation" class="title-slide slide level1 center" style="font-size: 0.5em">
+<h1>Significant genes in UC and inflammation</h1>
 <div class="columns">
 <div class="column" style="width:40%;">
 <ul>
-<li>Key points</li>
+<li>Upregulated genes in inflammed (red) vs uninflammed (blue) biopsies
+<ul>
+<li>coloured dots: p-value &lt; 0.05 &amp; log2 fold change above 0.25</li>
+</ul></li>
+<li>Random forest model (green): Most contributing genes</li>
+<li>Inflammation vs UC diagnostics
+<ul>
+<li>Little overlay for genes in the 2 analysis</li>
+</ul></li>
 </ul>
 <p><img data-src="images/confusion_matrix_rf.png"></p>
 </div><div class="column" style="width:60%;">
@@ -493,47 +531,27 @@ Asbjørn, Emiliano, Magnus, Oliver and Trine
 </div></div>
 </section>
 
-<section id="plot-5" class="title-slide slide level1 center">
-<h1>plot 5</h1>
-<div class="columns">
-<div class="column" style="width:30%;">
-<ul>
-<li>key points</li>
-</ul>
-</div><div class="column" style="width:70%;">
-<p><img data-src="images/top40_differential_genes_across_samples.png"></p>
-</div></div>
-</section>
-
-<section id="plot-6" class="title-slide slide level1 center">
-<h1>Plot 6</h1>
-<div class="columns">
-<div class="column" style="width:30%;">
-<ul>
-<li>key points</li>
-</ul>
-</div><div class="column" style="width:70%;">
-<p><img data-src="images/significant_gene_count_by_anatomic_location.png"></p>
-</div></div>
-</section>
-
-<section id="discussion-8" class="title-slide slide level1 center">
-<h1>Discussion 8</h1>
-<div id="Discussion" style="font-size: 0.8em">
+<section id="discussion" class="title-slide slide level1 center">
+<h1>Discussion:</h1>
+<div id="Discussion" style="font-size: 0.6em">
 <ul>
 <li><p>What causes UC</p>
 <ul>
-<li><p>We investigated if there is a genetic bias in getting UC</p></li>
-<li><p>We investigated the role of smoking</p></li>
+<li>We investigated if there is a genetic link in getting UC</li>
 </ul></li>
-<li><p>Limited sample size (67 patients + 30 controls)</p></li>
-<li><p>Could be caused by</p>
+<li><p>UC caused by various factors</p>
 <ul>
-<li><p>Immune-system issue i.e.&nbsp;an auto immune diesise</p></li>
+<li><p>Immune-system issue i.e.&nbsp;an auto immune disease</p></li>
 <li><p>Gut bacteria imbalance</p></li>
 <li><p>Genetic traits</p></li>
 <li><p>Environmental impact</p></li>
 </ul></li>
+<li><p>What causes inflammation</p>
+<ul>
+<li><p>Key genes in inflammation</p></li>
+<li><p>Inflammation overshadowing UC diagnosis?</p></li>
+</ul></li>
+<li><p>Limited sample size (67 patients + 30 controls)</p></li>
 <li><p>An inconsistent data set - Meta data</p></li>
 </ul>
 </div>
@@ -542,15 +560,10 @@ Asbjørn, Emiliano, Magnus, Oliver and Trine
 </div>
 </section>
 
-<section id="conclusion-9" class="title-slide slide level1 center">
-<h1>Conclusion 9</h1>
+<section id="conclusion" class="title-slide slide level1 center">
+<h1>Conclusion</h1>
 <div id="Conclusion" style="font-size: 0.8em">
-<ul>
-<li>Correlation and causality</li>
-</ul>
-<p>We showed a Correlation between some genes and ulcerative colitis (UC). However this does not show us if it is caused by the UC or the cause of the UC.</p>
-<p>We developed a randomforest model which predicts the significance of genes in UC so this could be used either as a diagnostic tool or for prediction of a future UC patient, however to test this model we would need more data. probably do a genome wide association study</p>
-<p>We did not find a correlation between UC and smoking nor a correlation between UC and age. Proving it can become an issue for all people</p>
+<p>We show that there is a correlation between some genes and the inflammation (blue/red dots). The genes that we found to be influencing the development of UC (random forest analysis) do not align with this.</p>
 </div>
 <div class="quarto-auto-generated-content">
 <div class="footer footer-default">
