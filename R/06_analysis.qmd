@@ -3,7 +3,7 @@ title: "05_analysis"
 format: html
 ---
 
-# Analysis
+# Analysis of metadata
 
 ## Loading libraries
 
