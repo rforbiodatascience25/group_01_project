@@ -20,7 +20,7 @@ library("knitr")
 #|   - "02_clean.qmd"
 #|   - "03_augment.qmd"
 #|   - "04_describe.qmd"
-#|   - "05_analysis_1.qmd"
+#|   - "05_analysis.qmd"
+#|   - "06_analysis.qmd"
 #|   - "07_analysis.qmd"
-#|   - "08_analysis_rf.qmd"
 ```

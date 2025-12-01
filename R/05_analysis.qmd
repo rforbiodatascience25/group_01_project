@@ -1,0 +1,183 @@
+---
+title: "06_analysis"
+format:
+  html:
+    fig-format: png
+---
+
+# Analysis of gene expression
+
+## Loading libraries
+
+```{r}
+#| message: false
+#| warning: false
+
+library("dplyr")
+library("ggplot2")
+```
+
+## Loading finaldata and featuredata
+
+```{r}
+#| message: false
+#| warning: false
+
+finaldata <- read_csv("../data/03_dat_aug.csv.gz")
+featuredata <- read_csv("../data/featuredata.csv.gz")
+source("99_proj_func.R")
+
+colnames(finaldata)
+colnames(featuredata)
+```
+
+## Looking at age groups
+
+### Correlation between age group and diagnosis time
+
+```{r age_groups_distribution_inflammation_status}
+finaldata |>
+    distinct(geo_accession, .keep_all = TRUE) |>
+    filter(!is.na(age_group)) |>
+    ggplot(mapping = aes(x = age_group, fill = inflammation_status))+
+       geom_bar(position = position_dodge2(preserve = "single", padding = 0), 
+        color = "black", 
+        alpha = 0.4)+
+      theme_minimal(base_size = 10) +
+      theme(
+        legend.position = "bottom"
+     ) +
+     labs(
+       x = "Age groups",
+        y = "n",
+       fill = "Inflammation-status"
+      )
+ggsave("age_groups_distribution_inflammation_status.png", path = "../results", dpi = 300, width = 20, height = 12, units = "cm")
+```
+
+## Age group and diagnosis time
+
+Plotting the correlation between the different age groups and diagnosis time to see, if there is a correlation between the two. Although the medians in the age groups are all similar, some patients in the age group (50,60) takes a long time to get diagnosed. The patients in the age group (30,40\] takes the shortest time to get diagnosed.
+
+```{r time_to_diagnosis_vs_age}
+finaldata |>  
+  filter(!is.na(age_group)) |> 
+  filter(!is.na(time_untreated)) |> 
+  filter(time_untreated > 0) |> 
+  group_by(age_group) |> 
+  summarise(n = n())
+
+finaldata |>  
+  filter(!is.na(age_group)) |> 
+  filter(!is.na(time_untreated)) |> 
+  filter(time_untreated > 0) |> 
+  group_by(age_group) |> 
+  ggplot(aes(x = age_group, y = time_untreated)) +
+    geom_boxplot() + 
+    theme_minimal() + 
+    labs(x = "Age Groups",
+         y = "Time to diagnostics (days)",
+         title = "Time from 1st UC symtomps to diagnostics against age") +
+    theme(
+      plot.title = element_text(size = 12)
+    )
+ggsave("time_to_diagnosis_vs_age.png", path = "../results", dpi = 300, width = 20, height = 12, units = "cm")
+```
+
+## Impact of smoking on inflammation status
+
+### Correlation between gene expression, inflammation status and smoking status
+
+Plotting the correlation between gene expression, inflammation status and smoking status. Most patients are either ex-smokers or have never smoked. The group of patients thats do smoke as well as the ones that have never smoked have a slightly higher subset that are inflamed.
+
+```{r gene_expression_by_smoking_status_and_inflammation}
+
+finaldata |>
+  distinct(geo_accession, .keep_all = TRUE) |>
+  filter(!is.na(smoking_status)) |> 
+  ggplot(aes(x = smoking_status, 
+             fill = inflammation_status)) +
+  geom_bar(position = position_dodge2(preserve = "single", padding = 0),
+        color = "black", 
+        alpha = 0.4) +
+  theme_minimal() +
+   theme(
+        legend.position = "bottom"
+     ) +
+  labs(x = "Smoking status", y = "n", fill = "Inflammation-status")
+ggsave("gene_expression_by_smoking_status_and_inflammation.png", path = "../results", dpi = 300, width = 20, height = 12, units = "cm")
+```
+
+### Correlation between smoking and the diagnosis time
+
+Plotting to see the correlation between patients that are smokers and how long it takes for them to get diagnosed. The patient group that whose smoking habits are unknown takes the shortest time to get diagnosed, followed by the current smokers. The group of patients that have never smoked takes the longest time to get diagnosed. However, since the "smoker" group and the "unknown" group are the much smaller than the "ex" and the "never" group, the results may be unreliable. Moreover, there are two three outliers in the plot who have all taken a very long time to get diagnosed.
+
+```{r time_to_diagnosis_vs_smoking_status}
+finaldata |>  
+  filter(!is.na(smoking_status)) |> 
+  filter(!is.na(time_untreated)) |> 
+  filter(time_untreated > 0) |> 
+  group_by(smoking_status) |> 
+  summarise(n = n()) 
+
+finaldata |>  
+  filter(!is.na(smoking_status)) |> 
+  filter(!is.na(time_untreated)) |> 
+  filter(time_untreated > 0) |> 
+  group_by(smoking_status) |> 
+  ggplot(aes(x = smoking_status, y = time_untreated)) +
+    geom_boxplot() + 
+    theme_minimal() + 
+    labs(x = "Smoking Status",
+         y = "Time to diagnostics (days)",
+         title = "Time from 1st UC symtomps to diagnostics against smoking") +
+    theme(
+      plot.title = element_text(size = 12)
+    )
+ggsave("time_to_diagnosis_vs_smoking_status.png", path = "../results", dpi = 300, width = 20, height = 12, units = "cm")
+```
+
+## Significance based on anatomical location
+
+The graph shows that significant variations in expression between inflamed and non-inflamed samples appear only in the descending colon and sigmoid colon. In the ascending colon, the differences do not exceed the significance threshold, while in the terminal ileum, the inflamed samples are too few to make a reliable comparison.
+
+```{r significant_gene_counts_by_anatomic_location}
+de_by_loc <- finaldata |>
+  filter(complete.cases(gene_expr, inflammation_status, anatomic_location)) |>
+  mutate(inflammation_status = factor(inflammation_status,
+                                      c("Uninflamed", "Inflamed"))) |>
+  group_by(anatomic_location, gene_id) |>
+  #Keep only genes where both groups are present in that location
+  filter(n_distinct(inflammation_status) == 2) |>
+  summarise(
+    log2FC  = mean(gene_expr[inflammation_status == "Inflamed"],   na.rm = TRUE) -
+              mean(gene_expr[inflammation_status == "Uninflamed"], na.rm = TRUE),
+
+    p_value = tryCatch(
+      t.test(gene_expr ~ inflammation_status)$p.value,
+      error = function(e) NA_real_
+    ),
+    .groups = "drop"
+  ) |>
+  group_by(anatomic_location) |>
+  mutate(
+    FDR = p.adjust(p_value, "BH"),
+    sig = !is.na(FDR) & FDR < 0.05
+  ) |>
+  ungroup()
+
+de_by_loc |>
+  group_by(anatomic_location, sig) |>
+  summarise(n = n(), .groups = "drop") |>
+  ggplot(aes(anatomic_location, n, fill = sig)) +
+  geom_col(position = "dodge") +
+  coord_flip() +
+  theme_minimal()
+ggsave("significant_gene_count_by_anatomic_location.png", path = "../results", dpi = 300, width = 20, height = 12, units = "cm")
+```
+
+## Cleaning environment
+
+```{r}
+rm(list = ls())
+```
